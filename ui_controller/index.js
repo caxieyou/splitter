@@ -36,10 +36,12 @@ $(function () {
             //右键
             canvas.resetType();
         }
+        canvas.recordMouseDown(event.offsetX, event.offsetY);
     });
 
     $(document).on('mouseup', '#main_container', function (event) {
         event = event || window.event;
+        canvas.recordMouseUp(event.offsetX, event.offsetY);
         if (canvas.getDrawType() == null) {
             var elementType = canvas.getFocusElement();
             if (elementType == null) {
@@ -48,6 +50,8 @@ $(function () {
                 if (btnNum == 0) {
                     canvas.renderAreaPicked(event.offsetX, event.offsetY);
                 }
+            } else if (elementType instanceof Vec2) {
+                console.log("set corner");
             } else {
                 var clientWidth = parseInt($('#container').css('width'));
                 var clientHeight = parseInt($('#container').css('height'));
@@ -63,8 +67,6 @@ $(function () {
                 }
                 $('#props_wrap').css('left', left).css('top', top);
                 
-                //console.log($('#props_wrap').find('.props.line').children('.iconfont'));
-                //console.log($('#props_wrap').find('.props.line').children('.iconfont').eq(0));
                 if (elementType instanceof MyCurve) {
                     if(!$('#props_wrap').find('.props.line').children('.iconfont').eq(0).hasClass('none'))
                     {
@@ -97,6 +99,8 @@ $(function () {
 
         if (event.which == 1) {
             //按住拖动
+            canvas.updateElement(event.offsetX, event.offsetY);
+            
         } else if(event.which == 0) {
             //没按住拖动
             canvas.setEndPoint(event.offsetX, event.offsetY);

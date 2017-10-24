@@ -1,7 +1,9 @@
 var STATUS = {
-    NOT_STARTED : -1,
-    SET_START   :  0,
-    DRAWING     :  1,
+    NOT_STARTED   : -1,
+    SET_START     :  0,
+    DRAWING       :  1,
+    LINE_START    :  2,
+    LINE_DRAWING  :  3
 }
 
 function Canvas(name) {
@@ -18,6 +20,9 @@ function Canvas(name) {
     this._focus = null;
     this._operationCurve = null;
     this._initialize();
+    this._mouseDown = new Vec2();
+    this._mouseUp = new Vec2();
+    this._linePoints = [];
 }
 
 Canvas.prototype._initialize = function() {
@@ -75,11 +80,30 @@ Canvas.prototype.creatCircle = function() {
 
 Canvas.prototype.setType = function(type) {
     this._type = type;
+    
+    if (this._type == TYPE.LINE) {
+        this._currentStatus = STATUS.LINE_START;
+        
+    }
+    
 }
 
 Canvas.prototype.setStartPoint = function(x, y) {
     if (this._type == null) {
         return false;
+    }
+    
+    if (this._currentStatus == STATUS.LINE_START) {
+        var list = [];
+        list.push(new Vec2(x, y));
+        this._linePoints.push(list);
+        console.log("press 0");
+        console.log(this._linePoints);
+        this._currentStatus = STATUS.LINE_DRAWING
+    } else if (this._currentStatus == STATUS.LINE_DRAWING) {
+        this._linePoints[this._linePoints.length-1].push(new Vec2(x, y));
+        console.log("press 1");
+        console.log(this._linePoints);
     }
     
     if (this._currentStatus == STATUS.NOT_STARTED) {
@@ -93,7 +117,11 @@ Canvas.prototype.setEndPoint = function(x, y) {
     if (this._type == null || this._currentStatus ==  STATUS.NOT_STARTED) {
         return false;
     }
-    
+    if (this._currentStatus ==  STATUS.LINE_START || this._currentStatus == STATUS.LINE_DRAWING) {
+        console.log("move: " + this._currentStatus);
+        return false;
+    }
+
     this._currentStatus = STATUS.DRAWING;
     this._mEdge.mEnd.mX = x;
     this._mEdge.mEnd.mY = y;
@@ -104,7 +132,19 @@ Canvas.prototype.setEndPoint = function(x, y) {
         return true;
     }
 }
-
+Canvas.prototype.resetType = function() {
+    if (this._currentStatus  == STATUS.LINE_DRAWING) {
+        this._currentStatus = STATUS.LINE_START;
+        console.log("right 0");
+    } else if (this._currentStatus  == STATUS.LINE_START) {
+        this._currentStatus = STATUS.NOT_STARTED;
+        this._type = null;
+        this._linePoints = [];
+        console.log("right 1");
+    } else {
+        this._type = null;
+    }
+}
 
 Canvas.prototype.getDrawType = function() {
     return this._type;
@@ -112,7 +152,7 @@ Canvas.prototype.getDrawType = function() {
 
 Canvas.prototype.getFocusElement = function() {
     if (this._focus) {
-        return this._focus.edge;
+        return this._focus.geom;
     } else {
         return null;
     }
@@ -131,9 +171,7 @@ Canvas.prototype.checkStatus = function() {
     }
 }
 
-Canvas.prototype.resetType = function() {
-    this._type = null;
-}
+
 
 Canvas.prototype.renderAreaPicked = function(x, y) {
     
@@ -146,6 +184,20 @@ Canvas.prototype.renderAreaPicked = function(x, y) {
     }
     this._renderOutput();
     //return null;
+}
+
+Canvas.prototype.recordMouseDown = function(x, y) {
+    this._mouseDown.mX = x;
+    this._mouseDown.mY = y;
+    
+}
+Canvas.prototype.recordMouseUp = function(x, y) {
+    this._mouseUp.mX = x;
+    this._mouseUp.mY = y;
+    
+    if (Math.abs(this._mouseDown.mX - this._mouseUp.mX) > 4 || Math.abs(this._mouseDown.mY - this._mouseUp.mY) > 4) {
+        this._focus = null;
+    }
 }
 
 Canvas.prototype.onSplitCurve = function() {
@@ -185,6 +237,13 @@ Canvas.prototype.setOperationCurve = function() {
     this._operationCurve = this._focus.controller;
 }
 
+Canvas.prototype.updateElement = function(x, y){
+    if (this._focus) {
+        console.log(this._focus.geom);
+        console.log(this._focus.controller);
+    }
+}
+
 Canvas.prototype.createElement = function() {
     switch(this._type) {
         case TYPE.RECTANGLE:
@@ -193,6 +252,10 @@ Canvas.prototype.createElement = function() {
         
         case TYPE.CIRCLE:
             this.creatCircle();
+        break;
+        
+        case TYPE.LINE :
+            //Do nothing
         break;
     }
 }
@@ -236,12 +299,43 @@ Canvas.prototype._renderFocusObject = function(x, y) {
     if(this._mFloor.mProfile) {
         var profile = this._mFloor.mProfile.getProfile();
         for (var i = 0; i < profile.length; i++) {
-            if (profile[i].pointInEdgeOrOnEdge(new Vec2(x, y), 1.0)) {
+            if (profile[i].pointInEdgeOrOnEdge(new Vec2(x, y), 2.0)) {
                 return;
             }
         }
     }
     
+    if(this._mFloor.mProfile) {
+        var vertices = this._mFloor.mProfile.getVertices();
+        for (var i = 0; i < vertices.length; i++) {
+            if (vertices[i].isClose(new Vec2(x, y), 2.0)) {
+                return;
+            }
+        }
+    }
+    
+    /////////////////////
+    // focus on corner //
+    /////////////////////
+    for (var i = 0; i < this._mFloor.mCorners.length; i++) {
+        if (this._mFloor.mCorners[i].mPosition.isClose(new Vec2(x, y), 2.0)) {
+            this._focus = {
+                    geom: new Vec2(x, y),
+                    controller : this._mFloor.mCorners[i]
+                };
+            break;
+        }
+    }
+    if (this._focus != null) {
+        console.log("render focus");
+        console.log(this._focus);
+        return;
+    }
+    
+    
+    ////////////////////
+    // focus on edge  //
+    ////////////////////
     for (var i = 0; i < this._mFloor.mCurves.length; i++) {
         var curve = this._mFloor.mCurves[i];
         var edge;
@@ -249,7 +343,7 @@ Canvas.prototype._renderFocusObject = function(x, y) {
             var edge = curve.getTheStartEndEdge();
             if (edge.pointInEdgeOrOnEdge(new Vec2(x, y), 1.0)) {
                 this._focus = {
-                    edge: edge,
+                    geom: edge,
                     controller : curve
                 };
                 break;
@@ -259,7 +353,7 @@ Canvas.prototype._renderFocusObject = function(x, y) {
             
             if (edge.isInsideCurveAndNotOnCurve(new Vec2(x, y), 1.0)) {
                 this._focus = {
-                    edge: edge,
+                    geom: edge,
                     controller : curve
                 };
                 break;
@@ -269,10 +363,10 @@ Canvas.prototype._renderFocusObject = function(x, y) {
     if (this._focus == null) {
         return;
     }
-    if (this._focus.edge instanceof MyEdge) {
-        this._renderer.drawLine(this._focus.edge, null, null, true);
-    } else if(this._focus.edge instanceof MyCurve) {
-        this._renderer.drawArc(this._focus.edge, true);
+    if (this._focus.geom instanceof MyEdge) {
+        this._renderer.drawLine(this._focus.geom, null, null, true);
+    } else if(this._focus.geom instanceof MyCurve) {
+        this._renderer.drawArc(this._focus.geom, true);
     }
 }
 

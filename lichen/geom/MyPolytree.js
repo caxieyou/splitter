@@ -231,6 +231,25 @@ MyPolytree.prototype.getProfile = function()
     }
     return _loc1_;
 }
+
+MyPolytree.prototype.getVertices = function()
+{
+    var _loc2_ = null;
+    var _loc1_ = [];//:Vector.<my2D_Edge> = new Vector.<my2D_Edge>();
+    if(this.mOutLines == null)
+    {
+        return _loc1_;
+    }
+    _loc1_ = _loc1_.concat(this.mOutLines.mVertices);
+    //ArrayHelperClass.addItems = function(_loc1_,this.mOutLines.getEdges());
+    if(this.containsHole())
+    {
+        for(var i = 0; i < this.mHoles.length; i++) {
+            _loc1_ = _loc1_.concat(this.mHoles[i].mVertices);
+        }
+    }
+    return _loc1_;
+}
 /*
 MyPolytree.prototype.§-_____--_____§ = function() : Number
 {
