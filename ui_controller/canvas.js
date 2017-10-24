@@ -135,14 +135,16 @@ Canvas.prototype.resetType = function() {
     this._type = null;
 }
 
-Canvas.prototype.getAreaPicked = function(x, y) {
-    //console.log(this._outputResult);
+Canvas.prototype.renderAreaPicked = function(x, y) {
+    
     for (var i = 0; i < this._innerResult.length; i++) {
         if (this._innerResult[i].contains(new Vec2(x, y))) {
-            return this._outputResult[i];
+            //return this._outputResult[i];
+            this._renderer.drawArea(this._outputResult[i]);
+            break;
         }
     }
-    return null;
+    //return null;
 }
 
 Canvas.prototype.onSplitCurve = function() {

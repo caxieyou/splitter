@@ -26,14 +26,32 @@ Converter.outputGeo = function(floor) {
     var areas = floor.mAreas;
     for (var i = 0; i < areas.length; i++) {
         var area = areas[i];
-        //areaList.push(area);
         holesList.push([]);
         for (var j = 0; j < areas.length; j++) {
             if(i == j) {
                 continue;
             }
+            
             if (area.isIncludedArea(areas[j])) {
-                holesList[i].push(areas[j]);
+                if (holesList[i].length == 0) {
+                    holesList[i].push(areas[j]);
+                } else {
+                    var isAdd = true;
+                    for (var k = 0; k < holesList[i].length; k++) {
+                        if (holesList[i][k].isIncludedArea(areas[j])) {
+                            isAdd = false;
+                            break;
+                        }
+                        if (areas[j].isIncludedArea(holesList[i][k])) {
+                            holesList[i][k] = areas[j];
+                            isAdd = false;
+                            break;
+                        }
+                    }
+                    if (isAdd) {
+                        holesList[i].push(areas[j]);
+                    }
+                }
             }
         }
     }
@@ -50,7 +68,4 @@ Converter.outputGeo = function(floor) {
     console.log("GEOM INFO:");
     console.log(result);
     return [result, result2];
-    //var JSONstr1 = JSON.stringify(result);
-    //console.log(JSONstr1);
-    //alert(JSONstr1);
 }

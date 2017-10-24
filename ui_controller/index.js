@@ -46,8 +46,7 @@ $(function () {
                 $('#props_wrap').hide();
                 var btnNum = event.button;
                 if (btnNum == 0) {
-                    var areaPicked = canvas.getAreaPicked(event.offsetX, event.offsetY);
-                    console.log(areaPicked);
+                    canvas.renderAreaPicked(event.offsetX, event.offsetY);
                 }
             } else {
                 var clientWidth = parseInt($('#container').css('width'));

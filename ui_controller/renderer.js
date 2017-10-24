@@ -139,4 +139,166 @@ Renderer = function () {
     this.clear = function() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
+    
+    this.drawArea = function(output) {
+
+        var ctx = this.ctx;
+        //console.log(output);
+
+        ctx.beginPath();
+        var prevPoint;
+        var counterclockwise;
+        for (var i = 0, length = output.mOutline.edges.length; i < length; i++) {
+            var edge = output.mOutline.edges[i],
+                next = output.mOutline.edges[(i + 1) % length],
+                nextSP = next.mStart,
+                nextEP = next.mEnd,
+                p = undefined;
+
+            if (next.constructor == MyCurve) {
+                nextSP = this.rotatePoint({
+                    x: next.mCenter.mX + next.mRadius,
+                    y: next.mCenter.mY
+                }, next.mCenter, next.mStartAngle);
+                nextEP = this.rotatePoint({
+                    x: next.mCenter.mX + next.mRadius,
+                    y: next.mCenter.mY
+                }, next.mCenter, next.mStartAngle + next.mArcAngle);
+            }
+
+            if (edge.constructor == MyEdge) {
+                if (prevPoint) {
+                    if (this.isClose(edge.mStart, prevPoint))
+                        p = edge.mEnd;
+                    else
+                        p = edge.mStart;
+                } else {
+                    if (this.isClose(edge.mStart, nextSP) || this.isClose(edge.mStart, nextEP))
+                        p = edge.mStart;
+                    else if (this.isClose(edge.mEnd, nextEP) || this.isClose(edge.mEnd, nextSP))
+                        p = edge.mEnd;
+                }
+
+                if (p) {
+                    prevPoint = p;
+                    if (i == 0)
+                        ctx.moveTo(p.mX, p.mY);
+                    else
+                        ctx.lineTo(p.mX, p.mY);
+                }
+            } 
+            else if (edge.constructor == MyCurve) {
+                var sp = this.rotatePoint({
+                        x: edge.mCenter.mX + edge.mRadius,
+                        y: edge.mCenter.mY
+                    }, edge.mCenter, edge.mStartAngle),
+                    ep = this.rotatePoint({
+                        x: edge.mCenter.mX + edge.mRadius,
+                        y: edge.mCenter.mY
+                    }, edge.mCenter, edge.mStartAngle + edge.mArcAngle);
+                var endAngle = edge.mArcAngle + edge.mStartAngle;
+                if (prevPoint) {
+                    if (this.isClose(prevPoint, sp)) {
+                        ctx.arc(edge.mCenter.mX, edge.mCenter.mY, edge.mRadius, edge.mStartAngle, endAngle, endAngle > edge.mStartAngle ? false : true);//false,endAngle < 0 ? true:false
+                        prevPoint = ep;
+                    }
+                    else {
+                        ctx.arc(edge.mCenter.mX, edge.mCenter.mY, edge.mRadius, endAngle, edge.mStartAngle, endAngle > edge.mStartAngle ? true : false);//true,endAngle < 0 ? false:true
+                        prevPoint = sp;
+                    }
+                } else {
+                    if (!this.isClose(ep, nextSP) && !this.isClose(ep, nextEP)) {
+                        ctx.arc(edge.mCenter.mX, edge.mCenter.mY, edge.mRadius, endAngle, edge.mStartAngle, endAngle > edge.mStartAngle ? true : false);//true,endAngle < 0 ? false:true
+                        prevPoint = sp;
+                    } else {
+                        ctx.arc(edge.mCenter.mX, edge.mCenter.mY, edge.mRadius, edge.mStartAngle, endAngle, endAngle > edge.mStartAngle ? false : true);//false,endAngle < 0 ? true:false
+                        prevPoint = ep;
+                    }
+                }
+            }
+        }
+        ctx.fillStyle = 'rgba(2,100,30,0.5)';
+        ctx.fill();
+        ctx.closePath();
+
+        if (output.mHoles.length > 0) {
+
+            ctx.globalCompositeOperation = "destination-out";
+            for (var i = 0; i < output.mHoles.length; i++) {
+                var prevPos=undefined, next, nextSP, nextEP;
+                var hole = output.mHoles[i];
+                var isCurves = this.isAllCurves(hole.edges);
+                ctx.beginPath();
+                for (var j = 0; j < hole.edges.length; j++) {
+                    var hedge = hole.edges[j];
+                    next = hole.edges[(j + 1) % hole.edges.length];
+                    nextSP = next.mStart;
+                    nextEP = next.mEnd;
+
+                    if (next.constructor == MyCurve) {
+                        nextSP = this.rotatePoint({
+                            x: next.mCenter.mX + next.mRadius,
+                            y: next.mCenter.mY
+                        }, next.mCenter, next.mStartAngle);
+                        nextEP = this.rotatePoint({
+                            x: next.mCenter.mX + next.mRadius,
+                            y: next.mCenter.mY
+                        }, next.mCenter, next.mStartAngle + next.mArcAngle);
+                    }
+
+                    if (hedge.constructor == MyEdge) {
+                        if (j == 0) ctx.moveTo(hedge.mStart.mX, hedge.mStart.mY);
+                        else ctx.lineTo(hedge.mStart.mX, hedge.mStart.mY);
+                        ctx.lineTo(hedge.mEnd.mX, hedge.mEnd.mY);
+                        prevPos = hedge.mEnd;
+                        //if (j == hole.edges.length - 1) ctx.lineTo(hedge.mEnd.mX, hedge.mEnd.mY);
+                    } else if (hedge.constructor == MyCurve) {
+                        var sp = this.rotatePoint({
+                                x: hedge.mCenter.mX + hedge.mRadius,
+                                y: hedge.mCenter.mY
+                            }, hedge.mCenter, hedge.mStartAngle),
+                            ep = this.rotatePoint({
+                                x: hedge.mCenter.mX + hedge.mRadius,
+                                y: hedge.mCenter.mY
+                            }, hedge.mCenter, hedge.mStartAngle + hedge.mArcAngle);
+                        var endAngle = hedge.mArcAngle + hedge.mStartAngle;
+                        var counterclockwise = endAngle < 0 ? true : false;
+                        if (!isCurves) counterclockwise = endAngle > edge.mStartAngle ? true : false;
+
+                        if ((prevPos != undefined && !this.isClose(prevPos, sp)) ){//|| (prevPos == undefined && !isClose(ep, nextSP) && !isClose(ep, nextEP))
+                            ctx.arc(hedge.mCenter.mX, hedge.mCenter.mY, hedge.mRadius, endAngle, hedge.mStartAngle, false);
+                            prevPos = sp;
+                        }
+                        else {
+                            ctx.arc(hedge.mCenter.mX, hedge.mCenter.mY, hedge.mRadius, hedge.mStartAngle, endAngle, false);//endAngle > edge.mStartAngle ? true:false
+                            prevPos = ep;
+                        }
+                    }
+                }
+
+                ctx.fillStyle = '#FFF';
+                ctx.fill();
+                ctx.closePath();
+
+            }
+            ctx.globalCompositeOperation = "source-over";
+        }
+
+    }
+
+    this.rotatePoint = function(a, o, angle) {
+        return {
+            mX: (a.x - o.mX) * Math.cos(angle) - (a.y - o.mY) * Math.sin(angle) + o.mX,
+            mY: (a.x - o.mX) * Math.sin(angle) + (a.y - o.mY) * Math.cos(angle) + o.mY
+        }
+    }
+    this.isClose = function(a, b) {
+        return Math.abs(a.mX - b.mX) <= 1 && Math.abs(a.mY - b.mY) <= 1;
+    }
+    this.isAllCurves = function(edges) {
+        for (var j = 0; j < edges.length; j++) {
+            if (edges[j].constructor == MyEdge)return false;
+        }
+        return true;
+    }
 }
