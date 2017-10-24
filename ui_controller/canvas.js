@@ -144,6 +144,7 @@ Canvas.prototype.renderAreaPicked = function(x, y) {
             break;
         }
     }
+    this._renderOutput();
     //return null;
 }
 

@@ -100,7 +100,7 @@ $(function () {
         } else if(event.which == 0) {
             //没按住拖动
             canvas.setEndPoint(event.offsetX, event.offsetY);
-            canvas.render(event.offsetX, event.offsetY, true);
+            canvas.render(event.offsetX, event.offsetY);
         }
     });
     
