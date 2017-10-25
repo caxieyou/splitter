@@ -142,6 +142,7 @@ Canvas.prototype.resetType = function() {
         this._linePoints = [];
         console.log("right 1");
     } else {
+        this._currentStatus = STATUS.NOT_STARTED;
         this._type = null;
     }
 }
