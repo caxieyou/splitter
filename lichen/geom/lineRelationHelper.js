@@ -195,8 +195,17 @@ lineRelationHelper.isInterSect = function(param1, param2, param3, param4)
             if (_loc5_.mRatio1.mX == 1 && _loc5_.mRatio2.mX == 1) {
                 return false;
             }
+            if (_loc5_.mRatio1.mX == 1 && _loc5_.mRatio2.mX == 0) {
+                return false;
+            }
+            if (_loc5_.mRatio1.mX == 0 && _loc5_.mRatio2.mX == 1) {
+                return false;
+            }
             return !(MyNumber.isZeroOrOrigin(_loc5_.mRatio1.mX) || MyNumber.isZeroOrOrigin(_loc5_.mRatio2.mX));
         case Line2DIntersectionStatus.OVERLAPPING:
+            if (_loc5_.mRatio1.mX == 1 && _loc5_.mRatio1.mY == 1) {
+                return false;
+            }
             return param3 || !MyNumber.isEqual(_loc5_.mRatio1.mX,_loc5_.mRatio1.mY) || !MyNumber.isZeroOrOrigin(_loc5_.mRatio1.mX);
         default:
             return false;

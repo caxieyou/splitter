@@ -18,6 +18,7 @@ function Canvas(name) {
     this._type = null;
     this._mEdge = new MyEdge(new Vec2(), new Vec2());
     this._focus = null;
+    this._updateElment = null;
     this._operationCurve = null;
     this._initialize();
     this._mouseDown = new Vec2();
@@ -83,7 +84,6 @@ Canvas.prototype.setType = function(type) {
     
     if (this._type == TYPE.LINE) {
         this._currentStatus = STATUS.LINE_START;
-        
     }
     
 }
@@ -92,7 +92,10 @@ Canvas.prototype.setStartPoint = function(x, y) {
     if (this._type == null) {
         return false;
     }
-    
+    if (!this._mFloor.mProfile.mOutLines.contains(new Vec2(x, y))) {
+        console.log("START POINT OUTSIDE OF ROOM!");
+        return;
+    }
     if (this._currentStatus == STATUS.LINE_START) {
         var list = [];
         list.push(new Vec2(x, y));
@@ -172,8 +175,6 @@ Canvas.prototype.checkStatus = function() {
     }
 }
 
-
-
 Canvas.prototype.renderAreaPicked = function(x, y) {
     
     for (var i = 0; i < this._innerResult.length; i++) {
@@ -199,6 +200,7 @@ Canvas.prototype.recordMouseUp = function(x, y) {
     if (Math.abs(this._mouseDown.mX - this._mouseUp.mX) > 4 || Math.abs(this._mouseDown.mY - this._mouseUp.mY) > 4) {
         this._focus = null;
     }
+    this._updateElment = null;
 }
 
 Canvas.prototype.onSplitCurve = function() {
@@ -238,11 +240,76 @@ Canvas.prototype.setOperationCurve = function() {
     this._operationCurve = this._focus.controller;
 }
 
-Canvas.prototype.updateElement = function(x, y){
-    if (this._focus) {
-        console.log(this._focus.geom);
-        console.log(this._focus.controller);
+
+Canvas.prototype._checkOverlap = function() {
+    var overlapped = false;
+    for (var i = 0; i < this._mFloor.mCurves.length; i++) {
+        for (var j = i+1; j < this._mFloor.mCurves.length; j++) {
+            var curve0 = this._mFloor.mCurves[i];
+            var curve1 = this._mFloor.mCurves[j];
+            if (curve0.isIntersectWith(curve1)) {
+                overlapped = true;
+                break;
+            }
+        }
     }
+    return overlapped;
+}
+
+Canvas.prototype.updateElement = function(x, y){
+    
+    if (!this._updateElment && this._focus) {
+        this._updateElment = this._focus;
+        this._lastFocos = new Vec2(x, y);
+    }
+    
+    if (this._updateElment) {
+        console.log("controller been called: " + x + " " + y);
+        if (this._updateElment.controller instanceof MyCorner) {
+            this._updateElment.controller.mPosition.mX = x;
+            this._updateElment.controller.mPosition.mY = y;
+            var analysis = new Analysis(this._mFloor);
+            analysis.execute();
+            [this._outputResult,  this._innerResult] = Converter.outputGeo(this._mFloor);
+        }
+        
+        if (this._updateElment.controller instanceof CurveController) {
+            this._updateElment.controller.mCurvePoint.mX = x;
+            this._updateElment.controller.mCurvePoint.mY = y;
+            var analysis = new Analysis(this._mFloor);
+            analysis.execute();
+            [this._outputResult,  this._innerResult] = Converter.outputGeo(this._mFloor);
+        }
+        
+        var overlapped = this._checkOverlap();
+        
+        if (overlapped)
+        {
+            if (this._updateElment.controller instanceof MyCorner) {
+                this._updateElment.controller.mPosition.mX = this._lastFocos.mX;
+                this._updateElment.controller.mPosition.mY = this._lastFocos.mY;
+            }
+            if (this._updateElment.controller instanceof CurveController) {
+                this._updateElment.controller.mCurvePoint.mX = this._lastFocos.mX;
+                this._updateElment.controller.mCurvePoint.mY = this._lastFocos.mY;
+            }
+            
+            var analysis = new Analysis(this._mFloor);
+            analysis.execute();
+            [this._outputResult,  this._innerResult] = Converter.outputGeo(this._mFloor);
+            
+            this._updateElment = null;
+            this._focus = null;
+            this._lastFocos = null;
+        }
+        this.render();
+        if (overlapped) {
+            return;
+        }
+        this._lastFocos.mX = x;
+        this._lastFocos.mY = y;
+    }
+    
 }
 
 Canvas.prototype.createElement = function() {
@@ -327,11 +394,14 @@ Canvas.prototype._renderFocusObject = function(x, y) {
             break;
         }
     }
+    
+    /*
     if (this._focus != null) {
         console.log("render focus");
         console.log(this._focus);
         return;
     }
+    */
     
     
     ////////////////////

@@ -280,7 +280,7 @@ Splitter.prototype.execute = function() {
         return;
     }
     
-    var _loc1_, _loc2_;
+    var _loc1_, _loc2_ = [];
     
     if (this.mCircle instanceof MyCircle) {
         _loc1_ = this.getSubCurvesCircleSplitByCurves(this.mCircle,this.mWall.mCurves);

@@ -35,6 +35,8 @@ CurveController.getSplitOneThirdCurve = function(param1)
     _loc3_.mCurvePoint = param1.getSplitPosByRatio(CurveController.CONST_SPLIT);
     return _loc3_;
 }
+
+
 //求圆心
 CurveController.prototype.getInnerIntersectionPoint_XX = function()
 {
