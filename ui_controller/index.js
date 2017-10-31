@@ -68,19 +68,12 @@ $(function () {
                 $('#props_wrap').css('left', left).css('top', top);
                 
                 if (elementType instanceof MyCurve) {
-                    if(!$('#props_wrap').find('.props.line').children('.iconfont').eq(0).hasClass('none'))
-                    {
-                        $('#props_wrap').find('.props.line').children('.iconfont').toggleClass('none');
-                    }
-                    
+                    $('#props_wrap .props.line .iconfont.straight').removeClass('none').siblings('.curve').addClass('none');
                     $('#props_wrap').find('.props.line').data('type','curve');
                     $('#props_wrap').find('.props.line').find('.pup').html('转为直线<i></i>');
     
                 } else if (elementType instanceof MyEdge) {
-                    if($('#props_wrap').find('.props.line').children('.iconfont').eq(0).hasClass('none'))
-                    {
-                        $('#props_wrap').find('.props.line').children('.iconfont').toggleClass('none');
-                    }
+                    $('#props_wrap .props.line .iconfont.curve').removeClass('none').siblings('.straight').addClass('none');
                     $('#props_wrap').find('.props.line').data('type','straight');
                     $('#props_wrap').find('.props.line').find('.pup').html('转为曲线<i></i>');
                 }
