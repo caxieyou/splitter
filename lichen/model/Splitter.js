@@ -41,8 +41,14 @@ Splitter.prototype.getSubSegmentsSplitByCurves = function(param1, param2)
     var subject = param1;
 
     var clippers = param2;
-
-    var edges = subject.getEdges();
+    
+    var edges
+    if (param1 instanceof MyPolygon) {
+        edges = subject.getEdges();
+    } else {
+        edges = param1;
+    }
+    //var edges = subject.getEdges();
     
     var intersections = [];
 
@@ -284,9 +290,11 @@ Splitter.prototype.execute = function() {
     
     if (this.mCircle instanceof MyCircle) {
         _loc1_ = this.getSubCurvesCircleSplitByCurves(this.mCircle,this.mWall.mCurves);
-    } else if (this.mCircle instanceof MyPolygon) {
+    } else if (this.mCircle instanceof MyPolygon || this.mCircle instanceof Array) {
         _loc1_ = this.getSubSegmentsSplitByCurves(this.mCircle,this.mWall.mCurves);
-    }
+    } //else if (this.mCircle instanceof Array) {
+    //    _loc1_ = this.getSubSegmentsSplitByCurves(this.mCircle,this.mWall.mCurves);
+    //}
     
     if (_loc1_[0] instanceof MyCurve) {
         _loc2_ = this.splitCurvesIntoOneThirdCurves(_loc1_);

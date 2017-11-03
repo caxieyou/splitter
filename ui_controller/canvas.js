@@ -24,6 +24,10 @@ function Canvas(name) {
     this._mouseDown = new Vec2();
     this._mouseUp = new Vec2();
     this._linePoints = [];
+    this._lineEdges = [];
+    this._linePoint = new Vec2();
+    this._curentLine0 = null;
+    this._curentLine1 = null;
 }
 
 Canvas.prototype._initialize = function() {
@@ -41,7 +45,9 @@ Canvas.prototype._initialize = function() {
 }
 
 Canvas.prototype._renderCurrentObject = function() {
-    if (this._currentStatus != STATUS.DRAWING) {
+    if (!(this._currentStatus == STATUS.DRAWING || 
+        this._currentStatus == STATUS.LINE_START || 
+        this._currentStatus == STATUS.LINE_DRAWING)) {
         return;
     }
     
@@ -52,6 +58,26 @@ Canvas.prototype._renderCurrentObject = function() {
         case TYPE.CIRCLE:
             this._renderer.drawCircle(this._mEdge);
         break;
+        case TYPE.LINE:
+        {
+            for (var i = 0; i < this._lineEdges.length; i++) {
+                this._renderer.drawLine(this._lineEdges[i]);
+                //console.log(this._lineEdges);
+            }
+            
+            if (this._currentStatus == STATUS.LINE_DRAWING) {
+                if (this._curentLine0) {
+                    this._renderer.drawLine(this._curentLine0, true);
+                }
+                if (this._curentLine1) {
+                    this._renderer.drawLine(this._curentLine1, true, 'red');
+                }
+            }
+            
+            
+        }
+            //this.renderLines.drawCircle(this._mEdge);
+        break;
     }
 }
 
@@ -60,6 +86,24 @@ Canvas.prototype.split = function(polygon) {
     splitter.execute();
     var analysis = new Analysis(this._mFloor);
     analysis.execute();
+    /*
+    var single = [];
+    for (var i = 0; i < this._mFloor.mCurves.length; i++) {
+        if (this._mFloor.mCurves[i].mStart.mCurves.length < 2 || this._mFloor.mCurves[i].mEnd.mCurves.length < 2) {
+            single.push(this._mFloor.mCurves[i]);
+            //this._mWallCurveOperation.onDelete(this._mFloor.mCurves[i]);
+        }
+    }
+    if (single.length > 0) {
+        for (var i = 0; i < single.length; i++) {
+            single[i].dispose();
+        }
+        var analysis = new Analysis(this._mFloor);
+        analysis.execute();
+    }
+    */
+    
+    
     [this._outputResult,  this._innerResult] = Converter.outputGeo(this._mFloor);
     
 }
@@ -102,11 +146,23 @@ Canvas.prototype.setStartPoint = function(x, y) {
         this._linePoints.push(list);
         console.log("press 0");
         console.log(this._linePoints);
-        this._currentStatus = STATUS.LINE_DRAWING
+        this._linePoint.mX = x;
+        this._linePoint.mY = y;
+        this._currentStatus = STATUS.LINE_DRAWING;
+        
+        //this.render();
+        
     } else if (this._currentStatus == STATUS.LINE_DRAWING) {
         this._linePoints[this._linePoints.length-1].push(new Vec2(x, y));
+        this._lineEdges.push(this._curentLine0.clone());
         console.log("press 1");
         console.log(this._linePoints);
+        if (this._curentLine1) {
+            this._currentStatus = STATUS.LINE_START;
+            this.render();
+            this._curentLine0 = null;
+            this._curentLine1 = null;
+        }
     }
     
     if (this._currentStatus == STATUS.NOT_STARTED) {
@@ -120,8 +176,46 @@ Canvas.prototype.setEndPoint = function(x, y) {
     if (this._type == null || this._currentStatus ==  STATUS.NOT_STARTED) {
         return false;
     }
-    if (this._currentStatus ==  STATUS.LINE_START || this._currentStatus == STATUS.LINE_DRAWING) {
-        console.log("move: " + this._currentStatus);
+    if (this._currentStatus ==  STATUS.LINE_START) {
+        return false;
+    }
+    
+    if (this._currentStatus == STATUS.LINE_DRAWING) {
+        this._linePoint.mX = x;
+        this._linePoint.mY = y;
+        
+        var lastPointArray = this._linePoints[this._linePoints.length - 1];
+        var lastPoint = lastPointArray[lastPointArray.length - 1];
+        var edge = new MyEdge(lastPoint, this._linePoint);
+        
+        var intersects = [];
+        for (var i = 0; i < this._mFloor.mCurves.length; i++) {
+            var curve = this._mFloor.mCurves[i];
+            curve.isIntersectWithGeometry(edge, intersects);
+        }
+        
+        for (var i = 0; i < this._lineEdges.length; i++) {
+            SegmentController.intersectSub(edge, this._lineEdges[i], intersects);
+        }
+        var minDis = Number.MAX_VALUE;
+        var idx = 0;
+        if (intersects.length > 0) {
+            for (var i = 0; i < intersects.length; i++) {
+                var dis = Vec2.distance(intersects[i], lastPoint);
+                if (minDis > dis) {
+                    minDis = dis;
+                    idx = i;
+                }
+            }
+            
+            this._curentLine0 = new MyEdge(lastPoint, intersects[idx]);
+            this._curentLine1 = new MyEdge(intersects[idx], this._linePoint);
+            
+        } else {
+            this._curentLine0 = edge;
+            this._curentLine1 = null;
+        }
+        
         return false;
     }
 
@@ -135,14 +229,60 @@ Canvas.prototype.setEndPoint = function(x, y) {
         return true;
     }
 }
+
 Canvas.prototype.resetType = function() {
     if (this._currentStatus  == STATUS.LINE_DRAWING) {
         this._currentStatus = STATUS.LINE_START;
+        
+        
+        var lastPointArray = this._linePoints[this._linePoints.length - 1];
+        
+        if (lastPointArray.length < 2 || Vec2.isEqual(lastPointArray[0], lastPointArray[lastPointArray.length - 1])) {
+            // do nothing
+        } else {
+            var firstPoint = lastPointArray[0];
+            var lastPoint = lastPointArray[lastPointArray.length - 1];
+            var edge = new MyEdge(lastPointArray[lastPointArray.length - 1], lastPointArray[0]);
+            var intersects = [];
+            for (var i = 0; i < this._mFloor.mCurves.length; i++) {
+                var curve = this._mFloor.mCurves[i];
+                curve.isIntersectWithGeometry(edge, intersects);
+            }
+            
+            for (var i = 0; i < this._lineEdges.length; i++) {
+                SegmentController.intersectSub(edge, this._lineEdges[i], intersects);
+            }
+            
+            var minDis = Number.MAX_VALUE;
+            var idx = 0;
+            if (intersects.length > 0) {
+                for (var i = 0; i < intersects.length; i++) {
+                    var dis = Vec2.distance(intersects[i], lastPoint);
+                    if (minDis > dis) {
+                        minDis = dis;
+                        idx = i;
+                    }
+                }
+                
+                lastPointArray.push(intersects[idx]);
+                this._lineEdges.push(new MyEdge(lastPoint, intersects[idx]));
+                //证明有问题，不封闭的
+                
+            } else {
+                this._lineEdges.push(new MyEdge(lastPoint, firstPoint));
+                //证明没有问题，封闭的
+                
+            }
+        }
+        
         console.log("right 0");
     } else if (this._currentStatus  == STATUS.LINE_START) {
         this._currentStatus = STATUS.NOT_STARTED;
         this._type = null;
+        this.split(this._lineEdges);
+        this.render();
         this._linePoints = [];
+        this._lineEdges = [];
         console.log("right 1");
     } else {
         this._currentStatus = STATUS.NOT_STARTED;
@@ -171,6 +311,12 @@ Canvas.prototype.checkStatus = function() {
         return false;
     } else if (this._currentStatus == STATUS.DRAWING){
         this._currentStatus = STATUS.NOT_STARTED;
+        return true;
+    } else if (this._currentStatus == STATUS.LINE_START){
+        //this._currentStatus = STATUS.NOT_STARTED;
+        return true;
+    } else if (this._currentStatus == STATUS.LINE_DRAWING){
+        //this._currentStatus = STATUS.NOT_STARTED;
         return true;
     }
 }
@@ -327,6 +473,7 @@ Canvas.prototype.createElement = function() {
         break;
     }
 }
+
 Canvas.prototype._renderOutput = function() {
     if (this._outputResult == null) {
         return;
@@ -434,6 +581,7 @@ Canvas.prototype._renderFocusObject = function(x, y) {
     if (this._focus == null) {
         return;
     }
+    
     if (this._focus.geom instanceof MyEdge) {
         this._renderer.drawLine(this._focus.geom, null, null, true);
     } else if(this._focus.geom instanceof MyCurve) {

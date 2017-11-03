@@ -257,6 +257,35 @@ CurveController.prototype.isIntersectWith = function(param1, param2, param3, par
     return false;                   
 }
 
+CurveController.prototype.isIntersectWithGeometry = function(param1, param2, param3, param4)
+{
+    if (param2 == null || param2 == undefined) {
+        param2 = null;
+    }
+    if (param3 == null || param3 == undefined) {
+        param3 = false;
+    }
+    if (param4 == null || param4 == undefined) {
+        param4 = 1.0E-6;
+    }
+
+    var _loc5_ = null;
+    var _loc6_ = null;
+    var _loc7_ = null;
+    var _loc8_ = null;
+    if(param1 instanceof MyCurve)
+    {
+        _loc6_ = param1;
+        return this.isCurveIntersectByAreaAndGetIntersectPoint(_loc6_,param2,param3,param4);
+    }
+    if(param1 instanceof MyEdge)
+    {
+        _loc8_ = param1;
+        return this.intersectSub(_loc8_,param2,param3,param4);
+    }
+    return false;                   
+}
+
 CurveController.prototype.intersectSub = function(param1, param2, param3, param4)
 {
     if (param2 == null || param2 == undefined) {

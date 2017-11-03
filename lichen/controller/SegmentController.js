@@ -64,6 +64,35 @@ SegmentController.createSegmentByMyEdge = function(param1)
          return _loc2_;
       }
 */
+
+SegmentController.intersectSub = function(param1, param2, param3, param4, param5)
+{
+    if (param3 == null || param3 == undefined) {
+        param3 = null;
+    }
+    if (param4 == null || param4 == undefined) {
+        param4 = false;
+    }
+    if (param5 == null || param5 == undefined) {
+        param5 = 1.0E-6;
+    }
+    var _loc5_ = param2;
+    var _loc6_ = null;
+    if(lineRelationHelper.isInterSect(_loc5_,param1,param4,param5))
+    {
+        if(param3 != null)
+        {
+            _loc6_ = lineRelationHelper.isInterSectAndGetPoint(_loc5_,param1);
+            if(_loc6_ != null)
+            {
+                param3.push(_loc6_);
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
 SegmentController.prototype.isStart = function(param1)
 {
     return this.mStart == param1;//§-_____-_-_--_§.isEqual(this.mm_start,param1);
@@ -222,6 +251,34 @@ SegmentController.prototype.isIntersectWith = function(param1, param2, param3, p
     {
         _loc7_ = param1;
         _loc8_ = _loc7_.getCurveFromController();
+        return this.isCurveIntersectByAreaAndGetIntersectPoint(_loc8_,param2,param3,param4);
+    }
+    return false;
+}
+
+SegmentController.prototype.isIntersectWithGeometry = function(param1, param2, param3, param4)
+{
+    if (param2 == null || param2 == undefined) {
+        param2 = null;
+    }
+    if (param3 == null || param3 == undefined) {
+        param3 = false;
+    }
+    if (param4 == null || param4 == undefined) {
+        param4 = 1.0E-6;
+    }
+    var _loc6_ = null;
+    var _loc7_ = null;
+    var _loc8_ = null;
+    var _loc5_ = null;
+    if(param1 instanceof MyEdge)
+    {
+        _loc5_ = param1
+        return this.intersectSub(_loc5_,param2,param3,param4);
+    }
+    if(param1 instanceof MyCurve)
+    {
+        _loc8_ = _loc7_;
         return this.isCurveIntersectByAreaAndGetIntersectPoint(_loc8_,param2,param3,param4);
     }
     return false;
