@@ -70,7 +70,12 @@ public function getCurveFromController() : myCurveClass
     return _loc6_;
 }
 */
-      
+
+CurveController.prototype.containsPoint = function(param1)
+{
+    return this.getCurveFromController().isPointOnCurve(param1);
+}
+
 CurveController.prototype.getCurveFromController = function()
 {
     var _loc1_ = this.getInnerIntersectionPoint_XX();

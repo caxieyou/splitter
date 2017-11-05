@@ -28,6 +28,11 @@ function Canvas(name) {
     this._linePoint = new Vec2();
     this._curentLine0 = null;
     this._curentLine1 = null;
+    this._lineIntersect = {
+        isStartIntersect : [],
+        isSelfIntersect: [],
+        isStartEndSame : []
+    };
 }
 
 Canvas.prototype._initialize = function() {
@@ -61,7 +66,10 @@ Canvas.prototype._renderCurrentObject = function() {
         case TYPE.LINE:
         {
             for (var i = 0; i < this._lineEdges.length; i++) {
-                this._renderer.drawLine(this._lineEdges[i]);
+                for (var j = 0; j < this._lineEdges[i].length; j++) {
+                    this._renderer.drawLine(this._lineEdges[i][j]);
+                }
+                
                 //console.log(this._lineEdges);
             }
             
@@ -144,21 +152,34 @@ Canvas.prototype.setStartPoint = function(x, y) {
         var list = [];
         list.push(new Vec2(x, y));
         this._linePoints.push(list);
+        this._lineEdges.push([]);
         console.log("press 0");
         console.log(this._linePoints);
         this._linePoint.mX = x;
         this._linePoint.mY = y;
         this._currentStatus = STATUS.LINE_DRAWING;
-        
-        //this.render();
-        
+        this._curentLine0 = null;
+        //if (this._linePoints[this._linePoints.length - 1].length === 1) {
+        this._lineIntersect.isStartIntersect.push(false);
+        this._lineIntersect.isSelfIntersect.push(false);
+        this._lineIntersect.isStartEndSame.push(false);
+        for (var i = 0; i < this._mFloor.mCurves.length; i++) {
+            if (this._mFloor.mCurves[i].containsPoint(this._linePoint)) {
+                this._lineIntersect.isStartIntersect[this._lineIntersect.isStartIntersect.length - 1] = true;
+                break;
+            }
+        }
+
     } else if (this._currentStatus == STATUS.LINE_DRAWING) {
         this._linePoints[this._linePoints.length-1].push(new Vec2(x, y));
-        this._lineEdges.push(this._curentLine0.clone());
+        this._lineEdges[this._lineEdges.length-1].push(this._curentLine0.clone());
         console.log("press 1");
         console.log(this._linePoints);
         if (this._curentLine1) {
+            this._linePoints[this._linePoints.length-1][this._linePoints[this._linePoints.length-1].length - 1].mX = this._curentLine0.mEnd.mX;
+            this._linePoints[this._linePoints.length-1][this._linePoints[this._linePoints.length-1].length - 1].mY = this._curentLine0.mEnd.mY;
             this._currentStatus = STATUS.LINE_START;
+            this._lineIntersect.isSelfIntersect[this._lineIntersect.isSelfIntersect.length - 1] = true;
             this.render();
             this._curentLine0 = null;
             this._curentLine1 = null;
@@ -195,7 +216,10 @@ Canvas.prototype.setEndPoint = function(x, y) {
         }
         
         for (var i = 0; i < this._lineEdges.length; i++) {
-            SegmentController.intersectSub(edge, this._lineEdges[i], intersects);
+            for (var j = 0; j < this._lineEdges[i].length; j++) {
+                SegmentController.intersectSub(edge, this._lineEdges[i][j], intersects);
+            }
+            
         }
         var minDis = Number.MAX_VALUE;
         var idx = 0;
@@ -210,6 +234,7 @@ Canvas.prototype.setEndPoint = function(x, y) {
             
             this._curentLine0 = new MyEdge(lastPoint, intersects[idx]);
             this._curentLine1 = new MyEdge(intersects[idx], this._linePoint);
+            //this._currentStatus = STATUS.LINE_START;
             
         } else {
             this._curentLine0 = edge;
@@ -239,6 +264,7 @@ Canvas.prototype.resetType = function() {
         
         if (lastPointArray.length < 2 || Vec2.isEqual(lastPointArray[0], lastPointArray[lastPointArray.length - 1])) {
             // do nothing
+            this._lineIntersect.isStartEndSame[this._lineIntersect.isStartEndSame.length - 1] = true;
         } else {
             var firstPoint = lastPointArray[0];
             var lastPoint = lastPointArray[lastPointArray.length - 1];
@@ -250,7 +276,9 @@ Canvas.prototype.resetType = function() {
             }
             
             for (var i = 0; i < this._lineEdges.length; i++) {
-                SegmentController.intersectSub(edge, this._lineEdges[i], intersects);
+                for (var j = 0; j < this._lineEdges[i].length; j++) {
+                    SegmentController.intersectSub(edge, this._lineEdges[i][j], intersects);
+                }
             }
             
             var minDis = Number.MAX_VALUE;
@@ -265,12 +293,13 @@ Canvas.prototype.resetType = function() {
                 }
                 
                 lastPointArray.push(intersects[idx]);
-                this._lineEdges.push(new MyEdge(lastPoint, intersects[idx]));
+                this._lineEdges[this._lineEdges.length - 1].push(new MyEdge(lastPoint, intersects[idx]));
                 //证明有问题，不封闭的
                 
             } else {
-                this._lineEdges.push(new MyEdge(lastPoint, firstPoint));
+                this._lineEdges[this._lineEdges.length - 1].push(new MyEdge(lastPoint, firstPoint));
                 //证明没有问题，封闭的
+                this._lineIntersect.isStartEndSame[this._lineIntersect.isStartEndSame.length - 1] = true;
                 
             }
         }
@@ -279,10 +308,50 @@ Canvas.prototype.resetType = function() {
     } else if (this._currentStatus  == STATUS.LINE_START) {
         this._currentStatus = STATUS.NOT_STARTED;
         this._type = null;
-        this.split(this._lineEdges);
+        var lines = [];
+        for (var i = 0; i < this._lineEdges.length; i++) {
+            if (this._lineIntersect.isStartEndSame[i]){
+                for (var j = 0; j < this._lineEdges[i].length; j++) {
+                    lines.push(this._lineEdges[i][j]);
+                }
+            } else {
+                if (!this._lineIntersect.isSelfIntersect[i]) {
+                    //首尾不同点，且没有自交，直接过滤
+                    continue;
+                } else if (this._lineIntersect.isStartIntersect[i]) {
+                    //首尾不同点，但是自交了，并且第一个点和已存部分有交集
+                    //那这些边都要
+                    for (var j = 0; j < this._lineEdges[i].length; j++) {
+                        lines.push(this._lineEdges[i][j]);
+                    }
+                } else {
+                    //首尾不同点，但是自交了，并且第一个点和已存部分没有交集
+                    //去掉首部相交的
+                    var idx =  -1;
+                    var lastPoint = this._linePoints[i][this._linePoints[i].length - 1];
+                    for (var j = 0; j < this._lineEdges[i].length - 1; j++) {
+                        if (this._lineEdges[i][j].pointInEdgeOrOnEdge(lastPoint)) {
+                            idx = j;
+                            break;
+                        }
+                    }
+                    this._lineEdges[i].splice(0, idx);
+                    this._lineEdges[i][0].mStart.mX = lastPoint.mX;
+                    this._lineEdges[i][0].mStart.mY = lastPoint.mY;
+                    for (var j = 0; j < this._lineEdges[i].length; j++) {
+                        lines.push(this._lineEdges[i][j]);
+                    }
+                }
+            }
+        }
+        this.split(lines);
         this.render();
         this._linePoints = [];
         this._lineEdges = [];
+        this._lineIntersect.isStartIntersect = [];
+        this._lineIntersect.isSelfIntersect = [];
+        this._lineIntersect.isStartEndSame = [];
+        
         console.log("right 1");
     } else {
         this._currentStatus = STATUS.NOT_STARTED;

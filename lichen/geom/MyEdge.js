@@ -263,7 +263,7 @@ MyEdge.prototype.removePointsNotInside = function(param1, param2)
 
 MyEdge.prototype.pointOnLineButNoNeedToBeWithin = function(param1)
 {
-    return my_number.isZeroOrOrigin(Vec2.crossByPoint(this.mStart,this.mEnd,param1));
+    return MyNumber.isZeroOrOrigin(Vec2.crossByPoint(this.mStart,this.mEnd,param1));
 }
 
 MyEdge.prototype.distanceSmallThan = function(param1, param2)
