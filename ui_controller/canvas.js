@@ -179,7 +179,19 @@ Canvas.prototype.setStartPoint = function(x, y) {
             this._linePoints[this._linePoints.length-1][this._linePoints[this._linePoints.length-1].length - 1].mX = this._curentLine0.mEnd.mX;
             this._linePoints[this._linePoints.length-1][this._linePoints[this._linePoints.length-1].length - 1].mY = this._curentLine0.mEnd.mY;
             this._currentStatus = STATUS.LINE_START;
-            this._lineIntersect.isSelfIntersect[this._lineIntersect.isSelfIntersect.length - 1] = true;
+            
+            var intersectWithCurve = false;
+            for (var i = 0; i < this._mFloor.mCurves.length; i++) {
+                if (this._mFloor.mCurves[i].containsPoint(this._curentLine0.mEnd)) {
+                    intersectWithCurve = true;
+                    break;
+                }
+            }
+            
+            if (!intersectWithCurve)
+            {
+                this._lineIntersect.isSelfIntersect[this._lineIntersect.isSelfIntersect.length - 1] = true;
+            }
             this.render();
             this._curentLine0 = null;
             this._curentLine1 = null;
