@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
     height: 100%;
     overflow: hidden;
     min-height: 560px;
@@ -14,10 +15,16 @@ html, body {
 /**
 * fonts
 */
+
 @font-face {
     font-family: "iconfont";
-    src: url('fonts/iconfont.eot?t=1499329564970'); /* IE9*/
-    src: url('fonts/iconfont.eot?t=1499329564970#iefix') format('embedded-opentype'), /* IE6-IE8 */ url('fonts/iconfont.woff?t=1499329564970') format('woff'), /* chrome, firefox */ url('fonts/iconfont.ttf?t=1499329564970') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/ url('fonts/iconfont.svg?t=1499329564970#iconfont') format('svg'); /* iOS 4.1- */
+    src: url('fonts/iconfont.eot?t=1499329564970');
+    /* IE9*/
+    src: url('fonts/iconfont.eot?t=1499329564970#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('fonts/iconfont.woff?t=1499329564970') format('woff'), /* chrome, firefox */
+    url('fonts/iconfont.ttf?t=1499329564970') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+    url('fonts/iconfont.svg?t=1499329564970#iconfont') format('svg');
+    /* iOS 4.1- */
 }
 
 .iconfont {
@@ -46,16 +53,51 @@ html, body {
 
 #container #main_wrap {
     flex: 1 1 auto;
-    height: 100%;
     position: relative;
+    display: flex;
 }
 
 #container #main_container {
-    height: 100%;
+    flex: 1 1 auto;
     position: relative;
     margin: 0 0 0 375px;
     transition: margin .5s ease-in;
     background-color: #f6f6f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#container #main_container .bottom-props {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    padding-left: 20px;
+    font-size: 0;
+    background-color: #f6f6f6;
+    color: #000;
+    border-top: 1px solid #999999;
+}
+
+#container #main_container .bottom-props *{
+    font-size: 16px;
+}
+
+#container #main_container .bottom-props .bottom-props-title {
+    padding-right: 10px;
+    border-right: 1px solid #000;
+}
+
+#container #main_container .bottom-props .bottom-props-bulge {
+    padding: 0 10px;
+}
+
+#container #main_container .bottom-props .bottom-props-bulge-input {
+    width: 65px;
+    margin-right: 5px;
 }
 
 #container #props_wrap {
@@ -177,4 +219,175 @@ html, body {
     text-align: center;
     margin-top: 10px;
     font-size: 13px;
+}
+
+#main_container .display {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    width: 100px;
+    height: 50px;
+    border-radius: 10px;
+    font-size: 13px;
+    text-align: center;
+    line-height: 50px;
+    z-index: 100;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+#main_container .settings {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 390px;
+    height: 40px;
+    margin-left: -185px;
+    border: 1px solid #d9d9d9;
+    display: flex;
+    align-items: center;
+}
+
+#main_container .settings .setting {
+    display: flex;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+}
+
+#main_container .settings .setting:nth-of-type(1) {
+    flex: 0 0 106px;
+    border-right: 1px solid #d9d9d9;
+}
+
+#main_container .settings .setting span {
+    margin: 0 6px;
+    font-weight: bold;
+    font-size: 14px;
+    font-family: tahoma, arial, 宋体, sans-serif;
+}
+
+#main_container .settings .setting .cover {
+    position: absolute;
+    width: 100%;
+    height: 38px;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+#main_container .settings .setting:nth-of-type(2),
+#main_container .settings .setting:nth-of-type(3) {
+    flex: 0 0 98px;
+}
+
+#main_container .settings .setting:nth-of-type(3) {
+    border-right: 1px solid #d9d9d9;
+}
+
+#main_container .settings .setting:nth-of-type(4) {
+    flex: 1 1 auto;
+}
+
+#main_container .settings .setting .setting-browse {
+    width: 20px;
+    height: 15px;
+}
+
+#main_container .settings .setting .setting-unfold {
+    width: 15px;
+    height: 12px;
+    margin-top: 1px;
+}
+
+#main_container .settings .setting .setting-goback {
+    width: 20px;
+    height: 15px;
+}
+
+#main_container .settings .setting .setting-goforward {
+    width: 20px;
+    height: 20px;
+}
+
+#main_container .settings .setting .setting-empty {
+    width: 20px;
+    height: 20px;
+}
+
+#main_container .settings .setting-display {
+    position: absolute;
+    top: 40px;
+    width: 132px;
+    height: 154px;
+    border: 1px solid #d9d9d9;
+    display: none;
+    padding-top: 10px;
+    background-color: #f6f6f6
+}
+
+#main_container .settings .setting-display .checkbox-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#main_container .settings .setting-display .checkbox-row .icheckbox_minimal+label {
+    cursor: pointer;
+    padding: 7px 0 7px 10px;
+}
+
+
+
+
+
+#setting_display_menu .setting-unfold{
+    transition: all 0.5s;
+}
+
+#setting_display_menu.on .setting-unfold {
+    transition: all 0.5s;
+    transform: rotate(180deg);
+}
+
+.icheckbox_minimal {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
+    width: 18px;
+    height: 18px;
+    border: none;
+    cursor: pointer;
+    background-size: 80px 20px;
+    background: url('../images/minimal.png');
+}
+
+.icheckbox_minimal .iradio_minimal {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
+    width: 18px;
+    height: 18px;
+    border: none;
+    cursor: pointer;
+    -webkit-background-size: 80px 20px;
+    background-size: 80px 20px;
+}
+
+.icheckbox_minimal {
+    background-position: -19px 0;
+}
+
+.icheckbox_minimal.checked {
+    background-position: 0 0;
+}
+
+.iradio_minimal {
+    background-position: -58px 0;
+}
+
+.iradio_minimal.checked {
+    background-position: -38px 0;
 }

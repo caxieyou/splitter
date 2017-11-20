@@ -7,7 +7,7 @@ var TYPE = {
     RECTANGLE   : 0,
     CIRCLE      : 1,
     LINE        : 2
-}
+};
 
 // 初始化canvas
 var canvas = new Canvas("canvas");
@@ -26,7 +26,7 @@ $(function () {
     });
     $('#props_wrap').hide();
     
-    $(document).on('mousedown', '#main_container', function (event) {
+    $(document).on('mousedown', '#canvas', function (event) {
         event = event || window.event;
         var btnNum = event.button;
         if (btnNum == 0) {
@@ -39,7 +39,7 @@ $(function () {
         canvas.recordMouseDown(event.offsetX, event.offsetY);
     });
 
-    $(document).on('mouseup', '#main_container', function (event) {
+    $(document).on('mouseup', '#canvas', function (event) {
         event = event || window.event;
         canvas.recordMouseUp(event.offsetX, event.offsetY);
         if (canvas.getDrawType() == null) {
@@ -87,7 +87,7 @@ $(function () {
         }
     });
 
-    $(document).on('mousemove', '#main_container', function (event) {
+    $(document).on('mousemove', '#canvas', function (event) {
         event = event || window.event;
 
         if (event.which == 1) {
@@ -126,5 +126,64 @@ $(function () {
             
         }
         $('#props_wrap').hide();
+    });
+    // icheck初始化
+    $('#main_container .settings .setting-display .setting-display-check').iCheck({
+        checkboxClass: 'icheckbox_minimal',
+        radioClass: 'iradio_minimal',
+        increaseArea: '20%' // optional
+    });
+    // 绝对边距和区域尺寸默认选中
+    $('#absolute_margin').iCheck('check');
+    $('#zone_size').iCheck('check');
+    // 绝对边距和相对距离二选一事件
+    $('#relative_distance').on('ifChecked', function(event) {
+        $('#absolute_margin').iCheck('uncheck');
+    });
+    $('#absolute_margin').on('ifChecked', function(event) {
+        $('#relative_distance').iCheck('uncheck');
+    });
+    // 显示菜单栏折叠与展开事件
+    $('#main_container').on('click', '#setting_display_menu', function() {
+        $('#setting-display').slideToggle();
+        $(this).toggleClass('on');
+        return false;
+    });
+    // 撤销
+    $('#main_container').on('click', '#setting_goback', function() {
+        alert('setting_goback');
+        return false;
+    });
+    // 恢复
+    $('#main_container').on('click', '#setting_goforward', function() {
+        alert('setting_goforward');
+        return false;
+    });
+    // 清空
+    $('#main_container').on('click', '#setting_empty', function() {
+        alert('setting_empty');
+        return false;
+    });
+    // 输入框change事件
+    $('body').on('keyup change', 'input.number', function() {
+        var $this = $(this),
+            val = $this.val(),
+            newval = parseFloat(val) ? parseFloat(val) : '';
+        if ($this.data('negative') == true) {
+            if (val !== '-' && isNaN(val)) {
+                $this.val(newval);
+            }
+        } else {
+            if (isNaN(val) || newval < 0) {
+                $this.val(Math.abs(newval));
+            }
+        }
+        if($this.val().length > 4) $this.val(Number(String($this.val()).substr(0, 4)));
+    });  
+    // 突出高度输入框回车事件  
+    $('.bottom-props-bulge-input.number').on('keyup', function(e) {
+        if(e.keyCode === 13) {
+            alert($(this).val());
+        }
     });
 });
