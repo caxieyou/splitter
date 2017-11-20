@@ -1,61 +1,114 @@
 ﻿<!DOCTYPE html>
 <html>
+
 <head lang="en">
     <meta charset="UTF-8">
     <title>区域分割</title>
-    <link rel="stylesheet" href="common/css/base.css"/>
-    <link rel="stylesheet" href="common/css/index.css"/>
-    <script src="common/plug/jquery-1.11.3.min.js"></script>            <!--jquery-->
+    <link rel="stylesheet" href="common/css/base.css" />
+    <link rel="stylesheet" href="common/css/index.css" />
+    <script src="common/plug/jquery-1.11.3.min.js"></script>
+    <!--jquery-->
 </head>
+
 <body oncontextmenu="return false">
-<div id="container">
-    <div id="head_wrap">
-        <p>区域分割</p>
-    </div>
-    <div id="main_wrap">
-        <div id="left_wrap">
-            <div id="left_draw">
-                <div class="title">自由绘制</div>
-                <div class="material-content clearfix">
-                    <div class="box">
-                        <img src="common/images/division.png" class="shape-obj" data-type="division">
-                        <div class="box-info">区域分割线</div>
-                    </div>
-                    <div class="box">
-                        <img src="common/images/rectangle.png" class="shape-obj" data-type="rectangle">
-                        <div class="box-info">矩形区域</div>
-                    </div>
-                    <div class="box">
-                        <img src="common/images/circle.png" class="shape-obj" data-type="circle">
-                        <div class="box-info">圆形区域</div>
+    <div id="container">
+        <div id="head_wrap">
+            <p>区域分割</p>
+        </div>
+        <div id="main_wrap">
+            <div id="left_wrap">
+                <div id="left_draw">
+                    <div class="title">自由绘制</div>
+                    <div class="material-content clearfix">
+                        <div class="box">
+                            <img src="common/images/division.png" class="shape-obj" data-type="division">
+                            <div class="box-info">区域分割线</div>
+                        </div>
+                        <div class="box">
+                            <img src="common/images/rectangle.png" class="shape-obj" data-type="rectangle">
+                            <div class="box-info">矩形区域</div>
+                        </div>
+                        <div class="box">
+                            <img src="common/images/circle.png" class="shape-obj" data-type="circle">
+                            <div class="box-info">圆形区域</div>
+                        </div>
+                        <div class="box">
+                            <img src="common/images/arc.png" class="shape-obj" data-type="arc">
+                            <div class="box-info">弧形</div>
+                        </div>
                     </div>
                 </div>
             </div>
+            <div id="main_container">
+                <div class="settings">
+                    <div class="setting" id="setting_display_menu">
+                        <img class="setting-browse" src="common/images/browse.png">
+                        <span>显示</span>
+                        <img class="setting-unfold" src="common/images/more_unfold.png">
+                    </div>
+                    <div class="setting" id="setting_goback">
+                        <img class="setting-goback" src="common/images/go_back.png">
+                        <span>撤销</span>
+                    </div>
+                    <div class="setting" id="setting_goforward">
+                        <img class="setting-goforward" src="common/images/go_forward.png">
+                        <span>恢复</span>
+                        <div class="cover"></div>
+                    </div>
+                    <div class="setting" id="setting_empty">
+                        <img class="setting-empty" src="common/images/empty.png">
+                        <span>清空</span>
+                    </div>
+                    <div class="setting-display" id="setting-display">
+                        <div class="checkbox-row">
+                            <input type="checkbox" class="setting-display-check" id="relative_distance">
+                            <label for="relative_distance">相对距离</label>
+                        </div>
+                        <div class="checkbox-row">
+                            <input type="checkbox" class="setting-display-check" id="absolute_margin">
+                            <label for="absolute_margin">绝对边距</label>
+                        </div>
+                        <div class="checkbox-row">
+                            <input type="checkbox" class="setting-display-check" id="zone_size">
+                            <label for="zone_size">区域尺寸</label>
+                        </div>
+                        <div class="checkbox-row">
+                            <input type="checkbox" class="setting-display-check" id="projrcting_height">
+                            <label for="projrcting_height">凸出高度</label>
+                        </div>
+                        <div class="checkbox-row">
+                            <input type="checkbox" class="setting-display-check" id="crown_height">
+                            <label for="crown_height">圆弧高度</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="bottom-props">
+                    <span class="bottom-props-title">区域</span>
+                    <span class="bottom-props-bulge">突出高度</span>
+                    <input type="text" class="bottom-props-bulge-input number">
+                    <span>mm</span>
+                </div>
+                <canvas id="canvas" width="400" height="400"></canvas>
+            </div>
         </div>
-        <div id="main_container">
-            <canvas id="canvas" width="400" height="400"></canvas>
+        <div id="props_wrap">
+            <div class="props" data-type="division">
+                <i class="icon iconfont">&#xe62a;</i>
+                <i class="pup">拆分<i></i></i>
+            </div>
+            <div class="props line" data-type="straight">
+                <i class="icon iconfont curve none">&#xe634;</i>
+                <i class="icon iconfont straight">&#xe62b;</i>
+                <i class="pup">转为直线<i></i></i>
+            </div>
+            <div class="props" data-type="delete">
+                <i class="icon iconfont">&#xe63a;</i>
+                <i class="pup">删除<i></i></i>
+            </div>
         </div>
     </div>
-    
-    <div id="props_wrap">
-        <div class="props" data-type="division">
-            <i class="icon iconfont">&#xe62a;</i>
-            <i class="pup">拆分<i></i></i>
-        </div>
-        <div class="props line" data-type="straight">
-            <i class="icon iconfont curve none">&#xe634;</i>
-            <i class="icon iconfont straight">&#xe62b;</i>
-            <i class="pup">转为直线<i></i></i>
-        </div>
-        <div class="props" data-type="delete">
-            <i class="icon iconfont">&#xe63a;</i>
-            <i class="pup">删除<i></i></i>
-        </div>
-    </div>
-    
-</div>
 </body>
-
+<script src="common/plug/icheck.min.js"></script>
 <script src="lichen/geom/Angle.js"></script>
 <script src="lichen/geom/ArrayHelperClass.js"></script>
 <script src="lichen/geom/CircleEdgeHelper.js"></script>
@@ -74,7 +127,6 @@
 <script src="lichen/geom/MyPolytree.js"></script>
 <script src="lichen/geom/MyRect.js"></script>
 <script src="lichen/geom/Vec2.js"></script>
-
 <script src="lichen/controller/CurveAreaRelationshipHelper.js"></script>
 <script src="lichen/controller/CurveController.js"></script>
 <script src="lichen/controller/CurveRelationHelper_XX.js"></script>
@@ -88,13 +140,12 @@
 <script src="lichen/controller/SomeArcEdgeHelper_AEE.js"></script>
 <script src="lichen/controller/WallCurveCornerHelper.js"></script>
 <script src="lichen/controller/WallCurveOperation.js"></script>
-
 <script src="lichen/model/Analysis.js"></script>
 <script src="lichen/model/MyFloor.js"></script>
 <script src="lichen/model/Splitter.js"></script>
 <script src="lichen/model/Converter.js"></script>
-
 <script src="ui_controller/renderer.js"></script>
 <script src="ui_controller/canvas.js"></script>
 <script src="ui_controller/index.js"></script>
+
 </html>
