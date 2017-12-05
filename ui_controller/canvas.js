@@ -614,22 +614,22 @@ Canvas.prototype._renderFocusObject = function(x, y) {
     // focus on corner //
     /////////////////////
     for (var i = 0; i < this._mFloor.mCorners.length; i++) {
-        if (this._mFloor.mCorners[i].mPosition.isClose(new Vec2(x, y), 2.0)) {
+        if (this._mFloor.mCorners[i].mPosition.isClose(new Vec2(x, y), 2)) {
             this._focus = {
-                    geom: new Vec2(x, y),
+                    geom: this._mFloor.mCorners[i].mPosition.clone(),
                     controller : this._mFloor.mCorners[i]
                 };
             break;
         }
     }
     
-    /*
+    
     if (this._focus != null) {
         console.log("render focus");
         console.log(this._focus);
+        this._renderer.drawCorner(this._focus.geom);
         return;
     }
-    */
     
     
     ////////////////////
@@ -671,6 +671,11 @@ Canvas.prototype._renderFocusObject = function(x, y) {
 }
 
 Canvas.prototype.render = function(x, y) {
+    
+    //this._renderer.drawSegment({x: 200,y: 300}, {x: 300,y: 300});
+    //this._renderer.drawDimensions({x: 200,y: 200}, {x: 300,y: 200});
+    //this._renderer.drawDimensions({x: 50,y: 300}, {x: 300,y: 300},null, true, function(v) {alert(v)});
+
     //清空canvas
     this._renderer.clear();
     
