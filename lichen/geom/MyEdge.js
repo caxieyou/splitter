@@ -6,22 +6,12 @@ function MyEdge(param1, param2) {
 MyEdge.THRESHOLD = 1.0E-6;
 MyEdge.CONST_1 = 1;
 
-/*
-MyEdge.§-___-_----_-_§(param1:my2D_Edge, param2:my2D_Edge) : Boolean
-{
-var _loc3_:my_Rect = param1.getBoundingBox();
-var _loc4_:my_Rect = param2.getBoundingBox();
-return _loc3_.isIntersected(_loc4_);
-}
-*/
-
-
 MyEdge.isValidAngleDiff = function(param1, param2, param3)
 {
     if (param3 == null || param3 == undefined) {
         param3 = 1;
     }
-    //param3 = param3 || 1;
+    
     var _loc4_ = param1.getVecEndMinusStart();
     var _loc5_ = param2.getVecEndMinusStart();
     var _loc6_ = Vec2.IncludedAngleValue(_loc4_,_loc5_);
@@ -34,7 +24,7 @@ MyEdge.isWithinPI = function(param1, param2, param3)
     if (param3 == null || param3 == undefined) {
         param3 = 1;
     }
-    //param3 = param3 || 1;
+    
     var _loc4_ = param1.getVecEndMinusStart();
     var _loc5_ = param2.getVecEndMinusStart();
     var _loc6_ = Vec2.IncludedAngleValue(_loc4_,_loc5_);
@@ -47,7 +37,7 @@ MyEdge.getIntersection = function(param1, param2, param3)
     if (param3 == null || param3 == undefined) {
         param3 = 1;
     }
-    //param3 = param3 || 1;
+    
     if(MyEdge.isValidAngleDiff(param1,param2,param3))
     {
         return null;
@@ -70,21 +60,6 @@ MyEdge.getDistanceBy2Points = function(param1, param2, param3, param4)
     return _loc5_.getDistance(param3,param4);
 }
 
-/*
-MyEdge.§-________-__-§(param1:Vec2, param2:Vec2, param3:Vec2, param4:Boolean) : Number
-{
-var _loc5_:my2D_Edge = new my2D_Edge(param1,param2);
-return _loc5_.verticalDistanceSquare(param3,param4);
-}
-*/
-
-/*
-MyEdge.distancePointToCurve = function(param1:Vec2, param2:Vec2, param3:Vec2) : Number
-{
-return Vec2.dot(Vec2.sub(param3,param1),new Vec2(param1.y - param2.y,param2.x - param1.x).normalize());
-}
-*/
-
 MyEdge.distancePointToCurve = function(param1, param2, param3)
 {
     return Vec2.dot(Vec2.sub(param3,param1),new Vec2(param1.mY - param2.mY,param2.mX - param1.mX).normalize());
@@ -95,7 +70,7 @@ MyEdge.distanceSmallThan = function(param1, param2, param3, param4)
     if (param4 == null || param4 == undefined) {
         param4 = 1.0E-6;
     }
-    //param4 = param4 || 1.0E-6;
+    
     var _loc5_ = MyEdge.getDistanceBy2Points(param1,param2,param3,true);
     return _loc5_ < param4;
 }
@@ -105,7 +80,7 @@ MyEdge.pointInEdgeOrOnEdge = function(param1, param2, param3, param4)
     if (param4 == null || param4 == undefined) {
         param4 = 1.0E-6;
     }
-    //param4 = param4 || 1.0E-6;
+    
     return      MyEdge.distanceSmallThan(param1,param2,param3,param4) 
             && !param3.isClose(param1,param4) 
             && !param3.isClose(param2,param4);
@@ -139,82 +114,12 @@ MyEdge.getXFromY = function(param1, param2, param3, param4, param5)
     return NaN;
 }
 
-/*
-MyEdge.§-__-_-_--§(param1:my2D_Edge, param2:my2D_Edge) : my2D_Edge
-{
-return param1.length > param2.length?param1:param2;
-}
-
-MyEdge.§-_______----__§(param1:my2D_Edge, param2:my2D_Edge) : my2D_Edge
-{
-return param1.length < param2.length?param1:param2;
-}
-
-MyEdge.§-____--___--__§(param1:my2D_Edge, param2:my2D_Edge) : Number
-{
-return param2.getDistance(param1.start,false);
-}
-
-MyEdge.§----___--§(param1:my2D_Edge, param2:my2D_Edge) : Number
-{
-return param2.verticalDistanceSquare(param1.start,false);
-}
-
-MyEdge.§-____-----_---§(param1:my2D_Edge, param2:my2D_Edge, param3:Number = 1.0E-6) : Vec2
-{
-var _loc4_:Vec2 = param1.start;
-var _loc5_:Vec2 = param1.end;
-var _loc6_:Vec2 = param2.start;
-var _loc7_:Vec2 = param2.end;
-if(Vec2.isEqual(_loc4_,_loc6_,param3) || Vec2.isEqual(_loc4_,_loc7_,param3))
-{
-return _loc4_;
-}
-if(Vec2.isEqual(_loc5_,_loc6_,param3) || Vec2.isEqual(_loc5_,_loc7_,param3))
-{
-return _loc5_;
-}
-return null;
-}
-
-MyEdge.getXFromY(param1:Vec2, param2:Vec2, param3:Number, param4:Boolean = false, param5:Number = 1.0E-6) : Number
-{
-if(my_number.isEqual(param1.y,param2.y,param5))
-{
-return NaN;
-}
-var _loc6_:Number = Math.min(param1.y,param2.y);
-var _loc7_:Number = Math.max(param1.y,param2.y);
-if(param3 < _loc7_ && param3 > _loc6_ || param4 && (my_number.isEqual(param3,_loc7_,param5) || my_number.isEqual(param3,_loc6_,param5)))
-{
-return param1.x - (param1.y - param3) * (param1.x - param2.x) / (param1.y - param2.y);
-}
-return NaN;
-}
-
-MyEdge.§-__-_--_-_§(param1:Vec2, param2:Vec2, param3:Number, param4:Boolean = false) : Number
-{
-if(param1.x == param2.x)
-{
-return NaN;
-}
-var _loc5_:Number = Math.min(param1.x,param2.x);
-var _loc6_:Number = Math.max(param1.x,param2.x);
-if(param3 < _loc6_ && param3 > _loc5_ || param4 && (param3 == _loc6_ || param3 == _loc5_))
-{
-return param1.y - (param1.x - param3) * (param1.y - param2.y) / (param1.x - param2.x);
-}
-return NaN;
-}
-*/
-
 MyEdge.prototype.contains = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6;
     }
 
-    //param2 = param2 || 1.0E-6;
     if(param1.distanceSquareFunc() > this.distanceSquareFunc())
     {
         return false;
@@ -222,30 +127,13 @@ MyEdge.prototype.contains = function(param1, param2)
     return this.distanceSmallThan(param1.mStart,param2) && this.distanceSmallThan(param1.mEnd,param2);
 }
 
-/*
-MyEdge.prototype.§--_--__--__§(param1:my2D_Edge) : my2D_Edge
-{
-return new my2D_Edge(this.project(param1.start,false),this.project(param1.end,false));
-}
-
-MyEdge.prototype.§-__-----_-_-_§(param1:my2D_Edge) : my2D_Edge
-{
-var _loc2_:my2D_Edge = this.§--_--__--__§(param1);
-if(!Angle.isEqual(_loc2_.angle,this.angle))
-{
-return _loc2_.reverse();
-}
-return _loc2_;
-}
-*/
-
 //removePointsNotInsideCurve
 MyEdge.prototype.removePointsNotInside = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6;
     }
-    //param2 = param2 || 1.0E-6;
+    
     var _loc3_ = null;
     var _loc4_ = param1.length - 1;
     var ret = false;

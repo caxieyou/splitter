@@ -66,7 +66,7 @@ MyCurve.prototype.removePointsNotInsideCurve = function(param1, param2)
     if (param2 == null || param2 == undefined) {
         param2 = null;
     }
-    //param2 = param2 || 1.0E-6;
+    
     var _loc3_ = null;
     var _loc4_ = param1.length - 1;
     var ret = false;
@@ -87,7 +87,7 @@ MyCurve.prototype.isInsideArcFan = function(param1, param2)
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6;
     }
-    //param2 = param2 || 1.0E-6;
+    
     this.diagnose();
     if(!this.createCircle_canvas().isInsideCircle(param1,param2))
     {
@@ -102,19 +102,18 @@ MyCurve.prototype.isInsideCurveAndNotOnCurve = function(param1, param2)
     if (param2 == null || param2 == undefined) {
         param2 = null;
     }
-    //param2 = param2 || 1.0E-6;
+    
     this.diagnose();
 
     return this.isInsideArcFan(param1,param2) && !this.isPointOnCurve(param1,param2);
 }
 
-//??curve??????
 MyCurve.prototype.isPointOnCurve = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6;
     }
-    //param2 = param2 || 1.0E-6;
+    
     return this.getSplitPosByRatio(0).isClose(param1,param2) || this.getSplitPosByRatio(1).isClose(param1,param2);
 }
 
@@ -264,14 +263,6 @@ MyCurve.prototype.enlarge_xx = function(param1)
     var _loc2_ = Math.abs(this.mArcAngle) * param1;
     return this.mRadius * _loc2_;
 }
-/*
-MyCurve.prototype.§--______----§(param1) : Number
-{
-this.diagnose();
-var _loc2_ = param1 / this.mRadius;
-return _loc2_ / Math.abs(this.mArcAngle);
-}
-*/
 
 MyCurve.prototype.getCenterIntersectAngle = function(param1)
 {
@@ -301,34 +292,6 @@ MyCurve.prototype.getAngleRatio = function(param1)
     }
     return (_loc2_ - _loc3_) / this.mArcAngle;
 }
-/*
-MyCurve.prototype.tessallation_NotUnderstand = function(param1)
-{
-    param1 = param1 || 0.3;
-    var _loc4_ = null;
-    var _loc5_ = NaN;
-    var _loc6_ = NaN;
-    this.diagnose();
-    var _loc2_:Vector.<Vec2> = new Vector.<Vec2>();
-    var _loc3_:Array = [new Vec2(0,1)];
-    while(_loc3_.length != 0)
-    {
-        _loc4_ = _loc3_.pop();
-        _loc5_ = (_loc4_.x + _loc4_.y) * 0.5;
-        _loc6_ = MyEdge.distancePointToCurve(this.getSplitPosByRatio(_loc4_.x),this.getSplitPosByRatio(_loc4_.y),this.getSplitPosByRatio(_loc5_));
-        if(Math.abs(_loc6_) < param1)
-        {
-            _loc2_.push(this.getSplitPosByRatio(_loc4_.x));
-        }
-        else
-        {
-            _loc3_.push(new Vec2(_loc5_,_loc4_.y),new Vec2(_loc4_.x,_loc5_));
-        }
-    }
-    _loc2_.push(this.getSplitPosByRatio(1));
-    return _loc2_;
-}
-*/
 
 MyCurve.prototype.tessallation_NotUnderstand = function(param1)
 {
@@ -399,54 +362,3 @@ MyCurve.prototype.getLength = function()
 {
     return this.enlarge_xx(1);
 }
-/*
-MyCurve.prototype.get length() : Number
-{
-return this.enlarge_xx(1);
-}
-
-MyCurve.prototype.get center() : Vec2
-{
-return this.mCenter;
-}
-
-MyCurve.prototype.set center(param1) : void
-{
-this.mCenter = param1;
-}
-
-MyCurve.prototype.get radius() : Number
-{
-return this.mRadius;
-}
-
-MyCurve.prototype.set radius(param1) : void
-{
-this.mRadius = param1;
-}
-
-MyCurve.prototype.get startAngle() : Number
-{
-return this.mStartAngle;
-}
-
-MyCurve.prototype.set startAngle(param1) : void
-{
-this.mStartAngle = param1;
-}
-
-MyCurve.prototype.get endAngle() : Number
-{
-return this.mStartAngle + this.mArcAngle;
-}
-
-MyCurve.prototype.get funcGetCurveAngle() : Number
-{
-return this.mArcAngle;
-}
-
-MyCurve.prototype.set funcGetCurveAngle(param1) : void
-{
-this.mArcAngle = param1;
-}
-*/

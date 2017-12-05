@@ -57,14 +57,8 @@ MyRect.prototype.includeValues = function(param1)
     }
     return this;
 }
-/*
-MyRect.prototype. §------§(param1:myRect) : myRect
-{
-this.mMin = Vec2.min(this.mMin,param1.min);
-this.mMax = Vec2.max(this.mMax,param1.max);
-return this;
-}
-*/
+
+
 MyRect.prototype.containsPoint = function(param1)
 {
     return param1.mX >= this.mMin.mX && 
@@ -90,20 +84,10 @@ MyRect.prototype.clamp = function(param1)
     return new Vec2(MyMath.clamp(param1.mX,this.mMin.mX,this.mMax.mX),
                     MyMath.clamp(param1.mY,this.mMin.mY,this.mMax.mY));
 }
-/*
-MyRect.prototype. §--------§(param1:myRect) : myRect
-{
-var loc2:Interval = this.§------§().clampInterval(param1.§------§());
-var loc3:Interval = this.§-------§().clampInterval(param1.§-------§());
-return new myRect(new Vec2(loc2.min,loc3.min),new Vec2(loc2.max,loc3.max));
-}
-
-
-*/
 
 MyRect.prototype.getWidthRange = function()
 {
-    return new Interval(this.mMin.mX,this.mMax.mX);//[this.mMin.mX,this.mMax.mX];
+    return new Interval(this.mMin.mX,this.mMax.mX);
 }
 
 MyRect.prototype.getHeightRange = function()
@@ -122,29 +106,16 @@ MyRect.prototype.isIntersected = function(param1, param2)
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6;
     }
-    //param2 = param2 || 1.0E-6;
+    
     return this.intersect_sub(param1,param2);
 }
-/*
-MyRect.prototype. §-------§(param1:myRect, param2:Number = 1.0E-6) : Boolean
-{
-    if(param1.min.mX >= this.mMax.mX - param2 || param1.max.mX - param2 <= this.mMin.mX)
-    {
-        return false;
-    }
-    if(param1.min.mY >= this.mMax.mY - param2 || param1.max.mY - param2 <= this.mMin.mY)
-    {
-        return false;
-    }
-    return true;
-}
-*/
+
 MyRect.prototype.intersect_sub = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6;
     }
-    //param2 = param2 || 1.0E-6;
+    
     if(param1.min.mX > this.mMax.mX + param2 || param1.max.mX + param2 < this.mMin.mX)
     {
         return false;
@@ -213,42 +184,9 @@ MyRect.prototype.toMyPolygon = function()
 {
     return new MyPolygon(this.getPoints());
 }
-/*
-MyRect.prototype. §----------§(param1:Number) : myRect
-{
-    var loc2:Vec2 = new Vec2(this.mMin.mX - param1,this.mMin.mY - param1);
-    var loc3:Vec2 = new Vec2(this.mMax.mX + param1,this.mMax.mY + param1);
-    return new myRect(loc2,loc3);
-}
-*/
+
 
 MyRect.prototype.clone = function()
 {
     return new myRect(this.mMin.clone(),this.mMax.clone());
 }
-/*
-MyRect.prototype. §---------§() : myRangeClass0
-{
-return new myRangeClass0(this.getExtent()).updateTransform(this.getCenter());
-}
-
-
-MyRect.prototype. §---§() : Rectangle
-{
-return new Rectangle(this.mMin.mX,this.mMin.mY,this.getExtent().x,this.getExtent().y);
-}
-
-MyRect.prototype. toString() : String
-{
-return "(" + "min:" + this.mMin + ", max:" + this.mMax + ")";
-}
-
-MyRect.prototype. get min() : Vec2
-{
-return this.mMin;
-}
-
-MyRect.prototype. get max() : Vec2
-{
-    return this.mMax;
-}*/

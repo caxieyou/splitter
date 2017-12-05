@@ -2,7 +2,6 @@ function CurveSplitClass(param1, floor) {
     this.mCurveArray = param1;
     this.mFloor = floor;
     this.mValid;
-    //this.mCurveArray;
     this.mCornerArray;
     this.initialize();
 }
@@ -68,7 +67,7 @@ CurveSplitClass.prototype.execute = function()
                 _loc7_ = _loc1_.getTheStartEndEdge();
                 _loc8_ = new MyEdge(_loc6_.project(_loc7_.mStart),_loc6_.project(_loc7_.mEnd));
                 
-                if(lineRelationHelper.isOverLapping(_loc6_,_loc8_) && MyEdge.isValidAngleDiff(_loc6_,_loc7_))
+                if(LineRelationHelper.isOverLapping(_loc6_,_loc8_) && MyEdge.isValidAngleDiff(_loc6_,_loc7_))
                 {
                    _loc9_ = _loc6_.getDistance(_loc7_.mStart);
                    if(_loc9_ < DISTANCE_TOLERANCE)

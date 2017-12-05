@@ -92,7 +92,7 @@ MyFloor.prototype.correctAreas = function()
 {
     var _loc2_ = null;
     var _loc3_ = null;
-    var _loc1_ = curveAreaRelationshipHelper.getHoleParts(this.mAreas);
+    var _loc1_ = CurveAreaRelationshipHelper.getHoleParts(this.mAreas);
     this.mHoles = [];//new Vector.<wallAreas_Class>();
     
     for (var i = 0; i < _loc1_.length; i++)
@@ -147,7 +147,7 @@ MyFloor.prototype.removeSpecificCurve_AH = function(param1)
 package com.qunhe.instdeco.model.wall
 {
    import §--_-__-_§.resourceGetSetInterface;
-   import §-_-_-___--_--§.curveAreaRelationshipHelper;
+   import §-_-_-___--_--§.CurveAreaRelationshipHelper;
    import §-_-___---__§.my_math;
    import §-____------_-_§.curveCornerHelperClass;
    import §-____------_-_§.m_pathOrMyPathClass;
@@ -413,7 +413,7 @@ package com.qunhe.instdeco.model.wall
       {
          var _loc2_:wallAreas_Class = null;
          var _loc3_:wallCurve = null;
-         var _loc1_:Vector.<wallAreas_Class> = curveAreaRelationshipHelper.getHoleParts(this.mAreas);
+         var _loc1_:Vector.<wallAreas_Class> = CurveAreaRelationshipHelper.getHoleParts(this.mAreas);
          this.mHoles = new Vector.<wallAreas_Class>();
          for each(_loc2_ in _loc1_)
          {

@@ -9,10 +9,8 @@ function MyPath() {
 
 MyPath.getArea_Not_0_Paths = function(param1)
 {
-    //var _loc3_ = null;
-    var _loc2_ = [];//:Vector.<MyPath> = new Vector.<MyPath>();
+    var _loc2_ = [];
     for(var i = 0; i < param1.length; i++)
-    //for each(_loc3_ in param1)
     {
         if(param1[i].getSize() > 1 && !param1[i].isIsolated())
         {
@@ -24,10 +22,8 @@ MyPath.getArea_Not_0_Paths = function(param1)
 
 MyPath.getClockWisePaths = function(param1)
 {
-    //var _loc3_ = null;
-    var _loc2_ = [];//:Vector.<MyPath> = new Vector.<MyPath>();
+    var _loc2_ = [];
     for(var i = 0; i < param1.length; i++)
-    //for each(_loc3_ in param1)
     {
         if(param1[i].getSize() > 1 && param1[i].isClockWise() && !param1[i].isIsolated())
         {
@@ -40,8 +36,7 @@ MyPath.getClockWisePaths = function(param1)
 MyPath.getCountClockWisePath = function(param1)
 {
     var _loc3_ = null;
-    var _loc2_ = [];//:Vector.<MyPath> = new Vector.<MyPath>();
-    //for each(_loc3_ in param1)
+    var _loc2_ = [];
     for(var i = 0; i < param1.length; i++)
     {
         if(param1[i].getSize() > 1 && param1[i].isCountClockWise() && !param1[i].isIsolated())
@@ -54,9 +49,7 @@ MyPath.getCountClockWisePath = function(param1)
 
 MyPath.getArea_0_Paths = function(param1)
 {
-    //var _loc3_:MyPath = null;
-    var _loc2_ = [];//:Vector.<MyPath> = new Vector.<MyPath>();
-    //for each(_loc3_ in param1)
+    var _loc2_ = [];
     for(var i = 0; i < param1.length; i++)
     {
         if(param1[i].getSize() > 1 && param1[i].isIsolated())
@@ -70,8 +63,8 @@ MyPath.getArea_0_Paths = function(param1)
 MyPath.prototype.initialize = function()
 {
     this.mPolygon = new MyPolygon();
-    this.mCurves = [];//new Vector.<curveBasicClass>();
-    this.mCorners = [];//new Vector.<cornerBasicClass>();
+    this.mCurves = [];
+    this.mCorners = [];
 }
 
 MyPath.prototype.buildCurveAndCorner = function()
@@ -149,13 +142,11 @@ MyPath.prototype.isCurveInPath_not_sure = function(param1)
 
 MyPath.prototype.getCurveByIndex = function(param1)
 {
-    //Assert.isTrue(param1 >= 0 && param1 < this.mCurves.length,"Index must between 0 and length");
     return this.mCurves[param1];
 }
 
 MyPath.prototype.getCornerByIndex = function(param1)
 {
-    //Assert.isTrue(param1 >= 0 && param1 < this.mCurves.length,"Index must between 0 and length");
     return this.mCorners[param1];
 }
 
@@ -172,55 +163,3 @@ MyPath.prototype.getArea = function()
 {
     return this.mArea;
 }
-
-/*
-MyPath.prototype.get mStart() : cornerBasicClass
-{
-return this.mm_start;
-}
-
-MyPath.prototype.set mStart(param1:cornerBasicClass) : void
-{
-this.mm_start = param1;
-}
-
-MyPath.prototype.get curves() : Vector.<curveBasicClass>
-{
-return this.mCurves;
-}
-
-MyPath.prototype.set curves(param1:Vector.<curveBasicClass>) : void
-{
-this.mCurves = param1;
-}
-
-MyPath.prototype.get corners() : Vector.<cornerBasicClass>
-{
-return this.mCorners;
-}
-
-MyPath.prototype.set corners(param1:Vector.<cornerBasicClass>) : void
-{
-this.mCorners = param1;
-}
-
-MyPath.prototype.get polygon() : my_polygon
-{
-return this.mPolygon;
-}
-
-MyPath.prototype.set polygon(param1:my_polygon) : void
-{
-this.mPolygon = param1;
-}
-
-MyPath.prototype.get funcAreaGetSet() : Number
-{
-return this.mArea;
-}
-
-MyPath.prototype.set funcAreaGetSet(param1:Number) : void
-{
-this.mArea = param1;
-}
-*/

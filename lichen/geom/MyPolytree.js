@@ -11,17 +11,14 @@ MyPolytree.getX_Intersections1 = function(param1, param2, param3, param4)
         param4 = 1.0E-4;
     }
 
-    //param4 = param4 || 1.0E-4;
-    //var polygon:my_polygon = null;
     var polygons = param1;
     var y = param2;
     var includeEnds = param3;
     var tolerance = param4;
-    var intersections = [];//:Vector.<Number> = new Vector.<Number>();
+    var intersections = [];
     for(var i = 0; i < polygons.length; i++)
     {
         intersections = intersections.concat(polygons[i].getX_Intersections2(y,includeEnds,tolerance));
-        //ArrayHelperClass.addItems(intersections,polygons[i].getX_Intersections2(y,includeEnds,tolerance));
     }
     intersections.sort(function(param1, param2)
     {
@@ -59,37 +56,12 @@ MyPolytree.prototype.contains = function(param1)
     return true;
 }
 
-
-/*
-MyPolytree.prototype.§-----_-__-_--§(param1:my_polygon) : Boolean
-{
-var _loc2_:my_polygon = null;
-if(!this.mOutLines.isIntersected(param1))
-{
-return false;
-}
-if(this.containsHole())
-{
-for each(_loc2_ in this.mHoles)
-{
-if(_loc2_.isIncludedPolygon(param1))
-{
-return false;
-}
-}
-}
-return true;
-}
-*/
-
-
 MyPolytree.prototype.containsInclusive = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-4;
     }
-    //param2 = param2 || 1.0E-4;
-    //var _loc3_:my_polygon = null;
+    
     if(!this.mOutLines.containsInclusive(param1,param2))
     {
         return false;
@@ -111,7 +83,7 @@ MyPolytree.prototype.containsExclusive = function(param1, param2)
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-4;
     }
-    //param2 = param2 || 1.0E-4;
+    
     var _loc3_ = null;
     if(!this.mOutLines.containsExclusive(param1,param2))
     {
@@ -132,9 +104,9 @@ MyPolytree.prototype.containsExclusive = function(param1, param2)
 
 MyPolytree.prototype.getValidGravityCenter = function()
 {
-    //var yValue:Number = NaN;
-    var xIntersections;//:Vector.<Number> = null;
-    var intersectionsIntervals;//:Vector.<Interval> = null;
+
+    var xIntersections;
+    var intersectionsIntervals;
     var i = 0;
     var intervalPart = null;
     var interval = null;
@@ -148,11 +120,10 @@ MyPolytree.prototype.getValidGravityCenter = function()
     }
     
     var y = centriod.mY;
-    var tempPoly = [];//:Vector.<my_polygon> = new Vector.<my_polygon>();
+    var tempPoly = [];
     tempPoly = tempPoly.concat(this.mHoles);
     tempPoly = tempPoly.concat(this.mOutLines);
-    //ArrayHelperClass.addItems(tempPoly,this.mHoles);
-    //ArrayHelperClass.addItem(tempPoly,this.mOutLines);
+    
     var yInterval = this.getBoundingBox().getHeightRange();
     var yVector   = [y,(y + yInterval.mMax) * 0.5,(y + yInterval.mMin) * 0.5];
     
@@ -164,7 +135,7 @@ MyPolytree.prototype.getValidGravityCenter = function()
         }
         else
         {
-            intersectionsIntervals = [];//new Vector.<Interval>();
+            intersectionsIntervals = [];
             i = 0;
             while(i < xIntersections.length - 1)
             {
@@ -190,24 +161,22 @@ MyPolytree.prototype.getValidGravityCenter = function()
     }
     return centriod;
 }
-//////////////////////////////////////////////////////////////////////////////////////
 
 MyPolytree.prototype.getProfilePoints = function()
 {
     var _loc2_ = null;
-    var _loc1_ = [];//:Vector.<Vec2> = new Vector.<Vec2>();
+    var _loc1_ = [];
     if(this.mOutLines == null)
     {
         return _loc1_;
     }
     _loc1_ = _loc1_.concat(this.mOutLines.vertices);
-    //ArrayHelperClass.addItems(_loc1_,this.mOutLines.vertices);
+    
     if(this.containsHole())
     {
-        for(var i = 0; i < this.mHoles.length; i++)// each(_loc2_ in this.mHoles)
+        for(var i = 0; i < this.mHoles.length; i++)
         {
             _loc1_ = _loc1_.concat(this.mHoles[i].vertices);
-            //ArrayHelperClass.addItems(_loc1_,_loc2_.vertices);
         }
     }
     return _loc1_;
@@ -216,13 +185,12 @@ MyPolytree.prototype.getProfilePoints = function()
 MyPolytree.prototype.getProfile = function()
 {
     var _loc2_ = null;
-    var _loc1_ = [];//:Vector.<my2D_Edge> = new Vector.<my2D_Edge>();
+    var _loc1_ = [];
     if(this.mOutLines == null)
     {
         return _loc1_;
     }
     _loc1_ = _loc1_.concat(this.mOutLines.getEdges());
-    //ArrayHelperClass.addItems = function(_loc1_,this.mOutLines.getEdges());
     if(this.containsHole())
     {
         for(var i = 0; i < this.mHoles.length; i++) {
@@ -235,13 +203,13 @@ MyPolytree.prototype.getProfile = function()
 MyPolytree.prototype.getVertices = function()
 {
     var _loc2_ = null;
-    var _loc1_ = [];//:Vector.<my2D_Edge> = new Vector.<my2D_Edge>();
+    var _loc1_ = [];
     if(this.mOutLines == null)
     {
         return _loc1_;
     }
     _loc1_ = _loc1_.concat(this.mOutLines.mVertices);
-    //ArrayHelperClass.addItems = function(_loc1_,this.mOutLines.getEdges());
+    
     if(this.containsHole())
     {
         for(var i = 0; i < this.mHoles.length; i++) {
@@ -250,25 +218,7 @@ MyPolytree.prototype.getVertices = function()
     }
     return _loc1_;
 }
-/*
-MyPolytree.prototype.§-_____--_____§ = function() : Number
-{
-var _loc2_:my_polygon = null;
-if(this.mOutLines == null)
-{
-return 0;
-}
-var _loc1_:Number = this.mOutLines.§-_____--_____§();
-if(this.containsHole())
-{
-for each(_loc2_ in this.mHoles)
-{
-_loc1_ = _loc1_ - _loc2_.getSize();
-}
-}
-return _loc1_;
-}
-*/
+
 MyPolytree.prototype.getBoundingBox = function()
 {
     return this.mOutLines.getBoundingBox();
@@ -278,19 +228,3 @@ MyPolytree.prototype.getOutline = function()
 {
     return this.mOutLines;
 }
-/*
-MyPolytree.prototype.set outline = function(param1:my_polygon) : void
-{
-this.mOutLines = param1;
-}
-
-MyPolytree.prototype.get holes = function() : Vector.<my_polygon>
-{
-return this.mHoles;
-}
-
-MyPolytree.prototype.set holes = function(param1:Vector.<my_polygon>) : void
-{
-this.mHoles = param1;
-}
-*/
