@@ -41,9 +41,10 @@ $(function () {
 
     $(document).on('mouseup', '#canvas', function (event) {
         event = event || window.event;
-        canvas.recordMouseUp(event.offsetX, event.offsetY);
+        
         if (canvas.getDrawType() == null) {
             var elementType = canvas.getFocusElement();
+            console.log(elementType);
             if (elementType == null) {
                 $('#props_wrap').hide();
                 var btnNum = event.button;
@@ -85,11 +86,11 @@ $(function () {
             canvas.createElement();
             canvas.render(event.offsetX, event.offsetY);
         }
+        canvas.recordMouseUp(event.offsetX, event.offsetY);
     });
 
     $(document).on('mousemove', '#canvas', function (event) {
         event = event || window.event;
-
         if (event.which == 1) {
             //按住拖动
             canvas.updateElement(event.offsetX, event.offsetY);

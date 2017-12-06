@@ -32,6 +32,20 @@ WallCurveOperation.prototype.onToLine = function(param1)
         }
     }
     
+    
+    for (var i = 0; i < _loc6_.mStart.mCurves.length; i++) {
+        if (_loc6_.mStart.mCurves[i].mId == param1.mId) {
+            _loc6_.mStart.mCurves[i] = _loc6_;
+        }
+    }
+    
+    for (var i = 0; i < _loc6_.mEnd.mCurves.length; i++) {
+        if (_loc6_.mEnd.mCurves[i].mId == param1.mId) {
+            _loc6_.mEnd.mCurves[i] = _loc6_;
+        }
+    }
+    
+    
     _loc7_.removeSpecificCurve_AH(param1);
     _loc8_.removeSpecificCurve_AH(param1);
     
@@ -45,8 +59,9 @@ WallCurveOperation.prototype.onToLine = function(param1)
 WallCurveOperation.prototype.onToArc = function(param1)
 {
     var _loc7_ = new CurveController();
-    _loc7_.mStart = param1.mStart;;
-    _loc7_.mEnd = param1.mEnd;;
+    _loc7_.mStart = param1.mStart;
+    _loc7_.mEnd = param1.mEnd;
+    
     var _loc4_ = 0.1;
     _loc7_.resetCurve(_loc4_);
     
@@ -55,6 +70,18 @@ WallCurveOperation.prototype.onToArc = function(param1)
         if (_loc7_.isIntersectWith(curve)) {
             console.warn("WARNING: TOO NARROW!!!");
             return false;
+        }
+    }
+    
+    for (var i = 0; i < _loc7_.mStart.mCurves.length; i++) {
+        if (_loc7_.mStart.mCurves[i].mId == param1.mId) {
+            _loc7_.mStart.mCurves[i] = _loc7_;
+        }
+    }
+    
+    for (var i = 0; i < _loc7_.mEnd.mCurves.length; i++) {
+        if (_loc7_.mEnd.mCurves[i].mId == param1.mId) {
+            _loc7_.mEnd.mCurves[i] = _loc7_;
         }
     }
     

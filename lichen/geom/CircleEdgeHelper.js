@@ -29,6 +29,9 @@ circleEdgeHelper.getEdgeCircleIntersectionPoints = function(param1, param2)
         _loc8_ = param2.project(_loc4_,false);
         _loc9_ = Math.sqrt(_loc5_ * _loc5_ - _loc6_ * _loc6_);
 
+        if (_loc8_ == null) {
+            return _loc3_;
+        }
         _loc3_.push(_loc8_.addBySplitAngle(_loc9_,_loc7_));
 
         //这里loc9前面有个负号

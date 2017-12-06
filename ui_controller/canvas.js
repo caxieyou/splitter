@@ -46,7 +46,7 @@ Canvas.prototype._initialize = function() {
     this._mFloor.setProfile(rect);
     
     //渲染
-    this.render();
+    this.render(0, 0);
 }
 
 Canvas.prototype._renderCurrentObject = function() {
@@ -495,6 +495,14 @@ Canvas.prototype.updateElement = function(x, y){
         if (this._updateElment.controller instanceof MyCorner) {
             this._updateElment.controller.mPosition.mX = x;
             this._updateElment.controller.mPosition.mY = y;
+            
+            //for (var i = 0; i < this._updateElment.controller.mCurves.length; i++) {
+            //    if (this._updateElment.controller.mCurves[i] instanceof CurveController) {
+            //        this._updateElment.controller.mCurves[i].updateInfo(this._updateElment.controller);
+            //        debugger;
+            //    }
+            //}
+            
             var analysis = new Analysis(this._mFloor);
             analysis.execute();
             [this._outputResult,  this._innerResult] = Converter.outputGeo(this._mFloor);
@@ -527,6 +535,7 @@ Canvas.prototype.updateElement = function(x, y){
             
             this._updateElment = null;
             this._focus = null;
+            console.log("222222222");
             this._lastFocos = null;
         }
         this.render();
@@ -591,7 +600,6 @@ Canvas.prototype._renderFocusObject = function(x, y) {
     }
     
     this._focus = null;
-    
     if(this._mFloor.mProfile) {
         var profile = this._mFloor.mProfile.getProfile();
         for (var i = 0; i < profile.length; i++) {
