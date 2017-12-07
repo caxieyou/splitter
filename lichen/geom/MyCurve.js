@@ -36,6 +36,26 @@ MyCurve.createCurveByEdgeNumber = function(param1, param2)
     return new MyCurve(_loc12_,_loc13_,_loc14_,_loc15_);
 }
 
+
+MyCurve.createCurveByEdgeNumber2 = function(param1, param2)
+{
+    var _loc3_ = param1.mStart.clone();
+    var _loc4_ = param1.mEnd.clone();
+    var _loc5_ = param1.getLength();
+    
+    var _loc6_ = MyMath.sign(param2);
+    var _loc7_ = Math.abs(param2);
+    var _loc8_ = param1.getCenter();
+    //var _loc9_ = Math.atan(_loc7_) * 4;
+    var _loc10_ = _loc5_ / 2 / Math.tan(_loc7_ / 2);
+    var _loc11_ = param1.getVecEndMinusStart().rotate(_loc6_ * Angle.HALF_PI).normalize();
+    var _loc12_ = _loc8_.add(_loc11_.mul(_loc10_));
+    var _loc13_ = _loc12_.distance(_loc3_);
+    var _loc14_ = _loc3_.sub(_loc12_).getAngle();
+    var _loc15_ = param2;
+    return new MyCurve(_loc12_,_loc13_,_loc14_,_loc15_);
+}
+
 MyCurve.prototype.diagnose = function()
 {
     if(isNaN(this.mStartAngle))

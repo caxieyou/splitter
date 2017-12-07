@@ -183,6 +183,16 @@ CurveController.prototype.resetCurve = function(param1)
     this.mCurvePoint = _loc2_.getSplitPosByRatio(0.3333333);
 }
 
+CurveController.prototype.adjustCurve = function(param1)
+{
+    if(this.mStart == null || this.mEnd == null || isNaN(param1))
+    {
+        return;
+    }
+    var _loc2_ = MyCurve.createCurveByEdgeNumber2(this.getTheStartEndEdge(),param1);
+    this.mCurvePoint = _loc2_.getSplitPosByRatio(0.3333333);
+}
+
 CurveController.prototype.isStartOrEnd = function(param1)
 {
     return param1 == this.mStart || param1 == this.mEnd;

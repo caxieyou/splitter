@@ -493,15 +493,23 @@ Canvas.prototype.updateElement = function(x, y){
     if (this._updateElment) {
         console.log("controller been called: " + x + " " + y);
         if (this._updateElment.controller instanceof MyCorner) {
+            
+            
+            var arc = [];
+            for (var i = 0; i < this._updateElment.controller.mCurves.length; i++) {
+                if (this._updateElment.controller.mCurves[i] instanceof CurveController) {
+                    arc.push(this._updateElment.controller.mCurves[i].getCurveFromController().mArcAngle);
+                }
+            }
             this._updateElment.controller.mPosition.mX = x;
             this._updateElment.controller.mPosition.mY = y;
-            
-            //for (var i = 0; i < this._updateElment.controller.mCurves.length; i++) {
-            //    if (this._updateElment.controller.mCurves[i] instanceof CurveController) {
-            //        this._updateElment.controller.mCurves[i].updateInfo(this._updateElment.controller);
-            //        debugger;
-            //    }
-            //}
+            var idx = 0;
+            for (var i = 0; i < this._updateElment.controller.mCurves.length; i++) {
+                if (this._updateElment.controller.mCurves[i] instanceof CurveController) {
+                    this._updateElment.controller.mCurves[i].adjustCurve(arc[idx]);
+                    idx++;
+                }
+            }
             
             var analysis = new Analysis(this._mFloor);
             analysis.execute();
@@ -521,9 +529,24 @@ Canvas.prototype.updateElement = function(x, y){
         if (overlapped)
         {
             if (this._updateElment.controller instanceof MyCorner) {
-                this._updateElment.controller.mPosition.mX = this._lastFocos.mX;
-                this._updateElment.controller.mPosition.mY = this._lastFocos.mY;
+                var arc = [];
+                for (var i = 0; i < this._updateElment.controller.mCurves.length; i++) {
+                    if (this._updateElment.controller.mCurves[i] instanceof CurveController) {
+                        arc.push(this._updateElment.controller.mCurves[i].getCurveFromController().mArcAngle);
+                    }
+                }
+                this._updateElment.controller.mPosition.mX = x;
+                this._updateElment.controller.mPosition.mY = y;
+                var idx = 0;
+                for (var i = 0; i < this._updateElment.controller.mCurves.length; i++) {
+                    if (this._updateElment.controller.mCurves[i] instanceof CurveController) {
+                        this._updateElment.controller.mCurves[i].adjustCurve(arc[idx]);
+                        idx++;
+                    }
+                }
             }
+            
+            
             if (this._updateElment.controller instanceof CurveController) {
                 this._updateElment.controller.mCurvePoint.mX = this._lastFocos.mX;
                 this._updateElment.controller.mCurvePoint.mY = this._lastFocos.mY;
@@ -535,10 +558,10 @@ Canvas.prototype.updateElement = function(x, y){
             
             this._updateElment = null;
             this._focus = null;
-            console.log("222222222");
+            //console.log("222222222");
             this._lastFocos = null;
         }
-        this.render();
+        this.render(x, y);
         if (overlapped) {
             return;
         }
