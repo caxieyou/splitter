@@ -1,5 +1,5 @@
 /**
- * Created by ÇÃ´úÂëµÄºº×Ó on 2017/8/25.
+ * Created by ï¿½Ã´ï¿½ï¿½ï¿½Äºï¿½ï¿½ï¿½ on 2017/8/25.
  * Integrated by Li
  */
  
@@ -153,6 +153,7 @@ Renderer = function () {
                 this.ctx.lineTo(p0.x + (xpos / numDashes) * i, p0.y + (ypos / numDashes) * i);
             }
         }
+        this.ctx.stroke();
     }
     
     this.drawLine = function (edge, isDash, color, isFocus) {
@@ -253,7 +254,6 @@ Renderer = function () {
     }
 
     this.drawDashLine = function (p0, p1) {
-        this.ctx.beginPath();
         var dashLen = 5,
             xpos = p1.x - p0.x,
             ypos = p1.y - p0.y,
@@ -266,7 +266,7 @@ Renderer = function () {
             }
         }
         this.ctx.strokeStyle = 'black';
-        this.ctx.closePath();
+        this.ctx.stroke();
     }
     
     this.clear = function() {
@@ -430,11 +430,11 @@ Renderer = function () {
     }
     
     /**
-     * »æÖÆÔ²µã
-     * @param {Object} point ×ø±ê
-     * @param {Object} radius °ë¾¶
-     * @param {Object} color Ìî³äÑÕÉ«
-     * @param {Object} isHollow ÊÇ·ñÎª¿ÕÐÄ£¬Ä¬ÈÏÎªÊµÐÄ
+     * ï¿½ï¿½ï¿½ï¿½Ô²ï¿½ï¿½
+     * @param {Object} point ï¿½ï¿½ï¿½
+     * @param {Object} radius ï¿½ë¾¶
+     * @param {Object} color ï¿½ï¿½ï¿½ï¿½ï¿½É«
+     * @param {Object} isHollow ï¿½Ç·ï¿½Îªï¿½ï¿½ï¿½Ä£ï¿½Ä¬ï¿½ï¿½ÎªÊµï¿½ï¿½
      */
     this.drawCorner = function(point, radius, color, isHollow) {
         color = color || "#000";
@@ -496,27 +496,27 @@ Renderer = function () {
 	
 	this._segmentsIntr = function(a, b, c, d) {
 
-		// Èý½ÇÐÎabc Ãæ»ýµÄ2±¶ 
+		// ï¿½ï¿½ï¿½ï¿½ï¿½abc ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½ 
 		var area_abc = (a.x - c.x) * (b.y - c.y) - (a.y - c.y) * (b.x - c.x);
 	
-		// Èý½ÇÐÎabd Ãæ»ýµÄ2±¶ 
+		// ï¿½ï¿½ï¿½ï¿½ï¿½abd ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½ 
 		var area_abd = (a.x - d.x) * (b.y - d.y) - (a.y - d.y) * (b.x - d.x);
 	
-		// Ãæ»ý·ûºÅÏàÍ¬ÔòÁ½µãÔÚÏß¶ÎÍ¬²à,²»Ïà½» (¶ÔµãÔÚÏß¶ÎÉÏµÄÇé¿ö,±¾Àýµ±×÷²»Ïà½»´¦Àí); 
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¶ï¿½Í¬ï¿½ï¿½,ï¿½ï¿½ï¿½à½» (ï¿½Ôµï¿½ï¿½ï¿½ï¿½ß¶ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½à½»ï¿½ï¿½ï¿½ï¿½); 
 		//		if(area_abc * area_abd >= 0) {
 		//			return false;
 		//		}
 	
-		// Èý½ÇÐÎcda Ãæ»ýµÄ2±¶ 
+		// ï¿½ï¿½ï¿½ï¿½ï¿½cda ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½ 
 		var area_cda = (c.x - a.x) * (d.y - a.y) - (c.y - a.y) * (d.x - a.x);
-		// Èý½ÇÐÎcdb Ãæ»ýµÄ2±¶ 
-		// ×¢Òâ: ÕâÀïÓÐÒ»¸öÐ¡ÓÅ»¯.²»ÐèÒªÔÙÓÃ¹«Ê½¼ÆËãÃæ»ý,¶øÊÇÍ¨¹ýÒÑÖªµÄÈý¸öÃæ»ý¼Ó¼õµÃ³ö. 
+		// ï¿½ï¿½ï¿½ï¿½ï¿½cdb ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½ 
+		// ×¢ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ð¡ï¿½Å»ï¿½.ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ã¹ï¿½Ê½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½Öªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¼ï¿½ï¿½Ã³ï¿½. 
 		var area_cdb = area_cda + area_abc - area_abd;
 		if(area_cda * area_cdb >= 0) {
 			return false;
 		}
 	
-		//¼ÆËã½»µã×ø±ê 
+		//ï¿½ï¿½ï¿½ã½»ï¿½ï¿½ï¿½ï¿½ï¿½ 
 		var t = area_cda / (area_abd - area_abc);
 		var dx = t * (b.x - a.x),
 			dy = t * (b.y - a.y);
@@ -559,29 +559,29 @@ Renderer = function () {
 				tx = poly[j].x,
 				ty = poly[j].y
 	
-			// µãÓë¶à±ßÐÎ¶¥µãÖØºÏ
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î¶ï¿½ï¿½ï¿½ï¿½Øºï¿½
 			if((sx === px && sy === py) || (tx === px && ty === py)) {
 				return true
 			}
 	
-			// ÅÐ¶ÏÏß¶ÎÁ½¶ËµãÊÇ·ñÔÚÉäÏßÁ½²à
+			// ï¿½Ð¶ï¿½ï¿½ß¶ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			if((sy < py && ty >= py) || (sy >= py && ty < py)) {
-				// Ïß¶ÎÉÏÓëÉäÏß Y ×ø±êÏàÍ¬µÄµãµÄ X ×ø±ê
+				// ï¿½ß¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Y ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½Äµï¿½ï¿½ X ï¿½ï¿½ï¿½
 				var x = sx + (py - sy) * (tx - sx) / (ty - sy)
 	
-				// µãÔÚ¶à±ßÐÎµÄ±ßÉÏ
+				// ï¿½ï¿½ï¿½Ú¶ï¿½ï¿½ï¿½ÎµÄ±ï¿½ï¿½ï¿½
 				if(x === px) {
 					return true
 				}
 	
-				// ÉäÏß´©¹ý¶à±ßÐÎµÄ±ß½ç
+				// ï¿½ï¿½ï¿½ß´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎµÄ±ß½ï¿½
 				if(x > px) {
 					flag = !flag
 				}
 			}
 		}
 	
-		// ÉäÏß´©¹ý¶à±ßÐÎ±ß½çµÄ´ÎÊýÎªÆæÊýÊ±µãÔÚ¶à±ßÐÎÄÚ
+		// ï¿½ï¿½ï¿½ß´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î±ß½ï¿½Ä´ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ú¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		return flag;
 	}
 	 
@@ -590,30 +590,30 @@ Renderer = function () {
 		var y = Math.abs(p1.y - p2.y);
 		var z = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 		var cos = y / z;
-		var radina = Math.acos(cos); //ÓÃ·´Èý½Çº¯ÊýÇó»¡¶È
-		var angle = Math.floor(180 / (Math.PI / radina)); //½«»¡¶È×ª»»³É½Ç¶È
+		var radina = Math.acos(cos); //ï¿½Ã·ï¿½ï¿½ï¿½Çºï¿½ï¿½ï¿½ï¿½ó»¡¶ï¿½
+		var angle = Math.floor(180 / (Math.PI / radina)); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½É½Ç¶ï¿½
 	
-		if(p2.x > p1.x && p2.y > p1.y) { //Êó±êÔÚµÚËÄÏóÏÞ
+		if(p2.x > p1.x && p2.y > p1.y) { //ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			angle = 180 - angle;
 		}
 	
-		if(p2.x == p1.x && p2.y > p1.y) { //Êó±êÔÚyÖá¸º·½ÏòÉÏ
+		if(p2.x == p1.x && p2.y > p1.y) { //ï¿½ï¿½ï¿½ï¿½ï¿½yï¿½á¸ºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			angle = 180;
 		}
 	
-		if(p2.x > p1.x && p2.y == p1.y) { //Êó±êÔÚxÖáÕý·½ÏòÉÏ
+		if(p2.x > p1.x && p2.y == p1.y) { //ï¿½ï¿½ï¿½ï¿½ï¿½xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			angle = 90;
 		}
 	
-		if(p2.x < p1.x && p2.y > p1.y) { //Êó±êÔÚµÚÈýÏóÏÞ
+		if(p2.x < p1.x && p2.y > p1.y) { //ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			angle = 180 + angle;
 		}
 	
-		if(p2.x < p1.x && p2.y == p1.y) { //Êó±êÔÚxÖá¸º·½Ïò
+		if(p2.x < p1.x && p2.y == p1.y) { //ï¿½ï¿½ï¿½ï¿½ï¿½xï¿½á¸ºï¿½ï¿½ï¿½ï¿½
 			angle = 270;
 		}
 	
-		if(p2.x < p1.x && p2.y < p1.y) { //Êó±êÔÚµÚ¶þÏóÏÞ
+		if(p2.x < p1.x && p2.y < p1.y) { //ï¿½ï¿½ï¿½ï¿½ÚµÚ¶ï¿½ï¿½ï¿½ï¿½ï¿½
 			angle = 360 - angle;
 		}
 	
@@ -639,9 +639,9 @@ Renderer = function () {
     
     
     /**
-     * »æÖÆÖÆ¶¨µãµÄÊ®×ÖÏß²¢±ê¼ÇÓëÇøÓòµÄ±ß½çµÄ¾àÀë
+     * ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½Ê®ï¿½ï¿½ï¿½ß²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ß½ï¿½Ä¾ï¿½ï¿½ï¿½
      * @param {Object} point
-     * @param {Array} borderPoints ±ß½çµã¼¯ºÏ
+     * @param {Array} borderPoints ï¿½ß½ï¿½ã¼¯ï¿½ï¿½
      */
     this.drawCrosshairs = function(point, borderPoints) {
         if(!this._isInPolygon(point, borderPoints))
@@ -678,7 +678,7 @@ Renderer = function () {
             bl = vep.y - point.y;
         //this.ctx.fillStyle = '#FFF';
         this.ctx.strokeStyle = '#000'; 
-        this.ctx.font = "bold 14px Î¢ÈíÑÅºÚ"; 
+        this.ctx.font = "bold 14px Î¢ï¿½ï¿½ï¿½Åºï¿½"; 
         this.ctx.textBaseline = 'middle'; 
         this.ctx.textAlign = 'center';
         this.ctx.fillText(ll, hsp.x + ll / 2, point.y); 
@@ -689,12 +689,12 @@ Renderer = function () {
     }
 
     /**
-     * »æÖÆ¾àÀë±ê¼ÇÏß
-     * @param {Object} p0 ÆðÊ¼µã
-     * @param {Object} p1 ½áÊøµã
-     * @param {Object} color ÏßÌõÑÕÉ«£¬Ä¬ÈÏÎª»ÒÉ«
-     * @param {Object} editable ÊÇ·ñ¿É±à¼­£¬Ä¬ÈÏÎª²»¿É±à¼­
-     * @param {Object} callbackFun ±à¼­»Øµ÷º¯Êý
+     * ï¿½ï¿½ï¿½Æ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+     * @param {Object} p0 ï¿½ï¿½Ê¼ï¿½ï¿½
+     * @param {Object} p1 ï¿½ï¿½ï¿½ï¿½ï¿½
+     * @param {Object} color ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½Ä¬ï¿½ï¿½Îªï¿½ï¿½É«
+     * @param {Object} editable ï¿½Ç·ï¿½É±à¼­ï¿½ï¿½Ä¬ï¿½ï¿½Îªï¿½ï¿½ï¿½É±à¼­
+     * @param {Object} callbackFun ï¿½à¼­ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
      */
     this.drawDimensions = function(p0, p1,color, editable, callbackFun) {
         color = color || '#a2a2a2';
@@ -706,10 +706,10 @@ Renderer = function () {
             vec0 = new Vector3().subVectors(sp, ep).normalize(),
             vec1 = new Vector3().subVectors(ep, sp).normalize();
 
-        //¶Ëµã´¹Ö±Ïß
+        //ï¿½Ëµã´¹Ö±ï¿½ï¿½
         lines.push([this._rotateVector(sp, vec0, Math.PI / 2).multiplyScalar(10).add(sp), this._rotateVector(sp, vec0, -Math.PI / 2).multiplyScalar(10).add(sp)]);
         lines.push([this._rotateVector(sp, vec1, Math.PI / 2).multiplyScalar(10).add(ep), this._rotateVector(sp, vec1, -Math.PI / 2).multiplyScalar(10).add(ep)]);
-        //¶ËµãÐ±Ïß
+        //ï¿½Ëµï¿½Ð±ï¿½ï¿½
         lines.push([this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(10).add(sp), this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(-10).add(sp)]);
         lines.push([this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(10).add(ep), this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(-10).add(ep)]);
 
@@ -745,11 +745,11 @@ Renderer = function () {
                 ctx.save();
                 ctx.translate(center.x, center.y);
                 ctx.rotate(scope._computeAngle(p0, p1) * Math.PI / 180);
-                //³¤¶È
+                //ï¿½ï¿½ï¿½ï¿½
                 ctx.fillStyle = "#FFF";
                 ctx.fillRect(-ctx.measureText(length).width / 2, -6, ctx.measureText(length).width, 12);
                 ctx.fillStyle = '#000';
-                ctx.font = "12px Î¢ÈíÑÅºÚ";
+                ctx.font = "12px Î¢ï¿½ï¿½ï¿½Åºï¿½";
                 ctx.textBaseline = 'middle';
                 ctx.textAlign = 'center';
                 ctx.fillText(length, 0, 0);
@@ -764,10 +764,10 @@ Renderer = function () {
     }
 
     /***
-     * »æÖÆ´ø¶ËµãµÄÏß¶Î
-     * @param {Object} p0 ÆðÊ¼µã
-     * @param {Object} p1 ½áÊøµã
-     * @param {Object} callbackFun ±à¼­»Øµ÷º¯Êý
+     * ï¿½ï¿½ï¿½Æ´ï¿½Ëµï¿½ï¿½ï¿½ß¶ï¿½
+     * @param {Object} p0 ï¿½ï¿½Ê¼ï¿½ï¿½
+     * @param {Object} p1 ï¿½ï¿½ï¿½ï¿½ï¿½
+     * @param {Object} callbackFun ï¿½à¼­ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
      */
     this.drawSegment = function(p0, p1, callbackFun) {
         this.drawDashLine(p0, p1);
@@ -783,12 +783,12 @@ Renderer = function () {
 
 /*
 var tools = new DrawingTools(canvas._renderer.ctx);
-//»æÖÆ±ê¼ÇÏß£¬¿É±à¼­
+//ï¿½ï¿½ï¿½Æ±ï¿½ï¿½ï¿½ß£ï¿½ï¿½É±à¼­
 tools.drawDimensions({x: 50,y: 400}, {x: 300,y: 400},null, true, function(v) {alert(v)});
 
-//±ê×¢Ïß£¬²»¿É±à¼­
+//ï¿½ï¿½×¢ï¿½ß£ï¿½ï¿½ï¿½ï¿½É±à¼­
 tools.drawDimensions({x: 600,y: 400}, {x: 700,y: 100});
 
-//»æÖÆ´ø¶ËµãµÄÐéÏß
+//ï¿½ï¿½ï¿½Æ´ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 tools.drawSegment({x: 200,y: 700}, {x: 500,y: 700});
 */

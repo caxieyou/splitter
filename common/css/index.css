@@ -391,3 +391,14 @@ body {
 .iradio_minimal.checked {
     background-position: -38px 0;
 }
+canvas{
+	position: absolute;
+	left: 0px;
+	top: 0px;
+}
+.editText{
+	width:40px;
+	height:16px;
+	position: absolute;
+	text-align: center;
+	}
