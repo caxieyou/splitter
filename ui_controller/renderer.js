@@ -407,7 +407,7 @@ Renderer = function () {
                             prevPos = sp;
                         }
                         else {
-                            ctx.arc(hedge.mCenter.mX, hedge.mCenter.mY, hedge.mRadius, hedge.mStartAngle, endAngle, false);//endAngle > edge.mStartAngle ? true:false
+                            ctx.arc(hedge.mCenter.mX, hedge.mCenter.mY, hedge.mRadius, hedge.mStartAngle, endAngle, endAngle > hedge.mStartAngle ? false:true);
                             prevPos = ep;
                         }
                     }
@@ -429,13 +429,13 @@ Renderer = function () {
         return true;
     }
     
-    /**
-     * ����Բ��
-     * @param {Object} point ���
-     * @param {Object} radius �뾶
-     * @param {Object} color �����ɫ
-     * @param {Object} isHollow �Ƿ�Ϊ���ģ�Ĭ��Ϊʵ��
-     */
+	/**
+	 * 绘制圆点
+	 * @param {Object} point 坐标
+	 * @param {Object} radius 半径
+	 * @param {Object} color 填充颜色
+	 * @param {Object} isHollow 是否为空心，默认为实心
+	 */
     this.drawCorner = function(point, radius, color, isHollow) {
         color = color || "#000";
         if(radius == undefined) radius = 10;
@@ -496,27 +496,21 @@ Renderer = function () {
 	
 	this._segmentsIntr = function(a, b, c, d) {
 
-		// �����abc ����2�� 
 		var area_abc = (a.x - c.x) * (b.y - c.y) - (a.y - c.y) * (b.x - c.x);
 	
-		// �����abd ����2�� 
 		var area_abd = (a.x - d.x) * (b.y - d.y) - (a.y - d.y) * (b.x - d.x);
 	
-		// �������ͬ���������߶�ͬ��,���ཻ (�Ե����߶��ϵ����,���������ཻ����); 
+		// 面积符号相同则两点在线段同侧,不相交 (对点在线段上的情况,本例当作不相交处理); 
 		//		if(area_abc * area_abd >= 0) {
 		//			return false;
 		//		}
 	
-		// �����cda ����2�� 
 		var area_cda = (c.x - a.x) * (d.y - a.y) - (c.y - a.y) * (d.x - a.x);
-		// �����cdb ����2�� 
-		// ע��: ������һ��С�Ż�.����Ҫ���ù�ʽ�������,����ͨ����֪��������Ӽ��ó�. 
 		var area_cdb = area_cda + area_abc - area_abd;
 		if(area_cda * area_cdb >= 0) {
 			return false;
 		}
 	
-		//���㽻����� 
 		var t = area_cda / (area_abd - area_abc);
 		var dx = t * (b.x - a.x),
 			dy = t * (b.y - a.y);
@@ -546,7 +540,7 @@ Renderer = function () {
 		}
 	
 		return vec;
-	}
+	};
 
 	 this._isInPolygon = function(p, poly) {
 		var px = p.x,
@@ -559,61 +553,61 @@ Renderer = function () {
 				tx = poly[j].x,
 				ty = poly[j].y
 	
-			// �������ζ����غ�
+			// 点与多边形顶点重合
 			if((sx === px && sy === py) || (tx === px && ty === py)) {
 				return true
 			}
 	
-			// �ж��߶����˵��Ƿ�����������
+			// 判断线段两端点是否在射线两侧
 			if((sy < py && ty >= py) || (sy >= py && ty < py)) {
-				// �߶��������� Y �����ͬ�ĵ�� X ���
+				// 线段上与射线 Y 坐标相同的点的 X 坐标
 				var x = sx + (py - sy) * (tx - sx) / (ty - sy)
 	
-				// ���ڶ���εı���
+				// 点在多边形的边上
 				if(x === px) {
 					return true
 				}
 	
-				// ���ߴ������εı߽�
+				// 射线穿过多边形的边界
 				if(x > px) {
 					flag = !flag
 				}
 			}
 		}
 	
-		// ���ߴ������α߽�Ĵ���Ϊ����ʱ���ڶ������
+		// 射线穿过多边形边界的次数为奇数时点在多边形内
 		return flag;
-	}
+	};
 	 
 	this._computeAngle = function(p1, p2) {
 		var x = Math.abs(p1.x - p2.x);
 		var y = Math.abs(p1.y - p2.y);
 		var z = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 		var cos = y / z;
-		var radina = Math.acos(cos); //�÷���Ǻ����󻡶�
-		var angle = Math.floor(180 / (Math.PI / radina)); //������ת���ɽǶ�
+		var radina = Math.acos(cos);
+		var angle = Math.floor(180 / (Math.PI / radina));
 	
-		if(p2.x > p1.x && p2.y > p1.y) { //����ڵ�������
+		if(p2.x > p1.x && p2.y > p1.y) {
 			angle = 180 - angle;
 		}
 	
-		if(p2.x == p1.x && p2.y > p1.y) { //�����y�Ḻ������
+		if(p2.x == p1.x && p2.y > p1.y) {
 			angle = 180;
 		}
 	
-		if(p2.x > p1.x && p2.y == p1.y) { //�����x��������
+		if(p2.x > p1.x && p2.y == p1.y) {
 			angle = 90;
 		}
 	
-		if(p2.x < p1.x && p2.y > p1.y) { //����ڵ�������
+		if(p2.x < p1.x && p2.y > p1.y) {
 			angle = 180 + angle;
 		}
 	
-		if(p2.x < p1.x && p2.y == p1.y) { //�����x�Ḻ����
+		if(p2.x < p1.x && p2.y == p1.y) {
 			angle = 270;
 		}
 	
-		if(p2.x < p1.x && p2.y < p1.y) { //����ڵڶ�����
+		if(p2.x < p1.x && p2.y < p1.y) {
 			angle = 360 - angle;
 		}
 	
@@ -639,10 +633,10 @@ Renderer = function () {
     
     
     /**
-     * �����ƶ����ʮ���߲����������ı߽�ľ���
-     * @param {Object} point
-     * @param {Array} borderPoints �߽�㼯��
-     */
+	 * 绘制制定点的十字线并标记与区域的边界的距离
+	 * @param {Object} point
+	 * @param {Array} borderPoints 边界点集合
+	 */
     this.drawCrosshairs = function(point, borderPoints) {
         if(!this._isInPolygon(point, borderPoints))
             return;
@@ -678,7 +672,7 @@ Renderer = function () {
             bl = vep.y - point.y;
         //this.ctx.fillStyle = '#FFF';
         this.ctx.strokeStyle = '#000'; 
-        this.ctx.font = "bold 14px ΢���ź�"; 
+        this.ctx.font = "bold 14px 微软雅黑"; 
         this.ctx.textBaseline = 'middle'; 
         this.ctx.textAlign = 'center';
         this.ctx.fillText(ll, hsp.x + ll / 2, point.y); 
@@ -688,14 +682,14 @@ Renderer = function () {
 
     }
 
-    /**
-     * ���ƾ�������
-     * @param {Object} p0 ��ʼ��
-     * @param {Object} p1 �����
-     * @param {Object} color ������ɫ��Ĭ��Ϊ��ɫ
-     * @param {Object} editable �Ƿ�ɱ༭��Ĭ��Ϊ���ɱ༭
-     * @param {Object} callbackFun �༭�ص�����
-     */
+	/**
+	 * 绘制距离标记线
+	 * @param {Object} p0 起始点
+	 * @param {Object} p1 结束点
+	 * @param {Object} color 线条颜色，默认为灰色
+	 * @param {Object} editable 是否可编辑，默认为不可编辑
+	 * @param {Object} callbackFun 编辑回调函数
+	 */
     this.drawDimensions = function(p0, p1,color, editable, callbackFun) {
         color = color || '#a2a2a2';
         var lines = [
@@ -706,10 +700,10 @@ Renderer = function () {
             vec0 = new Vector3().subVectors(sp, ep).normalize(),
             vec1 = new Vector3().subVectors(ep, sp).normalize();
 
-        //�˵㴹ֱ��
+        //端点垂直线
         lines.push([this._rotateVector(sp, vec0, Math.PI / 2).multiplyScalar(10).add(sp), this._rotateVector(sp, vec0, -Math.PI / 2).multiplyScalar(10).add(sp)]);
         lines.push([this._rotateVector(sp, vec1, Math.PI / 2).multiplyScalar(10).add(ep), this._rotateVector(sp, vec1, -Math.PI / 2).multiplyScalar(10).add(ep)]);
-        //�˵�б��
+        //端点斜线
         lines.push([this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(10).add(sp), this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(-10).add(sp)]);
         lines.push([this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(10).add(ep), this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(-10).add(ep)]);
 
@@ -745,11 +739,11 @@ Renderer = function () {
                 ctx.save();
                 ctx.translate(center.x, center.y);
                 ctx.rotate(scope._computeAngle(p0, p1) * Math.PI / 180);
-                //����
+                //长度
                 ctx.fillStyle = "#FFF";
                 ctx.fillRect(-ctx.measureText(length).width / 2, -6, ctx.measureText(length).width, 12);
                 ctx.fillStyle = '#000';
-                ctx.font = "12px ΢���ź�";
+                ctx.font = "12px 微软雅黑";
                 ctx.textBaseline = 'middle';
                 ctx.textAlign = 'center';
                 ctx.fillText(length, 0, 0);
@@ -763,12 +757,12 @@ Renderer = function () {
         }
     }
 
-    /***
-     * ���ƴ�˵���߶�
-     * @param {Object} p0 ��ʼ��
-     * @param {Object} p1 �����
-     * @param {Object} callbackFun �༭�ص�����
-     */
+	/***
+	 * 绘制带端点的线段
+	 * @param {Object} p0 起始点
+	 * @param {Object} p1 结束点
+	 * @param {Object} callbackFun 编辑回调函数
+	 */
     this.drawSegment = function(p0, p1, callbackFun) {
         this.drawDashLine(p0, p1);
         this.drawCorner(p0, 5, "#a2a2a2");
