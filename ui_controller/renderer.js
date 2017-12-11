@@ -258,6 +258,8 @@ Renderer = function () {
             xpos = p1.x - p0.x,
             ypos = p1.y - p0.y,
             numDashes = Math.floor(Math.sqrt(xpos * xpos + ypos * ypos) / dashLen);
+            
+        this.ctx.beginPath();
         for (var i = 0; i < numDashes; i++) {
             if (i % 2 === 0) {
                 this.ctx.moveTo(p0.x + (xpos / numDashes) * i, p0.y + (ypos / numDashes) * i);
@@ -267,6 +269,7 @@ Renderer = function () {
         }
         this.ctx.strokeStyle = 'black';
         this.ctx.stroke();
+        this.ctx.closePath();
     }
     
     this.clear = function() {
@@ -657,14 +660,19 @@ Renderer = function () {
                 y: point.y + 1000
             }, borderPoints);
 
+		this.ctx.beginPath();
         this.ctx.strokeStyle = '#717070'
         this.ctx.moveTo(hsp.x, hsp.y + 0.5);
         this.ctx.lineTo(hep.x, hep.y + 0.5);
         this.ctx.stroke();
+        this.ctx.closePath();
 
+		this.ctx.beginPath();
         this.ctx.moveTo(vsp.x + 0.5, vsp.y);
         this.ctx.lineTo(vep.x + 0.5, vep.y);
         this.ctx.stroke();
+        this.ctx.closePath();
+        
 
         var ll = point.x - hsp.x,
             rl = hep.x - point.x,
@@ -708,6 +716,7 @@ Renderer = function () {
         lines.push([this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(10).add(ep), this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(-10).add(ep)]);
 
         this.ctx.strokeStyle = color;
+        this.ctx.beginPath();
         for(var i = 0; i < lines.length; i++) {
             lines[i][0].x = Math.round(lines[i][0].x);
             lines[i][0].y = Math.round(lines[i][0].y);
@@ -727,30 +736,29 @@ Renderer = function () {
         }
 
         this.ctx.stroke();
+        this.ctx.closePath();
         var center = {
                 x: (p0.x + p1.x) / 2,
                 y: (p0.y + p1.y) / 2
             },
             length = Math.round(this._getPointsDistance(p0, p1));
         if(!editable) {
-            var ctx = this.ctx,
-            scope = this;
-            setTimeout(function() {
-                ctx.save();
-                ctx.translate(center.x, center.y);
-                ctx.rotate(scope._computeAngle(p0, p1) * Math.PI / 180);
-                //长度
-                ctx.fillStyle = "#FFF";
-                ctx.fillRect(-ctx.measureText(length).width / 2, -6, ctx.measureText(length).width, 12);
-                ctx.fillStyle = '#000';
-                ctx.font = "12px 微软雅黑";
-                ctx.textBaseline = 'middle';
-                ctx.textAlign = 'center';
-                ctx.fillText(length, 0, 0);
-                ctx.restore();
-                ctx.translate(0, 0);
+            var ctx = this.ctx;
 
-            }, 20);
+            ctx.save();
+            ctx.translate(center.x, center.y);
+            ctx.rotate(this._computeAngle(p0, p1) * Math.PI / 180);
+            //长度
+            ctx.fillStyle = "#FFF";
+            ctx.fillRect(-ctx.measureText(length).width / 2, -6, ctx.measureText(length).width, 12);
+            ctx.fillStyle = '#000';
+            ctx.font = "12px 微软雅黑";
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
+            ctx.fillText(length, 0, 0);
+            ctx.restore();
+            ctx.translate(0, 0);
+
         } else {
             var tt = this._makeTextInput(center, length, callbackFun);
             return tt;
@@ -764,6 +772,7 @@ Renderer = function () {
 	 * @param {Object} callbackFun 编辑回调函数
 	 */
     this.drawSegment = function(p0, p1, callbackFun) {
+
         this.drawDashLine(p0, p1);
         this.drawCorner(p0, 5, "#a2a2a2");
         this.drawCorner(p1, 5, "#a2a2a2", true);
@@ -774,15 +783,3 @@ Renderer = function () {
     }
 
 }
-
-/*
-var tools = new DrawingTools(canvas._renderer.ctx);
-//���Ʊ���ߣ��ɱ༭
-tools.drawDimensions({x: 50,y: 400}, {x: 300,y: 400},null, true, function(v) {alert(v)});
-
-//��ע�ߣ����ɱ༭
-tools.drawDimensions({x: 600,y: 400}, {x: 700,y: 100});
-
-//���ƴ�˵������
-tools.drawSegment({x: 200,y: 700}, {x: 500,y: 700});
-*/
