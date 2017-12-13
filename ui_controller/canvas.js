@@ -493,8 +493,6 @@ Canvas.prototype.updateElement = function(x, y){
     if (this._updateElment) {
         console.log("controller been called: " + x + " " + y);
         if (this._updateElment.controller instanceof MyCorner) {
-            
-            
             var arc = [];
             for (var i = 0; i < this._updateElment.controller.mCurves.length; i++) {
                 if (this._updateElment.controller.mCurves[i] instanceof CurveController) {
@@ -535,8 +533,8 @@ Canvas.prototype.updateElement = function(x, y){
                         arc.push(this._updateElment.controller.mCurves[i].getCurveFromController().mArcAngle);
                     }
                 }
-                this._updateElment.controller.mPosition.mX = x;
-                this._updateElment.controller.mPosition.mY = y;
+                this._updateElment.controller.mPosition.mX = this._lastFocos.mX;
+                this._updateElment.controller.mPosition.mY = this._lastFocos.mY;
                 var idx = 0;
                 for (var i = 0; i < this._updateElment.controller.mCurves.length; i++) {
                     if (this._updateElment.controller.mCurves[i] instanceof CurveController) {
@@ -558,7 +556,6 @@ Canvas.prototype.updateElement = function(x, y){
             
             this._updateElment = null;
             this._focus = null;
-            //console.log("222222222");
             this._lastFocos = null;
         }
         this.render(x, y);
@@ -656,8 +653,8 @@ Canvas.prototype._renderFocusObject = function(x, y) {
     
     
     if (this._focus != null) {
-        console.log("render focus");
-        console.log(this._focus);
+        //console.log("render focus");
+        //console.log(this._focus);
         this._renderer.drawCorner(this._focus.geom);
         return;
     }
