@@ -440,3 +440,9 @@ CurveController.prototype.getLength = function()
 {
     return this.getCurveFromController().getLength();
 }
+
+CurveController.prototype.getAngle = function()
+{
+    var _loc1_ = new MyEdge(this.mStart.mPosition.clone(),this.mEnd.mPosition.clone());
+    return _loc1_.getLength();
+}

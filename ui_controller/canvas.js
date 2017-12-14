@@ -522,6 +522,103 @@ Canvas.prototype.updateElement = function(x, y){
             [this._outputResult,  this._innerResult] = Converter.outputGeo(this._mFloor);
         }
         
+        if (this._updateElment.controller instanceof SegmentController) {
+            var seg = this._updateElment.controller;
+            //1 找到2个corner
+            var coners = seg.toCorners();
+            //2 找到所有线段
+            var startCurves;
+            var endCurves;
+            var angle = seg.getAngle();
+            
+            // 得到差别最大的两个线段
+            var minS = 0;
+            var minE = 0;
+            for (var i = 0; i < coners[0].mCurves.length; i++) {
+                if (coners[0].mCurves[i].mId !== seg.mId) {
+                    coners[0].mCurves[i].getAngle();
+                    var diff = Math.abs(angle - coners[0].mCurves[i].getAngle());
+                    while(diff > Math.PI) {
+                        diff = diff - Math.PI;
+                    }
+                    if (diff > minS) {
+                        minS = diff;
+                        startCurves = coners[0].mCurves[i];
+                    }
+                    //startCurves.push(coners[0].mCurves[i]);
+                }
+            }
+            for (var i = 0; i < coners[1].mCurves.length; i++) {
+                if (coners[1].mCurves[i].mId !== seg.mId) {
+                    coners[1].mCurves[i].getAngle();
+                    //endCurves.push(coners[1].mCurves[i]);
+                    var diff = Math.abs(angle - coners[1].mCurves[i].getAngle());
+                    while(diff > Math.PI) {
+                        diff = diff - Math.PI;
+                    }
+                    if (diff > minE) {
+                        minE = diff;
+                        endCurves = coners[1].mCurves[i];
+                    }
+                }
+            }
+            
+            var newEdge;
+            if (MyNumber.isEqual(angle, Math.PI / 2)) {
+                newEdge = new MyEdge(new Vec2(x, y), new Vec2(x, y + 1));
+            } else {
+                newEdge = new MyEdge(new Vec2(x, y), new Vec2(x + 1, y + Math.tan(angle)));
+            }
+            
+            var s = MyEdge.getIntersection(newEdge, startCurves.getTheStartEndEdge());
+            var e = MyEdge.getIntersection(newEdge, endCurves.getTheStartEndEdge());
+            
+            
+            //更新曲线的曲率了
+            var arc = [];
+            for (var i = 0; i < coners[0].mCurves.length; i++) {
+                if (coners[0].mCurves[i] instanceof CurveController) {
+                    arc.push(coners[0].mCurves[i].getCurveFromController().mArcAngle);
+                }
+            }
+            
+            //更新完这个位置
+            coners[0].mPosition.mX = s.mX;
+            coners[0].mPosition.mY = s.mY;
+            
+            var idx = 0;
+            for (var i = 0; i < coners[0].mCurves.length; i++) {
+                if (coners[0].mCurves[i] instanceof CurveController) {
+                    coners[0].mCurves[i].adjustCurve(arc[idx]);
+                    idx++;
+                }
+            }
+            
+            var arc = [];
+            for (var i = 0; i < coners[1].mCurves.length; i++) {
+                if (coners[1].mCurves[i] instanceof CurveController) {
+                    arc.push(coners[1].mCurves[i].getCurveFromController().mArcAngle);
+                }
+            }
+            
+            //更新完这个位置
+            coners[1].mPosition.mX = e.mX;
+            coners[1].mPosition.mY = e.mY;
+            
+            var idx = 0;
+            for (var i = 0; i < coners[1].mCurves.length; i++) {
+                if (coners[1].mCurves[i] instanceof CurveController) {
+                    coners[1].mCurves[i].adjustCurve(arc[idx]);
+                    idx++;
+                }
+            }
+            
+            var analysis = new Analysis(this._mFloor);
+            analysis.execute();
+            [this._outputResult,  this._innerResult] = Converter.outputGeo(this._mFloor);
+            
+        }
+        
         var overlapped = this._checkOverlap();
         
         if (overlapped)
@@ -549,6 +646,103 @@ Canvas.prototype.updateElement = function(x, y){
                 this._updateElment.controller.mCurvePoint.mX = this._lastFocos.mX;
                 this._updateElment.controller.mCurvePoint.mY = this._lastFocos.mY;
             }
+            
+            if (this._updateElment.controller instanceof SegmentController) {
+                var seg = this._updateElment.controller;
+                //1 找到2个corner
+                var coners = seg.toCorners();
+                //2 找到所有线段
+                var startCurves;
+                var endCurves;
+                var angle = seg.getAngle();
+                
+                // 得到差别最大的两个线段
+                var minS = 0;
+                var minE = 0;
+                for (var i = 0; i < coners[0].mCurves.length; i++) {
+                    if (coners[0].mCurves[i].mId !== seg.mId) {
+                        coners[0].mCurves[i].getAngle();
+                        var diff = Math.abs(angle - coners[0].mCurves[i].getAngle());
+                        while(diff > Math.PI) {
+                            diff = diff - Math.PI;
+                        }
+                        if (diff > minS) {
+                            minS = diff;
+                            startCurves = coners[0].mCurves[i];
+                        }
+                        //startCurves.push(coners[0].mCurves[i]);
+                    }
+                }
+                for (var i = 0; i < coners[1].mCurves.length; i++) {
+                    if (coners[1].mCurves[i].mId !== seg.mId) {
+                        coners[1].mCurves[i].getAngle();
+                        //endCurves.push(coners[1].mCurves[i]);
+                        var diff = Math.abs(angle - coners[1].mCurves[i].getAngle());
+                        while(diff > Math.PI) {
+                            diff = diff - Math.PI;
+                        }
+                        if (diff > minE) {
+                            minE = diff;
+                            endCurves = coners[1].mCurves[i];
+                        }
+                    }
+                }
+                
+                var newEdge;
+                if (MyNumber.isEqual(angle, Math.PI / 2)) {
+                    newEdge = new MyEdge(new Vec2(this._lastFocos.mX, this._lastFocos.mY), new Vec2(this._lastFocos.mX, this._lastFocos.mY + 1));
+                } else {
+                    newEdge = new MyEdge(new Vec2(this._lastFocos.mX, this._lastFocos.mY), new Vec2(this._lastFocos.mX + 1, this._lastFocos.mY + Math.tan(angle)));
+                }
+                
+                var s = MyEdge.getIntersection(newEdge, startCurves.getTheStartEndEdge());
+                var e = MyEdge.getIntersection(newEdge, endCurves.getTheStartEndEdge());
+                
+                
+                //更新曲线的曲率了
+                var arc = [];
+                for (var i = 0; i < coners[0].mCurves.length; i++) {
+                    if (coners[0].mCurves[i] instanceof CurveController) {
+                        arc.push(coners[0].mCurves[i].getCurveFromController().mArcAngle);
+                    }
+                }
+                
+                //更新完这个位置
+                coners[0].mPosition.mX = s.mX;
+                coners[0].mPosition.mY = s.mY;
+                
+                var idx = 0;
+                for (var i = 0; i < coners[0].mCurves.length; i++) {
+                    if (coners[0].mCurves[i] instanceof CurveController) {
+                        coners[0].mCurves[i].adjustCurve(arc[idx]);
+                        idx++;
+                    }
+                }
+                
+                arc = [];
+                for (var i = 0; i < coners[1].mCurves.length; i++) {
+                    if (coners[1].mCurves[i] instanceof CurveController) {
+                        arc.push(coners[1].mCurves[i].getCurveFromController().mArcAngle);
+                    }
+                }
+                
+                //更新完这个位置
+                coners[1].mPosition.mX = e.mX;
+                coners[1].mPosition.mY = e.mY;
+                
+                idx = 0;
+                for (var i = 0; i < coners[1].mCurves.length; i++) {
+                    if (coners[1].mCurves[i] instanceof CurveController) {
+                        coners[1].mCurves[i].adjustCurve(arc[idx]);
+                        idx++;
+                    }
+                }
+                
+                var analysis = new Analysis(this._mFloor);
+                analysis.execute();
+                [this._outputResult,  this._innerResult] = Converter.outputGeo(this._mFloor);
+            }
+            
             
             var analysis = new Analysis(this._mFloor);
             analysis.execute();
@@ -597,7 +791,6 @@ Canvas.prototype._renderOutput = function() {
             }else if (edge instanceof MyCurve) {
                 this._renderer.drawArc(edge);
             }
-            
         }
         
         for (var j = 0; j < res[i].mHoles.length; j++) {
@@ -698,12 +891,56 @@ Canvas.prototype._renderFocusObject = function(x, y) {
     }
 }
 
-Canvas.prototype.render = function(x, y) {
+Canvas.prototype._renderMarkerLines = function() {
     
-    //this._renderer.drawSegment({x: 200,y: 300}, {x: 300,y: 300});
-    //this._renderer.drawDimensions({x: 200,y: 200}, {x: 300,y: 200});
-    //this._renderer.drawDimensions({x: 50,y: 300}, {x: 300,y: 300},null, true, function(v) {alert(v)});
+    for (var i = 0; i < this._mFloor.mCurves.length; i++) {
+        var curve = this._mFloor.mCurves[i];
+        
+        if (curve instanceof CurveController) {
+            //do nothing for now
+        }
+        
+        if (curve instanceof SegmentController && !curve.isBoundry) {
+            var edge = curve.getTheStartEndEdge();
+            var start = edge.mStart.clone();
+            var end = edge.mEnd.clone();
+            var center = edge.getCenter();
+            var area = curve.mAreas[0];
+            //var area = areas[0];
+            var angle = edge.getAngle();
+            angle = angle + Math.PI / 2;
+            
+            var offset = 10;
+            center.mY += offset * Math.sin(angle);
+            center.mX += offset * Math.cos(angle);
+            
+            if (area.containsPoint(center)) {
+                
+                start.mY -= offset * Math.sin(angle);
+                start.mX -= offset * Math.cos(angle);
+                
+                end.mY -= offset * Math.sin(angle);
+                end.mX -= offset * Math.cos(angle);
+                
+                
+            } else {
+                start.mX += offset * Math.sin(angle);
+                start.mY += offset * Math.cos(angle);
+                
+                end.mX += offset * Math.sin(angle);
+                end.mY += offset * Math.cos(angle);
+            }
+            
+            this._renderer.drawDimensions({x: start.mX,y: start.mY}, {x: end.mX,y: end.mY});
+            //center
+            
+            
+        }
+    }
+    
+}
 
+Canvas.prototype.render = function(x, y) {
     //清空canvas
     this._renderer.clear();
     
@@ -715,5 +952,12 @@ Canvas.prototype.render = function(x, y) {
     
     //绘制鼠标移动中经过的图元
     this._renderFocusObject(x, y);
+    
+    this._renderMarkerLines();
+    
+    //this._renderer.drawDimensions({x: 200,y: 200}, {x: 300,y: 200});
+    
+    //this._renderer.drawDimensions({x: 200,y: 200}, {x: 300,y: 200});
+    //this._renderer.drawDimensions({x: 50,y: 300}, {x: 300,y: 300},null, true, function(v) {alert(v)});
 }
 

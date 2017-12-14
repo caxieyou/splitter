@@ -406,3 +406,9 @@ SegmentController.prototype.getLength = function()
 {
     return this.getTheStartEndEdge().getLength();
 }
+
+SegmentController.prototype.getAngle = function()
+{
+    return this.getTheStartEndEdge().getAngle();
+}
+

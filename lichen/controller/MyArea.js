@@ -186,6 +186,15 @@ MyArea.prototype.isIncludedArea = function(param1)
     return true;
 }
 
+MyArea.prototype.containsPoint = function(param1)
+{
+    if(!this.getPathPolygon().containsInclusive(param1))
+    {
+        return false;
+    }
+    return true;
+}
+
 
 MyArea.prototype.isIncludedPolygon = function(param1)
 {
