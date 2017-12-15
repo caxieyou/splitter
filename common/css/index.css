@@ -109,8 +109,10 @@ body {
 }
 
 #container #main_container .canvas-container {
+    position: relative;
     width: 100%;
     height: 100%;
+    overflow: hidden;
 }
 
 #container #props_wrap .props {
