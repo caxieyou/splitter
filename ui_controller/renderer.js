@@ -618,11 +618,12 @@ Renderer = function () {
 	}
 	
 	this._makeTextInput = function(pos, value, callbackFun){
+		var offset = $(this.canvas).position();
 		var tt = document.createElement("input");
 		tt.className = "editText";
 		this.canvas.parentElement.appendChild(tt);
-		tt.style.left = pos.x - 20 + "px";
-		tt.style.top = pos.y - 10 + "px";
+		tt.style.left = pos.x + offset.left  - 20 + "px";
+		tt.style.top = pos.y + offset.top - 10 + "px";
 		if(value)
 			tt.value = value;
 		if(callbackFun) {
@@ -716,7 +717,7 @@ Renderer = function () {
         lines.push([this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(10).add(ep), this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(-10).add(ep)]);
 
         this.ctx.strokeStyle = color;
-        this.ctx.beginPath();
+        this.ctx.beginPath();https://item.jd.com/3820581.html
         for(var i = 0; i < lines.length; i++) {
             lines[i][0].x = Math.round(lines[i][0].x);
             lines[i][0].y = Math.round(lines[i][0].y);
@@ -731,7 +732,7 @@ Renderer = function () {
             if(lines[i][1].y % 2 == 0)
                 lines[i][1].y += 0.5;
             this.ctx.moveTo(lines[i][0].x, lines[i][0].y);
-            this.ctx.lineTo(lines[i][1].x, lines[i][1].y)
+            this.ctx.lineTo(lines[i][1].x, lines[i][1].y);
 
         }
 

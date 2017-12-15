@@ -403,6 +403,7 @@ canvas{
 	position: absolute;
 	left: 0px;
 	top: 0px;
+	background-color: #FFFFCC;
 }
 .editText{
 	width:40px;
