@@ -6,6 +6,44 @@ function MyEdge(param1, param2) {
 MyEdge.THRESHOLD = 1.0E-6;
 MyEdge.CONST_1 = 1;
 
+MyEdge.getValidHorizontalSection = function(edge0, edge1, markLine) {
+    var a = [edge0.mStart.mX, edge0.mEnd.mX, edge1.mStart.mX, edge1.mEnd.mX];
+    a.sort(function(a, b) {
+        return a - b;
+        });
+    if (a[3] - a[0] >= Math.abs(edge0.mEnd.mX - edge0.mStart.mX) + Math.abs(edge1.mEnd.mX - edge1.mStart.mX)) {
+        return false;
+    } else {
+        
+        markLine.mStart.mX = (a[1] + a[2])/2;
+        markLine.mStart.mY = edge0.mStart.mY;
+        markLine.mEnd.mX = markLine.mStart.mX;
+        markLine.mEnd.mY = edge1.mStart.mY;
+        
+        return true;
+    }
+}
+
+MyEdge.getValidVerticalSection = function(edge0, edge1, markLine) {
+    var a = [edge0.mStart.mY, edge0.mEnd.mY, edge1.mStart.mY, edge1.mEnd.mY];
+    
+    a.sort(function(a, b) {
+        return a - b;
+        });
+    
+    if (a[3] - a[0] >= Math.abs(edge0.mEnd.mY - edge0.mStart.mY) + Math.abs(edge1.mEnd.mY - edge1.mStart.mY)) {
+        return false;
+    } else {
+        
+        markLine.mStart.mX = edge0.mStart.mX;
+        markLine.mStart.mY = (a[1] + a[2])/2;
+        markLine.mEnd.mX = edge1.mStart.mX;
+        markLine.mEnd.mY = markLine.mStart.mY;
+        
+        return true;
+    }
+}
+
 MyEdge.isValidAngleDiff = function(param1, param2, param3)
 {
     if (param3 == null || param3 == undefined) {
