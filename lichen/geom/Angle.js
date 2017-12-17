@@ -12,7 +12,17 @@ Angle.CONST_180_DEVIDE_PI = 57.29577951308232;
 Angle.CONST_PI_DEVIDE_180 = 0.017453292519943295;
 
 Angle.isHorizontal = function(param1, param2) {
+    if (param2 == null || param2 ==undefined) {
+        param2 = 1;
+    }
     return Angle.toDegrees(Math.abs(param1)) < param2 || Angle.toDegrees(Math.abs(Math.abs(param1) - Math.PI)) < param2;
+};
+
+Angle.isVertical = function(param1, param2) {
+    if (param2 == null || param2 ==undefined) {
+        param2 = 1;
+    }
+    return Angle.toDegrees(Math.abs(Math.abs(param1) - Math.PI / 2)) < param2;
 };
 
 Angle.isEqual = function(param1, param2, param3) {

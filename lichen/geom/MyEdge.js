@@ -456,6 +456,11 @@ MyEdge.prototype.isHorizontal = function()
     return Angle.isHorizontal(this.getAngle());
 }
 
+MyEdge.prototype.isVertical = function()
+{
+    return Angle.isVertical(this.getAngle());
+}
+
 MyEdge.prototype.getXFromY = function(param1)
 {
     if(this.mStart.mY == this.mEnd.mY)
