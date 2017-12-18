@@ -1016,7 +1016,7 @@ Canvas.prototype._renderMarkerLines = function() {
             }
             if (maxDis > -Number.MAX_VALUE) {
                 
-                this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX,y: center.mY - sign * maxDis});
+                this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX,y: center.mY - sign * maxDis}, null, true);
             }
         }
         
@@ -1087,7 +1087,7 @@ Canvas.prototype._renderMarkerLines = function() {
                 }
             }
             if (maxDis > -Number.MAX_VALUE) {
-                this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - sign * maxDis,y: center.mY});
+                this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - sign * maxDis,y: center.mY}, null, true);
             }
         }
         
