@@ -190,16 +190,16 @@ Renderer = function () {
         
         this.ctx.beginPath();
         //if (isDash) {
-            this._drawDash(leftUp, {x: rightBottom.x, y: leftUp.y});
-            this._drawDash({x: rightBottom.x, y: leftUp.y}, rightBottom);
-            this._drawDash(rightBottom, {x: leftUp.x, y: rightBottom.y});
-            this._drawDash({x: leftUp.x, y: rightBottom.y}, leftUp);
+        //    this._drawDash(leftUp, {x: rightBottom.x, y: leftUp.y});
+        //    this._drawDash({x: rightBottom.x, y: leftUp.y}, rightBottom);
+        //    this._drawDash(rightBottom, {x: leftUp.x, y: rightBottom.y});
+        //    this._drawDash({x: leftUp.x, y: rightBottom.y}, leftUp);
         //} else {
-        //    this.ctx.moveTo(leftUp.x, leftUp.y);
-        //    this.ctx.lineTo(rightBottom.x, leftUp.y);
-        //    this.ctx.lineTo(rightBottom.x, rightBottom.y);
-        //    this.ctx.lineTo(leftUp.x, rightBottom.y);
-        //    this.ctx.lineTo(leftUp.x, leftUp.y);
+            this.ctx.moveTo(leftUp.x, leftUp.y);
+            this.ctx.lineTo(rightBottom.x, leftUp.y);
+            this.ctx.lineTo(rightBottom.x, rightBottom.y);
+            this.ctx.lineTo(leftUp.x, rightBottom.y);
+            this.ctx.lineTo(leftUp.x, leftUp.y);
         //}
         this.ctx.strokeStyle = "black";
         this.ctx.stroke();
@@ -277,9 +277,22 @@ Renderer = function () {
     }
     
     this.drawArea = function(output) {
+        
+        
+        
+        
+
+        
+        
+        
         var ctx = this.ctx;
         //console.log(output);
 
+        
+        
+        
+        
+        
         ctx.beginPath();
         var prevPoint;
         var counterclockwise;
@@ -299,6 +312,9 @@ Renderer = function () {
                     x: next.mCenter.mX + next.mRadius,
                     y: next.mCenter.mY
                 }, next.mCenter, next.mStartAngle + next.mArcAngle);
+                
+                
+                
             }
 
             if (edge.constructor == MyEdge) {
@@ -326,6 +342,7 @@ Renderer = function () {
                 }
             } 
             else if (edge.constructor == MyCurve) {
+                
                 var sp = this._rotatePoint({
                         x: edge.mCenter.mX + edge.mRadius,
                         y: edge.mCenter.mY
@@ -423,6 +440,25 @@ Renderer = function () {
             }
             ctx.globalCompositeOperation = "source-over";
         }
+        
+        
+        for (var i = 0, length = output.mOutline.edges.length; i < length; i++) {
+            var edge = output.mOutline.edges[i];
+            if (edge.constructor == MyCurve) {
+                var _start = edge.getSplitPosByRatio(0);
+                var _end = edge.getSplitPosByRatio(1);
+                this.drawCorner(_start, 10, 'red');
+                this.drawCorner(_end, 10, 'red');
+            }
+
+            if (edge.constructor == MyEdge) {
+                var _start = edge.mStart;
+                var _end = edge.mEnd;
+                this.drawCorner(_start, 10, 'red');
+                this.drawCorner(_end, 10, 'red');
+            }
+        }
+                
     }
    
     this.isAllCurves = function(edges) {

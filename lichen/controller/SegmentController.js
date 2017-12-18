@@ -18,7 +18,20 @@ SegmentController.prototype.wallDleleteSame = function(param1)
 {
     return ArrayHelperClass.removeItem(this.mAreas,param1);
 }
-
+SegmentController.isWithinSameArea = function (param1, param2) {
+    //var res = false;
+    
+    for (var i = 0; i < param1.mAreas.length; i++) {
+        for (var j = 0; j < param2.mAreas.length; j++) {
+            if (param1.mAreas[i].mId == param2.mAreas[j].mId) {
+                return true;
+            }
+        }
+    }
+    
+    return false;
+    
+}
 SegmentController.createSegmentByMyEdge = function(param1)
 {
     var _loc2_ = null;
@@ -213,6 +226,37 @@ SegmentController.prototype.isIntersectWith = function(param1, param2, param3, p
     return false;
 }
 
+SegmentController.isIntersectWith = function(param1, param2, param3, param4, param5)
+{
+    if (param3 == null || param3 == undefined) {
+        param3 = null;
+    }
+    if (param4 == null || param4 == undefined) {
+        param4 = false;
+    }
+    if (param5 == null || param5 == undefined) {
+        param5 = 1.0E-6;
+    }
+    var _loc6_ = null;
+    var _loc7_ = null;
+    var _loc8_ = null;
+    var _loc5_ = null;
+    if(param2 instanceof SegmentController)
+    {
+        _loc6_ = param2;
+        _loc5_ = _loc6_.getTheStartEndEdge();
+        return SegmentController.intersectSub(param1, _loc5_,param3,param4,param5);
+    }
+    if(param2 instanceof CurveController)
+    {
+        _loc7_ = param2;
+        _loc8_ = _loc7_.getCurveFromController();
+        return SegmentController.isCurveIntersectByAreaAndGetIntersectPoint(param1, _loc8_,param3,param4,param5);
+    }
+    return false;
+}
+
+
 SegmentController.prototype.isIntersectWithGeometry = function(param1, param2, param3, param4)
 {
     if (param2 == null || param2 == undefined) {
@@ -349,6 +393,34 @@ SegmentController.prototype.isCurveIntersectByAreaAndGetIntersectPoint = functio
     if(param2 != null)
     {
         ArrayHelperClass.addItems(param2,_loc5_);
+    }
+    return true;
+}
+
+SegmentController.isCurveIntersectByAreaAndGetIntersectPoint = function(param1, param2, param3, param4, param5)
+{
+    if (param3 == null || param3 == undefined) {
+        param3 = null;
+    }
+    if (param4 == null || param3 == undefined) {
+        param4 = false;
+    }
+    if (param5 == null || param5 == undefined) {
+        param5 = 1.0E-6;
+    }
+    
+    var _loc5_ = someArcEdgeHelper_AEE.getValidIntersectionPointBetweenArcAndEdge(param2, param1);
+    if(!param4)
+    {
+        param2.removePointsNotInsideCurve(_loc5_);
+    }
+    if(_loc5_.length == 0)
+    {
+        return false;
+    }
+    if(param3 != null)
+    {
+        ArrayHelperClass.addItems(param3,_loc5_);
     }
     return true;
 }
