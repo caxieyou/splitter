@@ -197,6 +197,7 @@ $(function() {
 	canvas.sHeight = $canvas.height();
 	container.addEventListener("mousedown", onmousedown);
 	container.addEventListener("mousewheel", onmousewheel);
+	
 	canvas.scale = 1;
 	function onmousedown(e) {
 		container.addEventListener("mousemove", onmousemove);
@@ -209,9 +210,11 @@ $(function() {
 
 	function onmousemove(e) {
 		var offset = $canvas.position();
-		$canvas.css({left:offset.left + e.clientX  - mousePos.x,top:offset.top + e.clientY - mousePos.y})
+		$canvas.css({left:offset.left + e.clientX  - mousePos.x,top:offset.top + e.clientY - mousePos.y});
 		mousePos = {x:e.clientX ,y:e.clientY};
+		
 	}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       	                          
 	
 	function onmouseup(e) {
 		container.removeEventListener("mousemove", onmousemove);
@@ -223,10 +226,15 @@ $(function() {
 		
 		canvas.scale += e.wheelDelta * 0.0001;
 		var offset = $canvas.position(),
-			offsetX = canvas.sWidth * canvas.scale - $canvas.width(),
-			offsetY = canvas.sHeight * canvas.scale - $canvas.height();
-		$canvas.css({left:offset.left + offsetX / 2 *-1,top:offset.top + offsetY/2 *-1});
+			offsetX = ( canvas.sWidth * canvas.scale - $canvas.width() ) / 2 * -1,
+			offsetY = ( canvas.sHeight * canvas.scale - $canvas.height() ) / 2 * -1;
+		$canvas.css({left:offset.left + offsetX,top:offset.top + offsetY});
 		$canvas.width(canvas.sWidth * canvas.scale).height(canvas.sHeight * canvas.scale);
-		
+
+	}
+	
+	window.onresize = function(e){
+		$("#canvas")[0].width = $('.canvas-container').width();
+		$("#canvas")[0].height = $('.canvas-container').height();
 	}
 });
