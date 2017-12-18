@@ -188,7 +188,7 @@ $(function() {
 			alert($(this).val());
 		}
 	});
-	var container = $('#main_container')[0],
+	var container = $('.canvas-container')[0],
 		$canvas = $("#canvas"),
 		mousePos = {};
 		
@@ -201,21 +201,22 @@ $(function() {
 	function onmousedown(e) {
 		container.addEventListener("mousemove", onmousemove);
 		container.addEventListener("mouseup", onmouseup);
-		mousePos = {x:e.offsetX,y:e.offsetY};
+		mousePos = {x:e.clientX ,y:e.clientY};
+		document.body.style.cursor = "move";
 	}
 
 
 
 	function onmousemove(e) {
 		var offset = $canvas.position();
-		$canvas.css({left:offset.left + e.offsetX - mousePos.x,top:offset.top + e.offsetY - mousePos.y})
-		mousePos = {x:e.offsetX,y:e.offsetY};
+		$canvas.css({left:offset.left + e.clientX  - mousePos.x,top:offset.top + e.clientY - mousePos.y})
+		mousePos = {x:e.clientX ,y:e.clientY};
 	}
 	
 	function onmouseup(e) {
 		container.removeEventListener("mousemove", onmousemove);
 		container.removeEventListener("mouseup", onmouseup);
-		mousePos = {x:e.offsetX,y:e.offsetY};
+		document.body.style.cursor = "default";
 	}
 	
 	function onmousewheel(e){
@@ -225,9 +226,7 @@ $(function() {
 			offsetX = canvas.sWidth * canvas.scale - $canvas.width(),
 			offsetY = canvas.sHeight * canvas.scale - $canvas.height();
 		$canvas.css({left:offset.left + offsetX / 2 *-1,top:offset.top + offsetY/2 *-1});
-		//$canvas.width(canvas.sWidth * canvas.scale).height(canvas.sHeight * canvas.scale);
-		$canvas[0].width = canvas.sWidth * canvas.scale;
-		$canvas[0].height = canvas.sHeight * canvas.scale;
+		$canvas.width(canvas.sWidth * canvas.scale).height(canvas.sHeight * canvas.scale);
 		
 	}
 });
