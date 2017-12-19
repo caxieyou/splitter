@@ -192,41 +192,42 @@ $(function() {
 		$canvas = $("#canvas"),
 		mousePos = {};
 		
-	
 	canvas.sWidth = $canvas.width();
 	canvas.sHeight = $canvas.height();
 	container.addEventListener("mousedown", onmousedown);
 	container.addEventListener("mousewheel", onmousewheel);
 	canvas.scale = 1;
 	function onmousedown(e) {
-		container.addEventListener("mousemove", onmousemove);
-		container.addEventListener("mouseup", onmouseup);
-		mousePos = {x:e.clientX ,y:e.clientY};
-		document.body.style.cursor = "move";
+        if (!canvas.getFocusElement()) {
+            container.addEventListener("mousemove", onmousemove);
+            container.addEventListener("mouseup", onmouseup);
+            mousePos = {x:e.clientX ,y:e.clientY};
+            //document.body.style.cursor = "move";
+        }
 	}
 
-
-
 	function onmousemove(e) {
-		var offset = $canvas.position();
-		$canvas.css({left:offset.left + e.clientX  - mousePos.x,top:offset.top + e.clientY - mousePos.y})
-		mousePos = {x:e.clientX ,y:e.clientY};
+        if (!canvas.getFocusElement()) {
+            var offset = $canvas.position();
+            $canvas.css({left:offset.left + e.clientX  - mousePos.x,top:offset.top + e.clientY - mousePos.y})
+            mousePos = {x:e.clientX ,y:e.clientY};
+        }
 	}
 	
 	function onmouseup(e) {
-		container.removeEventListener("mousemove", onmousemove);
-		container.removeEventListener("mouseup", onmouseup);
-		document.body.style.cursor = "default";
+        if (!canvas.getFocusElement()) {
+            container.removeEventListener("mousemove", onmousemove);
+            container.removeEventListener("mouseup", onmouseup);
+            //document.body.style.cursor = "default";
+        }
 	}
 	
 	function onmousewheel(e){
-		
 		canvas.scale += e.wheelDelta * 0.0001;
 		var offset = $canvas.position(),
 			offsetX = canvas.sWidth * canvas.scale - $canvas.width(),
 			offsetY = canvas.sHeight * canvas.scale - $canvas.height();
 		$canvas.css({left:offset.left + offsetX / 2 *-1,top:offset.top + offsetY/2 *-1});
 		$canvas.width(canvas.sWidth * canvas.scale).height(canvas.sHeight * canvas.scale);
-		
 	}
 });

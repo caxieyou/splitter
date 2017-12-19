@@ -44,6 +44,28 @@ MyEdge.getValidVerticalSection = function(edge0, edge1, markLine) {
     }
 }
 
+MyEdge.isPointWithinHorizontal = function(x, edge) {
+    var min = Math.min(edge.mStart.mX, edge.mEnd.mX);
+    var max = Math.max(edge.mStart.mX, edge.mEnd.mX);
+    
+    if (x < max && x > min) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+MyEdge.isPointWithinVertical = function(y, edge) {
+    var min = Math.min(edge.mStart.mY, edge.mEnd.mY);
+    var max = Math.max(edge.mStart.mY, edge.mEnd.mY);
+    
+    if (y < max && y > min) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 MyEdge.isValidAngleDiff = function(param1, param2, param3)
 {
     if (param3 == null || param3 == undefined) {

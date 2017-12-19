@@ -135,7 +135,7 @@ Quaternion = function(x, y, z, w) {
 };
 
 Renderer = function () {
-
+    this.textBlank = [];
     this.init = function (canvas) {
         this.canvas = canvas;
         this.ctx = this.canvas.getContext("2d");
@@ -274,24 +274,15 @@ Renderer = function () {
     
     this.clear = function() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        for (var i = 0; i < this.textBlank.length; i++) {
+            $(this.textBlank[i]).remove();
+        }
+        this.textBlank =[];
     }
     
     this.drawArea = function(output) {
-        
-        
-        
-        
-
-        
-        
-        
         var ctx = this.ctx;
         //console.log(output);
-
-        
-        
-        
-        
         
         ctx.beginPath();
         var prevPoint;
@@ -312,9 +303,6 @@ Renderer = function () {
                     x: next.mCenter.mX + next.mRadius,
                     y: next.mCenter.mY
                 }, next.mCenter, next.mStartAngle + next.mArcAngle);
-                
-                
-                
             }
 
             if (edge.constructor == MyEdge) {
@@ -440,27 +428,50 @@ Renderer = function () {
             }
             ctx.globalCompositeOperation = "source-over";
         }
-        
-        
+    }
+    
+    this.drawAreaDots = function(output) {
         for (var i = 0, length = output.mOutline.edges.length; i < length; i++) {
             var edge = output.mOutline.edges[i];
             if (edge.constructor == MyCurve) {
                 var _start = edge.getSplitPosByRatio(0);
                 var _end = edge.getSplitPosByRatio(1);
-                this.drawCorner(_start, 10, 'red');
-                this.drawCorner(_end, 10, 'red');
+                this.drawCorner(_start, 3, 'red');
+                this.drawCorner(_end, 3, 'red');
             }
 
             if (edge.constructor == MyEdge) {
                 var _start = edge.mStart;
                 var _end = edge.mEnd;
-                this.drawCorner(_start, 10, 'red');
-                this.drawCorner(_end, 10, 'red');
+                this.drawCorner(_start, 3, 'red');
+                this.drawCorner(_end, 3, 'red');
             }
         }
-                
+        
+        if (output.mHoles.length > 0) {
+            for (var i = 0; i < output.mHoles.length; i++) {
+                var hole = output.mHoles[i];
+                for (var j = 0; j < hole.edges.length; j++) {
+                    var edge = hole.edges[j];
+                    //var edge = output.mOutline.edges[i];
+                    if (edge.constructor == MyCurve) {
+                        var _start = edge.getSplitPosByRatio(0);
+                        var _end = edge.getSplitPosByRatio(1);
+                        this.drawCorner(_start, 3, 'red');
+                        this.drawCorner(_end, 3, 'red');
+                    }
+
+                    if (edge.constructor == MyEdge) {
+                        var _start = edge.mStart;
+                        var _end = edge.mEnd;
+                        this.drawCorner(_start, 3, 'red');
+                        this.drawCorner(_end, 3, 'red');
+                    }
+                }
+            }
+        }
     }
-   
+    
     this.isAllCurves = function(edges) {
         for (var j = 0; j < edges.length; j++) {
             if (edges[j].constructor == MyEdge)return false;
@@ -477,11 +488,11 @@ Renderer = function () {
 	 */
     this.drawCorner = function(point, radius, color, isHollow) {
         color = color || "#000";
-        if(radius == undefined) radius = 10;
+        if(radius == undefined) radius = 3;
 
         this.ctx.strokeStyle = color;
         this.ctx.beginPath();
-        this.ctx.arc(point.mX || point.x, point.mY || point.y, 5, 0, Math.PI * 2, true);
+        this.ctx.arc(point.mX || point.x, point.mY || point.y, radius, 0, Math.PI * 2, true);
 
         if(!isHollow) {
             this.ctx.closePath();
@@ -798,6 +809,7 @@ Renderer = function () {
 
         } else {
             var tt = this._makeTextInput(center, length, callbackFun);
+            this.textBlank.push(tt);
             return tt;
         }
     }
@@ -811,12 +823,12 @@ Renderer = function () {
     this.drawSegment = function(p0, p1, callbackFun) {
 
         this.drawDashLine(p0, p1);
-        this.drawCorner(p0, 5, "#a2a2a2");
-        this.drawCorner(p1, 5, "#a2a2a2", true);
+        this.drawCorner(p0, 3, "#a2a2a2");
+        this.drawCorner(p1, 3, "#a2a2a2", true);
         var center = new Vector3((p0.x+p1.x)/2, (p0.y+p1.y)/2, 0);
         var pos = this._rotateVector(center,new Vector3().subVectors(new Vector3(p0.x,p0.y,0),center).normalize(),Math.PI / 2).multiplyScalar(20).add(center);
         var tt = this._makeTextInput(pos, Math.round(this._getPointsDistance(p0, p1)), callbackFun);
+        //this.textBlank.push(tt);
         return tt;
     }
-
 }

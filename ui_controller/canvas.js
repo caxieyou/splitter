@@ -137,6 +137,11 @@ Canvas.prototype.setType = function(type) {
     if (this._type == TYPE.LINE) {
         this._currentStatus = STATUS.LINE_START;
     }
+    if (this._type == null) {
+        document.body.style.cursor = "default";
+    } else {
+        document.body.style.cursor = "crosshair";
+    }
     
 }
 
@@ -319,7 +324,7 @@ Canvas.prototype.resetType = function() {
         console.log("right 0");
     } else if (this._currentStatus  == STATUS.LINE_START) {
         this._currentStatus = STATUS.NOT_STARTED;
-        this._type = null;
+        this.setType(null);// = null;
         var lines = [];
         for (var i = 0; i < this._lineEdges.length; i++) {
             if (this._lineIntersect.isStartEndSame[i]){
@@ -367,7 +372,8 @@ Canvas.prototype.resetType = function() {
         console.log("right 1");
     } else {
         this._currentStatus = STATUS.NOT_STARTED;
-        this._type = null;
+        this.setType(null);
+        //this._type = null;
     }
 }
 
@@ -404,14 +410,18 @@ Canvas.prototype.checkStatus = function() {
 
 Canvas.prototype.renderAreaPicked = function(x, y) {
     
+    
     for (var i = 0; i < this._innerResult.length; i++) {
         if (this._innerResult[i].contains(new Vec2(x, y))) {
             //return this._outputResult[i];
             this._renderer.drawArea(this._outputResult[i]);
+            this._renderOutput();
+            this._renderer.drawAreaDots(this._outputResult[i]);
             break;
         }
     }
-    this._renderOutput();
+    
+    
     //return null;
 }
 
@@ -830,12 +840,12 @@ Canvas.prototype._renderFocusObject = function(x, y) {
             }
         }
     }
-    
+    var snappingOffset = 5;
     /////////////////////
     // focus on corner //
     /////////////////////
     for (var i = 0; i < this._mFloor.mCorners.length; i++) {
-        if (this._mFloor.mCorners[i].mPosition.isClose(new Vec2(x, y), 2)) {
+        if (this._mFloor.mCorners[i].mPosition.isClose(new Vec2(x, y), snappingOffset)) {
             this._focus = {
                     geom: this._mFloor.mCorners[i].mPosition.clone(),
                     controller : this._mFloor.mCorners[i]
@@ -844,14 +854,13 @@ Canvas.prototype._renderFocusObject = function(x, y) {
         }
     }
     
-    
     if (this._focus != null) {
-        //console.log("render focus");
-        //console.log(this._focus);
-        this._renderer.drawCorner(this._focus.geom);
+        this._renderer.drawCorner(this._focus.geom, 10, 'blue');
+        document.body.style.cursor = "move";
         return;
+    } else {
+        document.body.style.cursor = "default";
     }
-    
     
     ////////////////////
     // focus on edge  //
@@ -861,7 +870,7 @@ Canvas.prototype._renderFocusObject = function(x, y) {
         var edge;
         if (curve instanceof SegmentController) {
             var edge = curve.getTheStartEndEdge();
-            if (edge.pointInEdgeOrOnEdge(new Vec2(x, y), 1.0)) {
+            if (edge.pointInEdgeOrOnEdge(new Vec2(x, y), snappingOffset)) {
                 this._focus = {
                     geom: edge,
                     controller : curve
@@ -871,7 +880,7 @@ Canvas.prototype._renderFocusObject = function(x, y) {
         } else if(curve instanceof CurveController) {
             var edge = curve.getCurveFromController();
             
-            if (edge.isInsideCurveAndNotOnCurve(new Vec2(x, y), 1.0)) {
+            if (edge.isInsideCurveAndNotOnCurve(new Vec2(x, y), snappingOffset)) {
                 this._focus = {
                     geom: edge,
                     controller : curve
@@ -886,8 +895,15 @@ Canvas.prototype._renderFocusObject = function(x, y) {
     
     if (this._focus.geom instanceof MyEdge) {
         this._renderer.drawLine(this._focus.geom, null, null, true);
+        var angle = this._focus.geom.getAngle();
+        if (Math.abs(angle) > Math.PI / 4 && Math.abs(angle) < 3 * Math.PI / 4) {
+            document.body.style.cursor = "e-resize";
+        } else {
+            document.body.style.cursor = "n-resize";
+        }
     } else if(this._focus.geom instanceof MyCurve) {
         this._renderer.drawArc(this._focus.geom, true);
+        document.body.style.cursor = "n-resize";
     }
 }
 
@@ -1015,7 +1031,6 @@ Canvas.prototype._renderMarkerLines = function() {
                 }
             }
             if (maxDis > -Number.MAX_VALUE) {
-                
                 this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX,y: center.mY - sign * maxDis}, null, true);
             }
         }
@@ -1094,6 +1109,28 @@ Canvas.prototype._renderMarkerLines = function() {
     }
 }
 
+Canvas.prototype._renderMouseLines = function(x, y) {
+    if (this._type == null) {
+        return;
+    }
+    //TODO: snapping 没做！！！
+    for (var j = 0; j < this._mFloor.mCurves.length; j++) {
+        if (!this._mFloor.mCurves[j].isBoundry) {
+            continue;
+        }
+        var edge2 = this._mFloor.mCurves[j].getTheStartEndEdge();
+        var angle2 = edge2.getAngle();
+        
+        if (Angle.isHorizontal(angle2) && MyEdge.isPointWithinHorizontal(x, edge2)) {
+            this._renderer.drawDimensions({x: x,y: y}, {x: x,y: edge2.mStart.mY});
+        }
+        if (Angle.isVertical(angle2) && MyEdge.isPointWithinVertical(y, edge2)) {
+            this._renderer.drawDimensions({x: x,y: y}, {x: edge2.mStart.mX,y: y});
+        }
+    }
+
+}
+
 Canvas.prototype.render = function(x, y) {
     //清空canvas
     this._renderer.clear();
@@ -1106,6 +1143,8 @@ Canvas.prototype.render = function(x, y) {
     
     //绘制鼠标移动中经过的图元
     this._renderFocusObject(x, y);
+    
+    this._renderMouseLines(x, y);
     
     this._renderMarkerLines();
     
