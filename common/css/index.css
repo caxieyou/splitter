@@ -35,6 +35,19 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+.vertical-line {
+    position: relative;
+    float: left;
+    width: 1px;
+    height: 25px;
+    background-color: #b2b1b1;
+    margin: 0 10px;
+}
+
+.select2-container .select2-selection--single {
+    height: 28px;
+}
+
 #container {
     width: 100%;
     height: 100%;
@@ -75,30 +88,44 @@ body {
     left: 0;
     width: 100%;
     height: 40px;
-    line-height: 40px;
     padding-left: 20px;
     font-size: 0;
     background-color: #f6f6f6;
     color: #000;
     border-top: 1px solid #999999;
+    display: flex;
+    align-items: center;
 }
 
 #container #main_container .bottom-props *{
-    font-size: 16px;
+    font-size: 14px;
 }
 
-#container #main_container .bottom-props .bottom-props-title {
-    padding-right: 10px;
-    border-right: 1px solid #000;
+#container #main_container .bottom-props label{
+    float: left;
 }
 
-#container #main_container .bottom-props .bottom-props-bulge {
-    padding: 0 10px;
+#container #main_container .bottom-props input, #container #main_container .bottom-props .select2-selection, .select2-dropdown{
+    border-color: #b2b1b1;
 }
 
-#container #main_container .bottom-props .bottom-props-bulge-input {
-    width: 65px;
-    margin-right: 5px;
+#container #main_container .bottom-props .bottom-props-name-input {
+    width: 87px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#container #main_container .bottom-props .bulge-backoff-selects {
+    width: 55px;
+}
+
+#container #main_container .bottom-props .bottom-props-depth {
+    margin-left: 10px;
+}
+
+#container #main_container .bottom-props .bottom-props-depth-input {
+    width: 55px;
 }
 
 #container #props_wrap {

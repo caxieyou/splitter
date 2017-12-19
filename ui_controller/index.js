@@ -182,12 +182,27 @@ $(function() {
 		}
 		if($this.val().length > 4) $this.val(Number(String($this.val()).substr(0, 4)));
 	});
-	// 突出高度输入框回车事件  
-	$('.bottom-props-bulge-input.number').on('keyup', function(e) {
+	// 区域深度输入框回车事件  
+	$('.bottom-props-depth-input.number').on('keyup', function(e) {
 		if(e.keyCode === 13) {
+			if($('#bulge_backoff_selects').val() === '1') {
+				console.log('凹进');
+			} else {
+				console.log('凸出');
+			}
 			alert($(this).val());
+			$(this).blur();
 		}
 	});
+	// 区域名称输入框回车事件  
+	$('.bottom-props-name-input').on('keyup', function(e) {
+		if(e.keyCode === 13) {
+			alert($(this).val());
+			$(this).blur();
+		}
+	});
+	// selects 初始化
+	$('#bulge_backoff_selects').select2({minimumResultsForSearch: Infinity, fireSelected: true});
 	var container = $('.canvas-container')[0],
 		$canvas = $("#canvas"),
 		mousePos = {};
