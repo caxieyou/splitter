@@ -182,12 +182,27 @@ $(function() {
 		}
 		if($this.val().length > 4) $this.val(Number(String($this.val()).substr(0, 4)));
 	});
-	// 突出高度输入框回车事件  
-	$('.bottom-props-bulge-input.number').on('keyup', function(e) {
+	// 区域深度输入框回车事件  
+	$('.bottom-props-depth-input.number').on('keyup', function(e) {
 		if(e.keyCode === 13) {
+			if($('#bulge_backoff_selects').val() === '1') {
+				console.log('凹进');
+			} else {
+				console.log('凸出');
+			}
 			alert($(this).val());
+			$(this).blur();
 		}
 	});
+	// 区域名称输入框回车事件  
+	$('.bottom-props-name-input').on('keyup', function(e) {
+		if(e.keyCode === 13) {
+			alert($(this).val());
+			$(this).blur();
+		}
+	});
+	// selects 初始化
+	$('#bulge_backoff_selects').select2({minimumResultsForSearch: Infinity, fireSelected: true});
 	var container = $('.canvas-container')[0],
 		$canvas = $("#canvas"),
 		mousePos = {};
@@ -196,6 +211,7 @@ $(function() {
 	canvas.sHeight = $canvas.height();
 	container.addEventListener("mousedown", onmousedown);
 	container.addEventListener("mousewheel", onmousewheel);
+	
 	canvas.scale = 1;
 	function onmousedown(e) {
         if (!canvas.getFocusElement()) {
@@ -213,6 +229,7 @@ $(function() {
             mousePos = {x:e.clientX ,y:e.clientY};
         }
 	}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       	                          
 	
 	function onmouseup(e) {
         if (!canvas.getFocusElement()) {
@@ -225,9 +242,15 @@ $(function() {
 	function onmousewheel(e){
 		canvas.scale += e.wheelDelta * 0.0001;
 		var offset = $canvas.position(),
-			offsetX = canvas.sWidth * canvas.scale - $canvas.width(),
-			offsetY = canvas.sHeight * canvas.scale - $canvas.height();
-		$canvas.css({left:offset.left + offsetX / 2 *-1,top:offset.top + offsetY/2 *-1});
+			offsetX = ( canvas.sWidth * canvas.scale - $canvas.width() ) / 2 * -1,
+			offsetY = ( canvas.sHeight * canvas.scale - $canvas.height() ) / 2 * -1;
+		$canvas.css({left:offset.left + offsetX,top:offset.top + offsetY});
 		$canvas.width(canvas.sWidth * canvas.scale).height(canvas.sHeight * canvas.scale);
+
+	}
+	
+	window.onresize = function(e){
+		$("#canvas")[0].width = $('.canvas-container').width();
+		$("#canvas")[0].height = $('.canvas-container').height();
 	}
 });

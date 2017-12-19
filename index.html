@@ -4,6 +4,7 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>区域分割</title>
+    <link rel="stylesheet" type="text/css" href="common/css/select2.min.css">
     <link rel="stylesheet" href="common/css/base.css" />
     <link rel="stylesheet" href="common/css/index.css" />
     <script src="common/plug/jquery-1.11.3.min.js"></script>
@@ -99,10 +100,21 @@
                     </div>
                 </div>
                 <div class="bottom-props">
-                    <span class="bottom-props-title">区域</span>
-                    <span class="bottom-props-bulge">凸出高度</span>
-                    <input type="text" class="bottom-props-bulge-input number">
-                    <span>mm</span>
+                    <label class="bottom-props-title">区域</label>
+                    <i class="vertical-line"></i>
+                    <label class="bottom-props-name">名称：<input type="text" class="bottom-props-name-input"></label>
+                    <i class="vertical-line"></i>
+                    <label class="bottom-props-selects">
+                        <select class="bulge-backoff-selects" id="bulge_backoff_selects">
+                            <option value="0">凸出</option>
+                            <option value="1">凹进</option>
+                        </select>
+                    </label>
+                    <label>
+                        <span class="bottom-props-depth">深度:</span>
+                        <input type="text" class="bottom-props-depth-input number">
+                        <span>mm</span>  
+                    </label>
                 </div>
 
                 <div class="canvas-container">
@@ -129,6 +141,7 @@
     </div>
 </body>
 <script src="common/plug/icheck.min.js"></script>
+<script src="common/plug/select2.min.js"></script>
 <script src="lichen/geom/Angle.js"></script>
 <script src="lichen/geom/ArrayHelperClass.js"></script>
 <script src="lichen/geom/CircleEdgeHelper.js"></script>
