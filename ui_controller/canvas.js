@@ -60,7 +60,29 @@ Canvas.prototype._renderCurrentObject = function() {
     
     switch(this._type) {
         case TYPE.RECTANGLE:
+        {
+            
+            var edges = [];
+            edges.push(new MyEdge(new Vec2(this._mEdge.mStart.mX, this._mEdge.mStart.mY), new Vec2(this._mEdge.mEnd.mX,   this._mEdge.mStart.mY)));
+            edges.push(new MyEdge(new Vec2(this._mEdge.mEnd.mX,   this._mEdge.mStart.mY), new Vec2(this._mEdge.mEnd.mX,   this._mEdge.mEnd.mY)));
+            edges.push(new MyEdge(new Vec2(this._mEdge.mEnd.mX,   this._mEdge.mEnd.mY),   new Vec2(this._mEdge.mStart.mX, this._mEdge.mEnd.mY)));
+            edges.push(new MyEdge(new Vec2(this._mEdge.mStart.mX, this._mEdge.mEnd.mY),   new Vec2(this._mEdge.mStart.mX, this._mEdge.mStart.mY)));
+            
+            intersects = [];
+            for (var i = 0; i < edges.length; i++) {
+                for (var j = 0; j < this._mFloor.mCurves.length; j++) {
+                    if(!this._mFloor.mCurves[j].isBoundry) {
+                        SegmentController.isIntersectWith(edges[i], this._mFloor.mCurves[j], intersects);
+                    }
+                }
+            }
+            
+            for (var i = 0; i < intersects.length; i++) {
+                this._hintPoints.push(intersects[i]);
+            }
+            
             this._renderer.drawRect(this._mEdge);
+        }
         break;
         case TYPE.CIRCLE:
             this._renderer.drawCircle(this._mEdge);
