@@ -19,7 +19,8 @@ function Canvas(name) {
     this._mEdge = new MyEdge(new Vec2(), new Vec2());
     this._focus = null;
     this._updateElment = null;
-    this._operationCurve = null;
+    this._operationCurve = null; 
+    this._hintPoints = [];
     this._initialize();
     this._mouseDown = new Vec2();
     this._mouseUp = new Vec2();
@@ -33,6 +34,7 @@ function Canvas(name) {
         isSelfIntersect: [],
         isStartEndSame : []
     };
+   
 }
 
 Canvas.prototype._initialize = function() {
@@ -149,6 +151,48 @@ Canvas.prototype.setStartPoint = function(x, y) {
     if (this._type == null) {
         return false;
     }
+    
+    
+    var hintPoints = [];
+    var minDis = Number.MAX_VALUE;
+    var index = -1;
+    var minPoint;
+    //Do the snapping
+    for (var i = 0; i < this._mFloor.mCurves.length; i++) {
+        var curve = this._mFloor.mCurves[i];
+        var edge;
+        if (curve instanceof SegmentController) {
+            edge = curve.getTheStartEndEdge();
+        } else {
+            edge = curve.getCurveFromController();
+        }
+        
+        if (!curve.isBoundry) {
+            
+            var point = edge.getIntersectionPointByPoint(new Vec2(x, y), true);
+            hintPoints.push(point);
+        }
+    }
+    
+    for (var i = 0; i < hintPoints.length; i++) {
+        var dis = Vec2.distance(new Vec2(x, y), hintPoints[i]);
+        if (dis < minDis) {
+            minDis = dis;
+            index = i;
+            minPoint = hintPoints[i];
+        }
+    }
+    //console.log(minDis);
+    if (minDis < 3) {
+        this._hintPoints.push(minPoint);
+        
+        x = minPoint.mX;
+        y = minPoint.mY;
+    }
+    
+    
+    
+    
     if (!this._mFloor.mProfile.mOutLines.contains(new Vec2(x, y))) {
         console.log("START POINT OUTSIDE OF ROOM!");
         return;
@@ -211,12 +255,52 @@ Canvas.prototype.setStartPoint = function(x, y) {
 }
 
 Canvas.prototype.setEndPoint = function(x, y) {
-    if (this._type == null || this._currentStatus ==  STATUS.NOT_STARTED) {
+    
+    if (this._type == null) {
         return false;
     }
-    if (this._currentStatus ==  STATUS.LINE_START) {
+    
+    var hintPoints = [];
+    var minDis = Number.MAX_VALUE;
+    var index = -1;
+    var minPoint;
+    //Do the snapping
+    for (var i = 0; i < this._mFloor.mCurves.length; i++) {
+        var curve = this._mFloor.mCurves[i];
+        var edge;
+        if (curve instanceof SegmentController) {
+            edge = curve.getTheStartEndEdge();
+        } else {
+            edge = curve.getCurveFromController();
+        }
+        
+        if (!curve.isBoundry) {
+            
+            var point = edge.getIntersectionPointByPoint(new Vec2(x, y), true);
+            hintPoints.push(point);
+        }
+    }
+    
+    for (var i = 0; i < hintPoints.length; i++) {
+        var dis = Vec2.distance(new Vec2(x, y), hintPoints[i]);
+        if (dis < minDis) {
+            minDis = dis;
+            index = i;
+            minPoint = hintPoints[i];
+        }
+    }
+    //console.log(minDis);
+    if (minDis < 3) {
+        this._hintPoints.push(minPoint);
+        
+        x = minPoint.mX;
+        y = minPoint.mY;
+    }
+    
+    if (this._currentStatus ==  STATUS.NOT_STARTED || this._currentStatus ==  STATUS.LINE_START) {
         return false;
     }
+   
     
     if (this._currentStatus == STATUS.LINE_DRAWING) {
         this._linePoint.mX = x;
@@ -430,6 +514,7 @@ Canvas.prototype.recordMouseDown = function(x, y) {
     this._mouseDown.mY = y;
     
 }
+
 Canvas.prototype.recordMouseUp = function(x, y) {
     this._mouseUp.mX = x;
     this._mouseUp.mY = y;
@@ -1130,6 +1215,12 @@ Canvas.prototype._renderMouseLines = function(x, y) {
     }
 
 }
+Canvas.prototype._renderHintPoints = function() {
+    for (var i = 0; i < this._hintPoints.length; i++) {
+        this._renderer.drawIntersectCorner(this._hintPoints[i], 6);
+    }
+    this._hintPoints = [];
+}
 
 Canvas.prototype.render = function(x, y) {
     //清空canvas
@@ -1146,8 +1237,9 @@ Canvas.prototype.render = function(x, y) {
     
     this._renderMouseLines(x, y);
     
-    this._renderMarkerLines();
+    this._renderMarkerLines(x, y);
     
+    this._renderHintPoints();
     //this._renderer.drawDimensions({x: 200,y: 200}, {x: 300,y: 200});
     
     //this._renderer.drawDimensions({x: 200,y: 200}, {x: 300,y: 200});

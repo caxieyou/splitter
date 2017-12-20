@@ -502,6 +502,12 @@ Renderer = function () {
             this.ctx.stroke();
     }
     
+    this.drawIntersectCorner = function(point, radius) {
+        radius = radius || 6;
+        this.drawCorner(point, radius, "#1371d1", true);
+        this.drawCorner(point, radius - 1, "#699acc");
+    }
+    
     this._getIntersectionForBorder = function(sp, ep, borderPoints) {
 
 
