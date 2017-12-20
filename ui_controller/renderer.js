@@ -363,7 +363,7 @@ Renderer = function () {
                 }
             }
         }
-        ctx.fillStyle = 'rgba(2,100,30,0.5)';
+        ctx.fillStyle = 'rgba(153, 255, 255,0.2)';
         ctx.fill();
         ctx.closePath();
 
@@ -751,17 +751,20 @@ Renderer = function () {
         var lines = [
             [p0, p1]
         ];
-        var sp = new Vector3(p0.x, p0.y, 0),
+        var length = 10;
+        	sp = new Vector3(p0.x, p0.y, 0),
             ep = new Vector3(p1.x, p1.y, 0),
             vec0 = new Vector3().subVectors(sp, ep).normalize(),
             vec1 = new Vector3().subVectors(ep, sp).normalize();
 
         //端点垂直线
-        lines.push([this._rotateVector(sp, vec0, Math.PI / 2).multiplyScalar(10).add(sp), this._rotateVector(sp, vec0, -Math.PI / 2).multiplyScalar(10).add(sp)]);
-        lines.push([this._rotateVector(sp, vec1, Math.PI / 2).multiplyScalar(10).add(ep), this._rotateVector(sp, vec1, -Math.PI / 2).multiplyScalar(10).add(ep)]);
+        lines.push([this._rotateVector(sp, vec0, Math.PI / 2).multiplyScalar(length).add(sp), this._rotateVector(sp, vec0, -Math.PI / 2).multiplyScalar(length).add(sp)]);
+        lines.push([this._rotateVector(sp, vec1, Math.PI / 2).multiplyScalar(length).add(ep), this._rotateVector(sp, vec1, -Math.PI / 2).multiplyScalar(length).add(ep)]);
+        
+        length = 6;
         //端点斜线
-        lines.push([this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(10).add(sp), this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(-10).add(sp)]);
-        lines.push([this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(10).add(ep), this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(-10).add(ep)]);
+        lines.push([this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(length).add(sp), this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(-length).add(sp)]);
+        lines.push([this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(length).add(ep), this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(-length).add(ep)]);
 
         this.ctx.strokeStyle = color;
         this.ctx.beginPath();https://item.jd.com/3820581.html
@@ -795,7 +798,9 @@ Renderer = function () {
 
             ctx.save();
             ctx.translate(center.x, center.y);
-            ctx.rotate(this._computeAngle(p0, p1) * Math.PI / 180);
+             var angle = this._computeAngle(p0, p1);
+            if(angle <= 245 && angle >= 105) angle += 180;
+            ctx.rotate(angle * Math.PI / 180);
             //长度
             ctx.fillStyle = "#FFF";
             ctx.fillRect(-ctx.measureText(length).width / 2, -6, ctx.measureText(length).width, 12);

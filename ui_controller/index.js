@@ -214,11 +214,12 @@ $(function() {
 	
 	canvas.scale = 1;
 	function onmousedown(e) {
+		if(e.target.localName == "input") return;
         if (!canvas.getFocusElement()) {
             container.addEventListener("mousemove", onmousemove);
             container.addEventListener("mouseup", onmouseup);
             mousePos = {x:e.clientX ,y:e.clientY};
-            //document.body.style.cursor = "move";
+
         }
 	}
 
@@ -227,6 +228,7 @@ $(function() {
             var offset = $canvas.position();
             $canvas.css({left:offset.left + e.clientX  - mousePos.x,top:offset.top + e.clientY - mousePos.y})
             mousePos = {x:e.clientX ,y:e.clientY};
+            document.body.style.cursor = "move";
         }
 	}
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        	                          
@@ -235,13 +237,16 @@ $(function() {
         if (!canvas.getFocusElement()) {
             container.removeEventListener("mousemove", onmousemove);
             container.removeEventListener("mouseup", onmouseup);
-            //document.body.style.cursor = "default";
+            document.body.style.cursor = "default";
         }
 	}
 	
 	function onmousewheel(e){
 		canvas.scale += e.wheelDelta * 0.0001;
-		var offset = $canvas.position(),
+		if(canvas.scale < 0.2) canvas.scale = 0.2;
+		else if(canvas.scale > 2) canvas.scale = 2;
+		
+		var offset = $canvas.position(),	
 			offsetX = ( canvas.sWidth * canvas.scale - $canvas.width() ) / 2 * -1,
 			offsetY = ( canvas.sHeight * canvas.scale - $canvas.height() ) / 2 * -1;
 		$canvas.css({left:offset.left + offsetX,top:offset.top + offsetY});
@@ -250,7 +255,7 @@ $(function() {
 	}
 	
 	window.onresize = function(e){
-		$("#canvas")[0].width = $('.canvas-container').width();
-		$("#canvas")[0].height = $('.canvas-container').height();
+		canvas._canvas.width = $('.canvas-container').width();
+		canvas._canvas.height = $('.canvas-container').height();
 	}
 });
