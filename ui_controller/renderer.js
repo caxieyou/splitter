@@ -685,6 +685,7 @@ Renderer = function () {
 					callbackFun(parseInt(tt.value));
 			});
 		}
+		this.textInputs.push(tt);
 		return tt;
 	}
     
@@ -842,4 +843,16 @@ Renderer = function () {
         //this.textBlank.push(tt);
         return tt;
     }
+    
+    this.textInputs = [];
+	
+	this.updateTextInputs = function(offsetx, offsety){
+		for(var i = 0 ;i < this.textInputs.length;i++){
+			var tt = this.textInputs[i];
+			if(tt && tt.parentElement){
+				var pos = $(tt).position();
+				$(tt).css({left:pos.left+offsetx,top:pos.top+offsety});
+			}
+		}
+	}
 }

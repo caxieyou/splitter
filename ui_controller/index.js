@@ -227,8 +227,10 @@ $(function() {
         if (!canvas.getFocusElement()) {
             var offset = $canvas.position();
             $canvas.css({left:offset.left + e.clientX  - mousePos.x,top:offset.top + e.clientY - mousePos.y})
-            mousePos = {x:e.clientX ,y:e.clientY};
+            
             document.body.style.cursor = "move";
+            canvas._renderer.updateTextInputs(e.clientX  - mousePos.x, e.clientY - mousePos.y);
+            mousePos = {x:e.clientX ,y:e.clientY};
         }
 	}
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        	                          
