@@ -226,8 +226,7 @@ $(function() {
 	function onmousemove(e) {
         if (!canvas.getFocusElement()) {
             var offset = $canvas.position();
-            $canvas.css({left:offset.left + e.clientX  - mousePos.x,top:offset.top + e.clientY - mousePos.y})
-            
+            $canvas.css({left:offset.left + e.clientX  - mousePos.x,top:offset.top + e.clientY - mousePos.y});
             document.body.style.cursor = "move";
             canvas._renderer.updateTextInputs(e.clientX  - mousePos.x, e.clientY - mousePos.y);
             mousePos = {x:e.clientX ,y:e.clientY};
@@ -248,11 +247,13 @@ $(function() {
 		if(canvas.scale < 0.2) canvas.scale = 0.2;
 		else if(canvas.scale > 2) canvas.scale = 2;
 		
-		var offset = $canvas.position(),	
+		var pos = $canvas.position(),	
 			offsetX = ( canvas.sWidth * canvas.scale - $canvas.width() ) / 2 * -1,
 			offsetY = ( canvas.sHeight * canvas.scale - $canvas.height() ) / 2 * -1;
-		$canvas.css({left:offset.left + offsetX,top:offset.top + offsetY});
-		$canvas.width(canvas.sWidth * canvas.scale).height(canvas.sHeight * canvas.scale);
+		$canvas.css({left:pos.left + offsetX,top:pos.top + offsetY});
+		canvas._canvas.width = canvas.sWidth * canvas.scale;
+		canvas._canvas.height = canvas.sHeight * canvas.scale;
+
 
 	}
 	
