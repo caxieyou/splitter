@@ -431,8 +431,8 @@ canvas{
 	position: absolute;
 	left: 0px;
 	top: 0px;
-	background-color: #FFFFFF;
-	border: solid 1px #999999;
+/*	background-color: #FFFFFF;
+	border: solid 1px #999999;*/
 }
 .editText{
 	width:40px;
