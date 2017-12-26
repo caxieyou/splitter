@@ -544,9 +544,7 @@ Canvas.prototype.renderAreaPicked = function(x, y) {
         if (this._innerResult[i].contains(new Vec2(x, y))) {
             //return this._outputResult[i];
             this._pickedArea = this._outputResult[i];
-            this._renderer.drawArea(this._pickedArea);
-            this._renderOutput();
-            this._renderer.drawAreaDots(this._pickedArea);
+            this.render();
             break;
         }
     }
@@ -1040,12 +1038,32 @@ Canvas.prototype._renderMarkerLines = function() {
     var curves = [];
     var segments = [];
     var boundries = [];
-    
+    var validIndex = [];
     for (var i = 0; i < this._mFloor.mCurves.length; i++) {
         if (this._mFloor.mCurves[i].isBoundry) {
             boundries.push(this._mFloor.mCurves[i]);
         } else if (this._mFloor.mCurves[i] instanceof SegmentController) {
-            segments.push(this._mFloor.mCurves[i]);
+            var seg = this._mFloor.mCurves[i];
+            segments.push(seg);
+            
+            if (this._pickedArea) {
+                //console.log(this._pickedArea);
+                for (var j = 0; j < this._pickedArea.mOutline.edges.length; j++) {
+                    var edge = this._pickedArea.mOutline.edges[j];
+                    if (edge instanceof MyEdge && edge.isSameAsEdgeStartOrEnd(seg.mStart.mPosition) && edge.isSameAsEdgeStartOrEnd(seg.mEnd.mPosition)) {
+                        validIndex.push(segments.length - 1);
+                    }
+                }
+                for (var k = 0; k < this._pickedArea.mHoles.length; k++) {
+                    var poly = this._pickedArea.mHoles[k];
+                    for (var j = 0; j < poly.edges.length; j++) {
+                        var edge = poly.edges[j];
+                        if (edge instanceof MyEdge  && edge.isSameAsEdgeStartOrEnd(seg.mStart.mPosition) && edge.isSameAsEdgeStartOrEnd(seg.mEnd.mPosition)) {
+                            validIndex.push(segments.length - 1);
+                        }
+                    }
+                }
+            }
         } else if (this._mFloor.mCurves[i] instanceof CurveController) {
             curves.push(this._mFloor.mCurves[i]);
         }
@@ -1083,10 +1101,13 @@ Canvas.prototype._renderMarkerLines = function() {
             end.mY += offset * Math.sin(angle);
             end.mX += offset * Math.cos(angle);
         }
-        
-        this._renderer.drawDimensions({x: start.mX,y: start.mY}, {x: end.mX,y: end.mY});
+        if (validIndex.indexOf(i) > -1) {
+            this._renderer.drawDimensions({x: start.mX,y: start.mY}, {x: end.mX,y: end.mY});
+        }
     }
     
+    
+    //validIndex = [];
     for (var i = 0; i < segments.length; i++) {
         
         var edge = segments[i].getTheStartEndEdge();
@@ -1097,12 +1118,11 @@ Canvas.prototype._renderMarkerLines = function() {
             var sign = 0;
             var center;
             var markLine = new MyEdge(new Vec2(), new Vec2());
-            
+            var validJ = -1;
             for (var j = i+1; j < segments.length; j++) {
                 var edge2 = segments[j].getTheStartEndEdge();
                 var angle2 = edge2.getAngle();
                 if (Angle.isHorizontal(angle2) && !SegmentController.isWithinSameArea(segments[i],segments[j]) && MyEdge.getValidHorizontalSection(edge, edge2, markLine)) {
-                    //markLine.mEnd.mY = segments[j].mStart.mPosition.mY;
                     var valid = true;
                     
                     for (var m = 0; m < this._mFloor.mCurves.length; m++) {
@@ -1124,6 +1144,7 @@ Canvas.prototype._renderMarkerLines = function() {
                             sign = Math.sign(segments[i].mStart.mPosition.mY - segments[j].mStart.mPosition.mY);
                             maxDis = distance;
                             center = markLine.mStart;
+                            validJ = j;
                         }
                     }
                 }
@@ -1158,8 +1179,10 @@ Canvas.prototype._renderMarkerLines = function() {
                     }
                 }
             }
-            if (maxDis > -Number.MAX_VALUE) {
+            if (maxDis > -Number.MAX_VALUE && (validIndex.indexOf(i) > -1 || validIndex.indexOf(validJ) > -1)) {
                 this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX,y: center.mY - sign * maxDis}, null, true);
+                var a = 0;
+                a++;
             }
         }
         
@@ -1168,7 +1191,7 @@ Canvas.prototype._renderMarkerLines = function() {
             var sign = 0;
             var center;
             var markLine = new MyEdge(new Vec2(), new Vec2());
-            
+            var validJ = -1;
             for (var j = i+1; j < segments.length; j++) {
                 var edge2 = segments[j].getTheStartEndEdge();
                 var angle2 = edge2.getAngle();
@@ -1195,6 +1218,7 @@ Canvas.prototype._renderMarkerLines = function() {
                             sign = Math.sign(segments[i].mStart.mPosition.mX - segments[j].mStart.mPosition.mX);
                             maxDis = distance;
                             center = markLine.mStart;
+                            validJ = j;
                         }
                     }
                 }
@@ -1229,7 +1253,7 @@ Canvas.prototype._renderMarkerLines = function() {
                     }
                 }
             }
-            if (maxDis > -Number.MAX_VALUE) {
+            if (maxDis > -Number.MAX_VALUE && (validIndex.indexOf(i) > -1 || validIndex.indexOf(validJ) > -1)) {
                 this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - sign * maxDis,y: center.mY}, null, true);
             }
         }
