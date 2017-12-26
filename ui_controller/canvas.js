@@ -32,7 +32,8 @@ function Canvas(name) {
     this._lineIntersect = {
         isStartIntersect : [],
         isSelfIntersect: [],
-        isStartEndSame : []
+        isStartEndSame : [],
+        isEndIntersect : []
     };
    
 }
@@ -234,6 +235,7 @@ Canvas.prototype.setStartPoint = function(x, y) {
         this._lineIntersect.isStartIntersect.push(false);
         this._lineIntersect.isSelfIntersect.push(false);
         this._lineIntersect.isStartEndSame.push(false);
+        this._lineIntersect.isEndIntersect.push(false);
         for (var i = 0; i < this._mFloor.mCurves.length; i++) {
             if (this._mFloor.mCurves[i].containsPoint(this._linePoint)) {
                 this._lineIntersect.isStartIntersect[this._lineIntersect.isStartIntersect.length - 1] = true;
@@ -246,6 +248,7 @@ Canvas.prototype.setStartPoint = function(x, y) {
         this._lineEdges[this._lineEdges.length-1].push(this._curentLine0.clone());
         console.log("press 1");
         console.log(this._linePoints);
+        
         if (this._curentLine1) {
             this._linePoints[this._linePoints.length-1][this._linePoints[this._linePoints.length-1].length - 1].mX = this._curentLine0.mEnd.mX;
             this._linePoints[this._linePoints.length-1][this._linePoints[this._linePoints.length-1].length - 1].mY = this._curentLine0.mEnd.mY;
@@ -263,10 +266,19 @@ Canvas.prototype.setStartPoint = function(x, y) {
             {
                 this._lineIntersect.isSelfIntersect[this._lineIntersect.isSelfIntersect.length - 1] = true;
             }
+            
+            if (Vec2.isEqual(this._curentLine1.mStart, this._curentLine1.mEnd)) {
+                this._lineIntersect.isEndIntersect[this._lineIntersect.isEndIntersect.length - 1] = true;
+            }
+            
             this.render();
             this._curentLine0 = null;
             this._curentLine1 = null;
         }
+        
+        //if (this._curentLine0 && !this._curentLine1) {
+        //    isEndIntersect
+        //}
     }
     
     if (this._currentStatus == STATUS.NOT_STARTED) {
@@ -360,6 +372,7 @@ Canvas.prototype.setEndPoint = function(x, y) {
             //this._currentStatus = STATUS.LINE_START;
             
         } else {
+            
             this._curentLine0 = edge;
             this._curentLine1 = null;
         }
@@ -438,6 +451,13 @@ Canvas.prototype.resetType = function() {
                     lines.push(this._lineEdges[i][j]);
                 }
             } else {
+                if (this._lineIntersect.isStartIntersect[i] && this._lineIntersect.isEndIntersect[i]) {
+                    //首尾都相交
+                    //那这些边都要
+                    for (var j = 0; j < this._lineEdges[i].length; j++) {
+                        lines.push(this._lineEdges[i][j]);
+                    }
+                }
                 if (!this._lineIntersect.isSelfIntersect[i]) {
                     //首尾不同点，且没有自交，直接过滤
                     continue;
@@ -474,6 +494,7 @@ Canvas.prototype.resetType = function() {
         this._lineIntersect.isStartIntersect = [];
         this._lineIntersect.isSelfIntersect = [];
         this._lineIntersect.isStartEndSame = [];
+        this._lineIntersect.isEndIntersect = [];
         
         console.log("right 1");
     } else {
