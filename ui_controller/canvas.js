@@ -35,7 +35,7 @@ function Canvas(name) {
         isStartEndSame : [],
         isEndIntersect : []
     };
-   
+   this._pickedArea = null;
 }
 
 Canvas.prototype._initialize = function() {
@@ -163,11 +163,15 @@ Canvas.prototype.setType = function(type) {
         this._currentStatus = STATUS.LINE_START;
     }
     if (this._type == null) {
+        
         document.body.style.cursor = "default";
+        
+        
     } else {
         document.body.style.cursor = "crosshair";
     }
-    
+    this._pickedArea = null;
+    this.render();
 }
 
 Canvas.prototype.setStartPoint = function(x, y) {
@@ -536,20 +540,16 @@ Canvas.prototype.checkStatus = function() {
 }
 
 Canvas.prototype.renderAreaPicked = function(x, y) {
-    
-    
     for (var i = 0; i < this._innerResult.length; i++) {
         if (this._innerResult[i].contains(new Vec2(x, y))) {
             //return this._outputResult[i];
-            this._renderer.drawArea(this._outputResult[i]);
+            this._pickedArea = this._outputResult[i];
+            this._renderer.drawArea(this._pickedArea);
             this._renderOutput();
-            this._renderer.drawAreaDots(this._outputResult[i]);
+            this._renderer.drawAreaDots(this._pickedArea);
             break;
         }
     }
-    
-    
-    //return null;
 }
 
 Canvas.prototype.recordMouseDown = function(x, y) {
@@ -946,7 +946,7 @@ Canvas.prototype._renderOutput = function() {
 }
 
 Canvas.prototype._renderFocusObject = function(x, y) {
-    if (this._type != null) {
+    if (this._type != null || (x == undefined && y == undefined)) {
         return;
     }
     
@@ -1238,7 +1238,7 @@ Canvas.prototype._renderMarkerLines = function() {
 }
 
 Canvas.prototype._renderMouseLines = function(x, y) {
-    if (this._type == null) {
+    if (this._type == null || (x == undefined && y == undefined)) {
         return;
     }
     //TODO: snapping 没做！！！
@@ -1258,11 +1258,21 @@ Canvas.prototype._renderMouseLines = function(x, y) {
     }
 
 }
+
+
 Canvas.prototype._renderHintPoints = function() {
     for (var i = 0; i < this._hintPoints.length; i++) {
         this._renderer.drawIntersectCorner(this._hintPoints[i], 6);
     }
     this._hintPoints = [];
+}
+
+Canvas.prototype._renderPickedArea = function() {
+    if (this._pickedArea) {
+        this._renderer.drawArea(this._pickedArea);
+        this._renderOutput();
+        this._renderer.drawAreaDots(this._pickedArea);
+    }
 }
 
 Canvas.prototype.render = function(x, y) {
@@ -1280,7 +1290,9 @@ Canvas.prototype.render = function(x, y) {
     
     this._renderMouseLines(x, y);
     
-    this._renderMarkerLines(x, y);
+    this._renderMarkerLines();
+    
+    this._renderPickedArea();
     
     this._renderHintPoints();
     //this._renderer.drawDimensions({x: 200,y: 200}, {x: 300,y: 200});
