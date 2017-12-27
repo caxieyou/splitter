@@ -1148,7 +1148,106 @@ Canvas.prototype._renderMarkerLines = function() {
                             center = markLine.mStart.clone();
                                 
                             if (validIndex.indexOf(i) > -1 || validIndex.indexOf(j) > -1) {
-                                this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX,y: center.mY - sign * distance}, null, true);
+                                var arcValid_i = true;
+                                var arcValid_j = true;
+                                
+                                var corners = segments[i].toCorners();
+                                for (var n = 0; n < corners.length; n++) {
+                                    var corner = corners[n];
+                                    for (var p = 0; p < corner.mCurves.length; p++) {
+                                        if (corner.mCurves[p] instanceof CurveController) {
+                                            arcValid_i = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                                
+                                var corners = segments[j].toCorners();
+                                for (var n = 0; n < corners.length; n++) {
+                                    var corner = corners[n];
+                                    for (var p = 0; p < corner.mCurves.length; p++) {
+                                        if (corner.mCurves[p] instanceof CurveController) {
+                                            arcValid_j = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                                
+                                if (arcValid_i || arcValid_j) {
+                                    var that = this;
+                                    if (arcValid_i && arcValid_j) {
+                                        this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX,y: center.mY - sign * distance}, null, true,
+                                        function(dis, canvas, seg, seg2, distance) {
+                                            var originalY1 = seg.mStart.mPosition.mY;
+                                            var originalY2 = seg2.mStart.mPosition.mY;
+                                            
+                                            seg.mStart.mPosition.mY = seg.mStart.mPosition.mY + 0.5 * Math.sign(distance) * (dis - Math.abs(distance));
+                                            seg.mEnd.mPosition.mY = seg.mEnd.mPosition.mY + 0.5 * Math.sign(distance) * (dis - Math.abs(distance));
+                                            
+                                            seg2.mStart.mPosition.mY = seg2.mStart.mPosition.mY - 0.5 * Math.sign(distance) * (dis - Math.abs(distance));
+                                            seg2.mEnd.mPosition.mY = seg2.mEnd.mPosition.mY - 0.5 * Math.sign(distance) * (dis - Math.abs(distance));
+                                            
+                                            var analysis = new Analysis(that._mFloor);
+                                            analysis.execute();
+                                            [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
+                                            
+                                            var overlapped = that._checkOverlap();
+                                        
+                                            if (overlapped)
+                                            {
+                                                
+                                                seg.mStart.mPosition.mY = originalY1;
+                                                seg.mEnd.mPosition.mY = originalY1;
+                                                
+                                                seg2.mStart.mPosition.mY = originalY2;
+                                                seg2.mEnd.mPosition.mY = originalY2;
+                                                
+                                                var analysis = new Analysis(that._mFloor);
+                                                analysis.execute();
+                                                [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
+                                                
+                                            }
+                                            that.render();
+                                            
+                                        }, that, segments[i], segments[j], sign * distance);
+                                    } else {
+                                        var seg; 
+                                        if (arcValid_i) {
+                                            seg = segments[i];
+                                        }
+                                        if (arcValid_j) {
+                                            seg = segments[j];
+                                        }
+                                        this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX,y: center.mY - sign * distance}, null, true,
+                                        function(dis, canvas, seg, seg2, distance) {
+                                            var originalY = seg.mStart.mPosition.mY;
+                                            
+                                            seg.mStart.mPosition.mY = seg.mStart.mPosition.mY + Math.sign(distance) * (dis - Math.abs(distance));
+                                            seg.mEnd.mPosition.mY = seg.mEnd.mPosition.mY + Math.sign(distance) * (dis - Math.abs(distance));
+                                            
+                                            var analysis = new Analysis(that._mFloor);
+                                            analysis.execute();
+                                            [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
+                                            
+                                            var overlapped = that._checkOverlap();
+                                        
+                                            if (overlapped)
+                                            {
+                                                
+                                                seg.mStart.mPosition.mY = originalY;
+                                                seg.mEnd.mPosition.mY = originalY;
+                                                
+                                                var analysis = new Analysis(that._mFloor);
+                                                analysis.execute();
+                                                [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
+                                                
+                                            }
+                                            that.render();
+                                            
+                                        }, that, seg, null, sign * distance);
+                                    }
+                                    
+                                }
                             }
                         }
                     }
@@ -1226,8 +1325,6 @@ Canvas.prototype._renderMarkerLines = function() {
                                 seg.mStart.mPosition.mY = originalY;
                                 seg.mEnd.mPosition.mY = originalY;
                                 
-                                
-                                
                                 var analysis = new Analysis(that._mFloor);
                                 analysis.execute();
                                 [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
@@ -1273,7 +1370,107 @@ Canvas.prototype._renderMarkerLines = function() {
                             sign = Math.sign(segments[i].mStart.mPosition.mX - segments[j].mStart.mPosition.mX);
                             center = markLine.mStart.clone();
                             if (validIndex.indexOf(i) > -1 || validIndex.indexOf(validJ) > -1) {
-                                this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - sign * distance,y: center.mY}, null, true);
+                                var arcValid_i = true;
+                                var arcValid_j = true;
+                                
+                                var corners = segments[i].toCorners();
+                                for (var n = 0; n < corners.length; n++) {
+                                    var corner = corners[n];
+                                    for (var p = 0; p < corner.mCurves.length; p++) {
+                                        if (corner.mCurves[p] instanceof CurveController) {
+                                            arcValid_i = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                                
+                                var corners = segments[j].toCorners();
+                                for (var n = 0; n < corners.length; n++) {
+                                    var corner = corners[n];
+                                    for (var p = 0; p < corner.mCurves.length; p++) {
+                                        if (corner.mCurves[p] instanceof CurveController) {
+                                            arcValid_j = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                                
+                                if (arcValid_i || arcValid_j) {
+                                    var that = this;
+                                    if (arcValid_i && arcValid_j) {
+                                        this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - sign * distance,y: center.mY}, null, true,
+                                        function(dis, canvas, seg, seg2, distance) {
+                                            var originalX1 = seg.mStart.mPosition.mX;
+                                            var originalX2 = seg2.mStart.mPosition.mX;
+                                            
+                                            seg.mStart.mPosition.mX = seg.mStart.mPosition.mX + 0.5 * Math.sign(distance) * (dis - Math.abs(distance));
+                                            seg.mEnd.mPosition.mX = seg.mEnd.mPosition.mX + 0.5 * Math.sign(distance) * (dis - Math.abs(distance));
+                                            
+                                            seg2.mStart.mPosition.mX = seg2.mStart.mPosition.mX - 0.5 * Math.sign(distance) * (dis - Math.abs(distance));
+                                            seg2.mEnd.mPosition.mX = seg2.mEnd.mPosition.mX - 0.5 * Math.sign(distance) * (dis - Math.abs(distance));
+                                            
+                                            var analysis = new Analysis(that._mFloor);
+                                            analysis.execute();
+                                            [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
+                                            
+                                            var overlapped = that._checkOverlap();
+                                        
+                                            if (overlapped)
+                                            {
+                                                
+                                                seg.mStart.mPosition.mX = originalX1;
+                                                seg.mEnd.mPosition.mX = originalX1;
+                                                
+                                                seg2.mStart.mPosition.mX = originalX2;
+                                                seg2.mEnd.mPosition.mX = originalX2;
+                                                
+                                                var analysis = new Analysis(that._mFloor);
+                                                analysis.execute();
+                                                [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
+                                                
+                                            }
+                                            that.render();
+                                            
+                                        }, that, segments[i], segments[j], sign * distance);
+                                    } else {
+                                        var seg; 
+                                        if (arcValid_i) {
+                                            seg = segments[i];
+                                        }
+                                        if (arcValid_j) {
+                                            seg = segments[j];
+                                        }
+                                        this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - sign * distance,y: center.mY}, null, true,
+                                        function(dis, canvas, seg, seg2, distance) {
+                                            var originalX = seg.mStart.mPosition.mX;
+                            
+                                            seg.mStart.mPosition.mX = seg.mStart.mPosition.mX + Math.sign(distance) * (dis - Math.abs(distance));
+                                            seg.mEnd.mPosition.mX = seg.mEnd.mPosition.mX + Math.sign(distance) * (dis - Math.abs(distance));
+                                            
+                                            var analysis = new Analysis(that._mFloor);
+                                            analysis.execute();
+                                            [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
+                                            
+                                            var overlapped = that._checkOverlap();
+                                        
+                                            if (overlapped)
+                                            {
+                                                
+                                                seg.mStart.mPosition.mX = originalX;
+                                                seg.mEnd.mPosition.mX = originalX;
+                                                
+                                                
+                                                
+                                                var analysis = new Analysis(that._mFloor);
+                                                analysis.execute();
+                                                [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
+                                                
+                                            }
+                                            that.render();
+                                            
+                                        }, that, seg, null, sign * distance);
+                                    }
+                                }
                             }
                         }
                     }
