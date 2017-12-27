@@ -1192,10 +1192,17 @@ Canvas.prototype._renderMarkerLines = function() {
                         var area = segments[i].mAreas[k];
                         for (var m = 0; m < area.mCurves.length; m++) {
                             var curve = area.mCurves[m];
-                            if (curve instanceof CurveController) {
-                                arcValid = false;
-                                break;
+                            var corners = curve.toCorners();
+                            for (var n = 0; n < corners.length; n++) {
+                                var corner = corners[n];
+                                for (var p = 0; p < corner.mCurves.length; p++) {
+                                    if (corner.mCurves[p] instanceof CurveController) {
+                                        arcValid = false;
+                                        break;
+                                    }
+                                }
                             }
+                            
                         }
                     }
                     if (arcValid) {
@@ -1311,10 +1318,17 @@ Canvas.prototype._renderMarkerLines = function() {
                         var area = segments[i].mAreas[k];
                         for (var m = 0; m < area.mCurves.length; m++) {
                             var curve = area.mCurves[m];
-                            if (curve instanceof CurveController) {
-                                arcValid = false;
-                                break;
+                            var corners = curve.toCorners();
+                            for (var n = 0; n < corners.length; n++) {
+                                var corner = corners[n];
+                                for (var p = 0; p < corner.mCurves.length; p++) {
+                                    if (corner.mCurves[p] instanceof CurveController) {
+                                        arcValid = false;
+                                        break;
+                                    }
+                                }
                             }
+                            
                         }
                     }
                     if (arcValid) {
