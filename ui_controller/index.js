@@ -191,7 +191,8 @@ $(function() {
     });
     // 清空
     $('#main_container').on('click', '#setting_empty', function() {
-        alert('setting_empty');
+        //alert('setting_empty');
+        canvas.clear();
         return false;
     });
     // 输入框change事件

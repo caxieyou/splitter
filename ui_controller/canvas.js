@@ -1354,3 +1354,35 @@ Canvas.prototype.render = function(x, y) {
     //this._renderer.drawDimensions({x: 50,y: 300}, {x: 300,y: 300},null, true, function(v) {alert(v)});
 }
 
+Canvas.prototype.clear = function() {
+    this._mFloor = new MyFloor();
+    this._mWallCurveOperation = new WallCurveOperation(this._mFloor);
+    this._outputResult = null;
+    this._innerResult = null;
+    this._currentStatus = STATUS.NOT_STARTED;
+    this._type = null;
+    this._mEdge = new MyEdge(new Vec2(), new Vec2());
+    this._focus = null;
+    this._updateElment = null;
+    this._operationCurve = null; 
+    this._hintPoints = [];
+    this._flags = {
+       isRelativeDistanceEnabled : false,
+       isAbosoluteMarginEnabled : true,
+       isZoneSizeEnabled : true
+    };
+    this._linePoints = [];
+    this._lineEdges = [];
+    this._curentLine0 = null;
+    this._curentLine1 = null;
+    this._lineIntersect = {
+        isStartIntersect : [],
+        isSelfIntersect: [],
+        isStartEndSame : [],
+        isEndIntersect : []
+    };
+   this._pickedArea = null;
+   this._initialize();
+}
+
+
