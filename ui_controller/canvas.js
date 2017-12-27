@@ -185,7 +185,6 @@ Canvas.prototype.setStartPoint = function(x, y) {
         return false;
     }
     
-    
     var hintPoints = [];
     var minDis = Number.MAX_VALUE;
     var index = -1;
@@ -222,9 +221,6 @@ Canvas.prototype.setStartPoint = function(x, y) {
         x = minPoint.mX;
         y = minPoint.mY;
     }
-    
-    
-    
     
     if (!this._mFloor.mProfile.mOutLines.contains(new Vec2(x, y))) {
         console.log("START POINT OUTSIDE OF ROOM!");
@@ -1186,12 +1182,54 @@ Canvas.prototype._renderMarkerLines = function() {
                                 maxDis = distance;
                                 center = markLine.mStart.clone();
                             }
-                            
                         }
                     }
                 }
+                
                 if (maxDis > -Number.MAX_VALUE && validIndex.indexOf(i) > -1) {
-                    this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX,y: center.mY - sign * maxDis}, null, true);
+                    var arcValid = true;
+                    for (var k = 0; k < segments[i].mAreas.length; k++) {
+                        var area = segments[i].mAreas[k];
+                        for (var m = 0; m < area.mCurves.length; m++) {
+                            var curve = area.mCurves[m];
+                            if (curve instanceof CurveController) {
+                                arcValid = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (arcValid) {
+                        var that = this;
+                        this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX,y: center.mY - sign * maxDis}, null, true,
+                        function(dis, canvas, seg, seg2, distance) {
+                            var originalY = seg.mStart.mPosition.mY;
+                            
+                            seg.mStart.mPosition.mY = seg.mStart.mPosition.mY + Math.sign(distance) * (dis - Math.abs(distance));
+                            seg.mEnd.mPosition.mY = seg.mEnd.mPosition.mY + Math.sign(distance) * (dis - Math.abs(distance));
+                            
+                            var analysis = new Analysis(that._mFloor);
+                            analysis.execute();
+                            [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
+                            
+                            var overlapped = that._checkOverlap();
+                        
+                            if (overlapped)
+                            {
+                                
+                                seg.mStart.mPosition.mY = originalY;
+                                seg.mEnd.mPosition.mY = originalY;
+                                
+                                
+                                
+                                var analysis = new Analysis(that._mFloor);
+                                analysis.execute();
+                                [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
+                                
+                            }
+                            that.render();
+                            
+                        }, that, segments[i], null, sign * maxDis);
+                    }
                 }
             }
         }
@@ -1268,7 +1306,49 @@ Canvas.prototype._renderMarkerLines = function() {
                     }
                 }
                 if (maxDis > -Number.MAX_VALUE && validIndex.indexOf(i) > -1) {
-                    this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - sign * maxDis,y: center.mY}, null, true);
+                    var arcValid = true;
+                    for (var k = 0; k < segments[i].mAreas.length; k++) {
+                        var area = segments[i].mAreas[k];
+                        for (var m = 0; m < area.mCurves.length; m++) {
+                            var curve = area.mCurves[m];
+                            if (curve instanceof CurveController) {
+                                arcValid = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (arcValid) {
+                        var that = this;
+                        this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - sign * maxDis,y: center.mY}, null, true,
+                        function(dis, canvas, seg, seg2, distance) {
+                            var originalX = seg.mStart.mPosition.mX;
+                            
+                            seg.mStart.mPosition.mX = seg.mStart.mPosition.mX + Math.sign(distance) * (dis - Math.abs(distance));
+                            seg.mEnd.mPosition.mX = seg.mEnd.mPosition.mX + Math.sign(distance) * (dis - Math.abs(distance));
+                            
+                            var analysis = new Analysis(that._mFloor);
+                            analysis.execute();
+                            [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
+                            
+                            var overlapped = that._checkOverlap();
+                        
+                            if (overlapped)
+                            {
+                                
+                                seg.mStart.mPosition.mX = originalX;
+                                seg.mEnd.mPosition.mX = originalX;
+                                
+                                
+                                
+                                var analysis = new Analysis(that._mFloor);
+                                analysis.execute();
+                                [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
+                                
+                            }
+                            that.render();
+                            
+                        }, that, segments[i], null, sign * maxDis);
+                    }
                 }
             }
         }
@@ -1296,7 +1376,6 @@ Canvas.prototype._renderMouseLines = function(x, y) {
     }
 
 }
-
 
 Canvas.prototype._renderHintPoints = function() {
     for (var i = 0; i < this._hintPoints.length; i++) {
