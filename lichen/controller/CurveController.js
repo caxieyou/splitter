@@ -210,7 +210,8 @@ CurveController.prototype.resetCurve = function(param1)
         return;
     }
     var _loc2_ = MyCurve.createCurveByEdgeNumber(this.getTheStartEndEdge(),param1);
-    this.mCurvePoint = _loc2_.getSplitPosByRatio(0.3333333);
+    
+    this.mCurvePoint.copy(_loc2_.getSplitPosByRatio(0.3333333));
 }
 
 CurveController.prototype.adjustCurve = function(param1)
@@ -220,7 +221,7 @@ CurveController.prototype.adjustCurve = function(param1)
         return;
     }
     var _loc2_ = MyCurve.createCurveByEdgeNumber2(this.getTheStartEndEdge(),param1);
-    this.mCurvePoint = _loc2_.getSplitPosByRatio(0.3333333);
+    this.mCurvePoint.copy(_loc2_.getSplitPosByRatio(0.3333333));
 }
 
 CurveController.prototype.isStartOrEnd = function(param1)

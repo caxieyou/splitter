@@ -36,6 +36,17 @@ MyCurve.createCurveByEdgeNumber = function(param1, param2)
     return new MyCurve(_loc12_,_loc13_,_loc14_,_loc15_);
 }
 
+MyCurve.isSameCurve = function (curve0, curve1) {
+    if (MyNumber.isEqual(curve0.mRadius, curve1.mRadius)         &&
+        MyNumber.isEqual(curve0.mStartAngle, curve1.mStartAngle) &&
+        MyNumber.isEqual(curve0.mArcAngle, curve1.mArcAngle) &&
+        Vec2.isEqual(curve0.mCenter, curve1.mCenter)
+    ) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 MyCurve.createCurveByEdgeNumber2 = function(param1, param2)
 {

@@ -173,6 +173,18 @@ $(function() {
         console.log("区域边界 取消选中");
     });
     
+    $('#crown_height').on('ifChecked', function(event) {
+        canvas.setCrownHeight(true);
+        console.log("圆弧高度 选中");
+    });
+    
+    $('#crown_height').on('ifUnchecked', function(event) {
+        canvas.setCrownHeight(false);
+        console.log("圆弧高度 取消选中");
+    });
+    
+    
+    
     // 显示菜单栏折叠与展开事件
     $('#main_container').on('click', '#setting_display_menu', function() {
         $('#setting-display').slideToggle();
