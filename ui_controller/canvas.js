@@ -1678,36 +1678,47 @@ Canvas.prototype._renderMouseLines = function(x, y) {
         
     }
     
-    var edgeX = null;
-    var edgeY = null;
+    var edgeX = [];
+    var edgeY = [];
     var snappedX = false;
     var snappedY = false;
     var min = Number.MAX_VALUE;
     for (var i = 0; i < snapY.length; i++) {
         var dis = Math.abs(snapY[i].mStart.mY - y);
         if (dis <= min) {
-            min = dis;
-            edgeY = snapY[i];
-            if (min < 3) {
-                y = snapY[i].mStart.mY;
-                snappedX = true;
+            
+            if (dis < min) {
+                edgeY = [];
             }
+            min = dis;
+            edgeY.push(snapY[i]);
+            
         }
+    }
+    if (min < 3) {
+        y = edgeY[0].mStart.mY;
+        snappedY = true;
     }
     
     min = Number.MAX_VALUE;
     for (var i = 0; i < snapX.length; i++) {
         var dis = Math.abs(snapX[i].mStart.mX - x);
+        //console.log(i + " " + dis + " " + min);
         if (dis <= min) {
-            min = dis;
-            edgeX = snapX[i];
-            if (min < 3) {
-                x = snapX[i].mStart.mX;
-                snappedY = true;
+            
+            if (dis < min) {
+                edgeX = [];
             }
+            edgeX.push(snapX[i]);
+            min = dis;
+
         }
     }
     
+    if (min < 3) {
+        x = edgeX[0].mStart.mX;
+        snappedX = true;
+    }
     
     for (var j = 0; j < this._mFloor.mCurves.length; j++) {
         if (!this._mFloor.mCurves[j].isBoundry) {
@@ -1724,12 +1735,54 @@ Canvas.prototype._renderMouseLines = function(x, y) {
         }
     }
     
-    if (edgeX && snappedX) {
-        this._renderer.drawLine(new MyEdge(new Vec2(x, y), new Vec2(edgeX.mStart.mX, y)), false, 'blue');
+    if (edgeX.length > 0 && snappedX ) {
+        
+        var yDis = Number.MAX_VALUE;
+        var ySnap = null;
+        for (var i = 0; i < edgeX.length;i++) {
+            if (!edgeX[i].pointInEdgeOrOnEdge(new Vec2(x, y))) {
+                var dis1 = Math.abs(y - edgeX[i].mStart.mY);
+                var dis2 = Math.abs(y - edgeX[i].mEnd.mY);
+                if (dis1 < yDis) {
+                    yDis = dis1;
+                    ySnap = edgeX[i].mStart.mY;
+                }
+                if (dis2 < yDis) {
+                    yDis = dis2;
+                    ySnap = edgeX[i].mEnd.mY;
+                }
+            }
+        }
+        
+        if (ySnap) {
+            this._renderer.drawLine(new MyEdge(new Vec2(x, y), new Vec2(x, ySnap)), false, 'blue');
+        }
     }
     
-    if (edgeY && snappedY) {
-        this._renderer.drawLine(new MyEdge(new Vec2(x, y), new Vec2(x, edgeY.mStart.mY)), false, 'blue');
+    if (edgeY.length > 0 && snappedY) {
+        
+        var xDis = Number.MAX_VALUE;
+        var xSnap = null;
+        
+        for (var i = 0; i < edgeY.length; i++) {
+            if (!edgeY[i].pointInEdgeOrOnEdge(new Vec2(x, y))) {
+                var dis1 = Math.abs(x - edgeY[i].mStart.mX);
+                var dis2 = Math.abs(x - edgeY[i].mEnd.mX);
+                
+                if (dis1 < xDis) {
+                    xDis = dis1;
+                    xSnap = edgeY[i].mStart.mX;
+                }
+                if (dis2 < xDis) {
+                    xDis = dis2;
+                    xSnap = edgeY[i].mEnd.mX;
+                }
+            }
+        }
+        
+        if (xSnap) {
+            this._renderer.drawLine(new MyEdge(new Vec2(x, y), new Vec2(xSnap, y)), false, 'blue');
+        }
     }
     
     
