@@ -114,6 +114,52 @@ MyEdge.getIntersection = function(param1, param2, param3)
     return _loc8_;
 }
 
+MyEdge.getDiff = function(param1, param2, param3) {
+    if (param3 == null || param3 == undefined) {
+        param3 = 1;
+    }
+    
+    var angle1 = param1.getAngle();
+    var angle2 = param2.getAngle();
+    
+    if(!MyEdge.isValidAngleDiff(param1,param2,param3))
+    {
+        return param1;
+    }
+    
+    var isStartInterSect = param2.distanceSmallThan(param1.mStart);
+    var isEndInterSect = param2.distanceSmallThan(param1.mEnd);
+    
+    
+    //contains
+    if (isStartInterSect && isEndInterSect) {
+        return null;
+    }
+    
+    //no relationship
+    if (!isStartInterSect && !isEndInterSect) {
+        return param1;
+    }
+    
+    //
+    if (isStartInterSect) {
+        if (Vec2.distance(param1.mEnd, param2.mStart) < Vec2.distance(param1.mEnd, param2.mEnd)) {
+            return new MyEdge(param1.mEnd.clone(), param2.mStart.clone());
+        } else {
+            return new MyEdge(param1.mEnd.clone(), param2.mEnd.clone());
+        }
+    }
+    
+    if (isEndInterSect) {
+        if (Vec2.distance(param1.mStart, param2.mStart) < Vec2.distance(param1.mStart, param2.mEnd)) {
+            return new MyEdge(param1.mStart.clone(), param2.mStart.clone());
+        } else {
+            return new MyEdge(param1.mStart.clone(), param2.mEnd.clone());
+        }
+    }
+} 
+
+
 MyEdge.getDistanceBy2Points = function(param1, param2, param3, param4)
 {
     var _loc5_ = new MyEdge(param1,param2);
@@ -219,10 +265,8 @@ MyEdge.prototype.distanceSmallThan = function(param1, param2)
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6;
     }
-    //param2 = param2 || 1.0E-6;
+    
     var _loc3_ = this.getDistance(param1,true);
-    //console.log("!!!!!!!!!!!!");
-    //console.log(_loc3_);
     return _loc3_ < param2;
 }
 
@@ -232,7 +276,6 @@ MyEdge.prototype.pointInEdgeOrOnEdge = function(param1, param2)
         param2 = 1.0E-6;
     }
     var res = this.distanceSmallThan(param1,param2) && !this.isSameAsEdgeStartOrEnd(param1,param2);
-    //console.log(res);
     return res;
 }
 

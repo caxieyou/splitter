@@ -151,9 +151,31 @@ Canvas.prototype.createRect = function(pnt0, pnt1) {
     pnt1 = pnt1 || this._mEdge.mEnd;
     
     var rect = new MyRect(pnt0, pnt1);
-    var poly = rect.toMyPolygon();
+    var polyEdges = rect.toMyPolygon().getEdges();
+    //edges = subject.getEdges();
     
-    this.split(poly);
+    for (var i = 0; i < polyEdges.length; i++) {
+        //var edge = polyEdges[i];
+        for (var j = 0; j < this._mFloor.mCurves.length; j++) {
+            var curve = this._mFloor.mCurves[j];
+            if (curve.isBoundry || curve instanceof CurveController) {
+                continue;
+            }
+            curve = curve.getTheStartEndEdge();
+            
+            polyEdges[i] = MyEdge.getDiff(polyEdges[i], curve);
+        }
+    }
+    
+    var res = [];
+    for (var i = 0; i < polyEdges.length; i++) {
+        if (polyEdges[i]) {
+            res.push(polyEdges[i]);
+        }
+    }
+    if (res.length > 0) {
+        this.split(res);
+    }
 }
 
 Canvas.prototype.creatCircle = function() {
