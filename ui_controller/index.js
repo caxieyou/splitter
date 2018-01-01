@@ -30,6 +30,7 @@ $(function() {
     $(document).on('mousedown', '#canvas', function(event) {
         event = event || window.event;
         var btnNum = event.button;
+        $('#props_wrap').hide();
         if(btnNum == 0) {
             //左键
             canvas.setStartPoint(event.offsetX, event.offsetY);
@@ -79,9 +80,12 @@ $(function() {
                     $('#props_wrap').find('.props.line').data('type', 'straight');
                     $('#props_wrap').find('.props.line').find('.pup').html('转为曲线<i></i>');
                 }
-
-                $('#props_wrap').show();
-                canvas.setOperationCurve();
+                if (!canvas.isMoved(event.offsetX, event.offsetY)) {
+                    $('#props_wrap').show();
+                    canvas.setOperationCurve();
+                } else {
+                    $('#props_wrap').hide();
+                }
             }
         } else if(canvas.checkStatus()) {
             canvas.createElement();
@@ -92,6 +96,7 @@ $(function() {
 
     $(document).on('mousemove', '#canvas', function(event) {
         event = event || window.event;
+        //console.log(event.offsetX + " " + event.offsetY);
         if(event.which == 1) {
             //按住拖动
             canvas.updateElement(event.offsetX, event.offsetY);
