@@ -15,7 +15,6 @@ MyNumber.isEqual = function(param1, param2, param3)
     if (param3 == null || param3 == undefined) {
         param3 = 1.0E-6;
     }
-    //param3 = param3 || 1.0E-6;
     return Math.abs(param1 - param2) < param3;
 }
 MyNumber.isZeroOrOrigin = function(param1, param2)

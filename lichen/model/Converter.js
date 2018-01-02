@@ -1,22 +1,3 @@
-
-//获取curve
-//CurveController.prototype.getCurveFromController = function()
-
-//获取polygon
-//MyArea.prototype.getPolygon = function()
-
-//是否包含polygon
-//MyArea.prototype.isIncludedPolygon = function(param1)
-
-//获取polygon几何部分
-//MyArea.prototype.getPathPolygon = function()
-
-//判断是否包含Area
-//MyArea.prototype.isIncludedArea = function(param1)
-
-//重点观察
-//curveCornerHelperClass.prototype.getPaths_eh = function()
-
 function Converter() {
     
 }

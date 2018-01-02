@@ -222,7 +222,7 @@ Splitter.prototype.checkDupAdd = function(param1)
         _loc3_.dispose();
     }
 
-    var _loc4_ = CurveRelationHelper_XX.getTheClosestCurve_ax(param1.mPosition.clone(), this.mWall.mCurves, false, Splitter.DISTANCE_TOLERANCE);
+    var _loc4_ = CurveRelationHelper.getTheClosestCurve_ax(param1.mPosition.clone(), this.mWall.mCurves, false, Splitter.DISTANCE_TOLERANCE);
     if(_loc4_ != null)
     {
         _loc4_.updateInfo(param1);

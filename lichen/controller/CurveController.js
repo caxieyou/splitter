@@ -306,7 +306,7 @@ CurveController.prototype.intersectSub = function(param1, param2, param3, param4
         param4 = 1.0E-6;
     }
     var _loc5_ = this.getCurveFromController();
-    var _loc6_ = someArcEdgeHelper_AEE.getValidIntersectionPointBetweenArcAndEdge(_loc5_,param1);
+    var _loc6_ = ArcEdgeHelper.getValidIntersectionPointBetweenArcAndEdge(_loc5_,param1);
     if(!param3)
     {
         param1.removePointsNotInside(_loc6_);
@@ -382,7 +382,7 @@ CurveController.prototype.isCurveIntersectByEdgeAndGetIntersectPoint = function(
     }
     
     var _loc5_ = this.getCurveFromController();
-    var _loc6_ = someArcEdgeHelper_AEE.getValidIntersectionPointBetweenArcAndEdge(_loc5_,param1);
+    var _loc6_ = ArcEdgeHelper.getValidIntersectionPointBetweenArcAndEdge(_loc5_,param1);
     if(!param3)
     {
         param1.removePointsNotInsideCurve(_loc6_);
@@ -412,7 +412,7 @@ CurveController.prototype.isCurveIntersectByAreaAndGetIntersectPoint = function(
     }
 
     var _loc5_ = this.getCurveFromController();
-    var _loc6_= someArcEdgeHelper_AEE.getCurveIntersectionPoints(_loc5_,param1,param4);
+    var _loc6_= ArcEdgeHelper.getCurveIntersectionPoints(_loc5_,param1,param4);
     if(!param3)
     {
         param1.removePointsNotInsideCurve(_loc6_);

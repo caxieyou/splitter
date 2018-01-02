@@ -160,7 +160,7 @@ MyArea.prototype.getPolygonFunc_EH = function()
     return this.mPolygon;
 }
 
-//get holes!!!!!!!!!!!!!!!!!!!!!
+//get holes
 MyArea.prototype.clonePolygons = function()
 {
     return [];
