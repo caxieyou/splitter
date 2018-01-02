@@ -142,7 +142,7 @@ CurveController.prototype.updateInfo = function(param1)
         this.updateStartCorner(param1);
     }
     this.mCurvePoint = _loc5_;
-    this.mWall.addONE_PART(_loc8_);
+    this.mWall.addSection(_loc8_);
     return _loc8_;
 }
 
@@ -167,24 +167,24 @@ CurveController.prototype.wallDleleteSame = function(param1)
 CurveController.prototype.updateStartCorner = function(param1) {
     if(this.mStart != null)
     {
-        this.mStart.removeSpecificCurve_AH(this);
+        this.mStart.removeSection(this);
     }
     this.mStart = param1;
     if(this.mStart != null)
     {
-        this.mStart.addONE_PART(this);
+        this.mStart.addSection(this);
     }
 };
 
 CurveController.prototype.updateEndCorner = function(param1) {
     if(this.mEnd != null)
     {
-        this.mEnd.removeSpecificCurve_AH(this);
+        this.mEnd.removeSection(this);
     }
     this.mEnd = param1;
     if(this.mEnd != null)
     {
-        this.mEnd.addONE_PART(this);
+        this.mEnd.addSection(this);
     }
 };
 
@@ -331,7 +331,7 @@ CurveController.prototype.dispose = function()
     for (var i = 0; i < _loc1_.length; i++) {
         _loc2_ = _loc1_[i];
         if (_loc2_) {
-            _loc2_.removeSpecificCurve_AH(this);
+            _loc2_.removeSection(this);
             if(_loc2_.mCurves.length == 0)
             {
                 _loc2_.dispose();
@@ -341,12 +341,12 @@ CurveController.prototype.dispose = function()
     
     for (var i = 0; i < this.mAreas.length; i++) {
         _loc3_ = this.mAreas[i];
-        _loc3_.removeSpecificCurve_AH(this);
+        _loc3_.removeSection(this);
     }
     
     if(this.mWall != null)
     {
-        this.mWall.removeSpecificCurve_AH(this);
+        this.mWall.removeSection(this);
     }
 }
 CurveController.prototype.isInsideMyArea = function(param1, param2, param3)
@@ -477,3 +477,10 @@ CurveController.prototype.getAngle = function()
     var _loc1_ = new MyEdge(this.mStart.mPosition.clone(),this.mEnd.mPosition.clone());
     return _loc1_.getLength();
 }
+
+CurveController.prototype.updatePosition = function(x, y) {
+    this.mCurvePoint.set(x, y);
+}
+
+
+

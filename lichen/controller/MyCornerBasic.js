@@ -20,12 +20,12 @@ MyCornerBasic.prototype.dispose = function()
     }
 }
 
-MyCornerBasic.prototype.addONE_PART = function(param1)
+MyCornerBasic.prototype.addSection = function(param1)
 {
     return ArrayHelperClass.ifHasAndSave(this.mCurves,param1);
 }
 
-MyCornerBasic.prototype.removeSpecificCurve_AH = function(param1)
+MyCornerBasic.prototype.removeSection = function(param1)
 {
     return ArrayHelperClass.removeItem(this.mCurves,param1);
 }

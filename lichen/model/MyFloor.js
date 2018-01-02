@@ -8,12 +8,9 @@ function MyFloor() {
 }
 
 MyFloor.prototype.initialize = function() {
-    //this.mPosition = new Vec2();
-    this.mAreas = [];//new Vector.<wallAreas_Class>();
-    this.mCurves = [];//new Vector.<wallCurve>();
-    //this.mModels = new Vector.<§-_--_-_-----§>();
-    //this.mBoundaries = new Vector.<§-----_-__----§>();
-    this.mCorners = [];//new Vector.<cornerSonClass>();
+    this.mAreas = [];
+    this.mCurves = [];
+    this.mCorners = [];
     this.mHoles = [];
     this.mProfile = null;
 }
@@ -26,7 +23,6 @@ MyFloor.prototype.setProfile = function(rect) {
 
 MyFloor.prototype.generatePolyTree = function()
 {
-    
     //var _loc4_ = null;
     //var _loc5_ = null;
     //var _loc1_ = this.getTheBiggestAreaPath();
@@ -66,15 +62,13 @@ MyFloor.prototype.correctAreas = function()
     var _loc2_ = null;
     var _loc3_ = null;
     var _loc1_ = CurveAreaRelationshipHelper.getHoleParts(this.mAreas);
-    this.mHoles = [];//new Vector.<wallAreas_Class>();
+    this.mHoles = [];
     
     for (var i = 0; i < _loc1_.length; i++)
-    //for each(_loc2_ in _loc1_)
     {
         this.mHoles.push(_loc1_[i]);
         
         for (var j = 0; j < _loc1_[i].mCurves.length; j++)
-        //for each(_loc3_ in _loc1_[i].curves)
         {
             _loc3_ = _loc1_[i].mCurves[j];
             _loc3_.wallDleleteSame(_loc1_[i]);
@@ -83,7 +77,7 @@ MyFloor.prototype.correctAreas = function()
     ArrayHelperClass.deleteSameValues(this.mAreas,_loc1_);
 }
 
-MyFloor.prototype.addONE_PART = function(param1)
+MyFloor.prototype.addSection = function(param1)
 {
     var _loc2_ = ArrayHelperClass.ifHasAndSave(this.mCurves,param1);
     if(_loc2_)
@@ -93,7 +87,7 @@ MyFloor.prototype.addONE_PART = function(param1)
     return _loc2_;
 }
 
-MyFloor.prototype.checkDupAdd = function(param1)
+MyFloor.prototype.addCorner = function(param1)
 {
     if(param1 == null)
     {
@@ -112,7 +106,66 @@ MyFloor.prototype.removeCorner = function(param1)
     return ArrayHelperClass.removeItem(this.mCorners,param1);
 }
 
-MyFloor.prototype.removeSpecificCurve_AH = function(param1)
+MyFloor.prototype.removeSection = function(param1)
 {
     return ArrayHelperClass.removeItem(this.mCurves, param1);
 }
+
+MyFloor.prototype.updatePosition = function(sub, newPos, oldPos)
+{
+    sub.updatePosition(newPos.mX, newPos.mY);
+    var analysis = new Analysis(this);
+    analysis.execute();
+    
+    var overlapped = this.checkOverlap();
+    
+    if (overlapped) {
+        sub.updatePosition(oldPos.mX, oldPos.mY);
+        var analysis = new Analysis(this);
+        analysis.execute();
+    }
+    
+    return overlapped;
+}
+
+MyFloor.prototype.checkOverlap = function()  {
+    var overlapped = false;
+    for (var i = 0; i < this.mCurves.length; i++) {
+        for (var j = i+1; j < this.mCurves.length; j++) {
+            var curve0 = this.mCurves[i];
+            var curve1 = this.mCurves[j];
+            if (curve0.isIntersectWith(curve1)) {
+                overlapped = true;
+                break;
+            }
+        }
+    }
+    return overlapped;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

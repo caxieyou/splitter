@@ -278,8 +278,7 @@ $(function() {
             mousePos = {x:e.clientX ,y:e.clientY};
         }
     }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
-    
+
     function onmouseup(e) {
         if (!canvas.getFocusElement()) {
             container.removeEventListener("mousemove", onmousemove);

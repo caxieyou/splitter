@@ -634,24 +634,7 @@ Canvas.prototype.setOperationCurve = function() {
     this._operationCurve = this._focus.controller;
 }
 
-
-Canvas.prototype._checkOverlap = function() {
-    var overlapped = false;
-    for (var i = 0; i < this._mFloor.mCurves.length; i++) {
-        for (var j = i+1; j < this._mFloor.mCurves.length; j++) {
-            var curve0 = this._mFloor.mCurves[i];
-            var curve1 = this._mFloor.mCurves[j];
-            if (curve0.isIntersectWith(curve1)) {
-                overlapped = true;
-                break;
-            }
-        }
-    }
-    return overlapped;
-}
-
 Canvas.prototype.updateElement = function(x, y){
-    
     if (!this._updateElment && this._focus) {
         this._updateElment = this._focus;
         this._lastFocos = new Vec2(x, y);
@@ -660,275 +643,16 @@ Canvas.prototype.updateElement = function(x, y){
     if (this._updateElment) {
         console.log("controller been called: " + x + " " + y);
         this._pickedArea = null;
-        if (this._updateElment.controller instanceof MyCorner) {
-            var arc = [];
-            for (var i = 0; i < this._updateElment.controller.mCurves.length; i++) {
-                if (this._updateElment.controller.mCurves[i] instanceof CurveController) {
-                    arc.push(this._updateElment.controller.mCurves[i].getCurveFromController().mArcAngle);
-                }
-            }
-            this._updateElment.controller.mPosition.mX = x;
-            this._updateElment.controller.mPosition.mY = y;
-            var idx = 0;
-            for (var i = 0; i < this._updateElment.controller.mCurves.length; i++) {
-                if (this._updateElment.controller.mCurves[i] instanceof CurveController) {
-                    this._updateElment.controller.mCurves[i].adjustCurve(arc[idx]);
-                    idx++;
-                }
-            }
-            
-            var analysis = new Analysis(this._mFloor);
-            analysis.execute();
-            [this._outputResult,  this._innerResult] = Converter.outputGeo(this._mFloor);
-        }
         
-        if (this._updateElment.controller instanceof CurveController) {
-            this._updateElment.controller.mCurvePoint.mX = x;
-            this._updateElment.controller.mCurvePoint.mY = y;
-            var analysis = new Analysis(this._mFloor);
-            analysis.execute();
-            [this._outputResult,  this._innerResult] = Converter.outputGeo(this._mFloor);
-        }
+        var overlapped = this._mFloor.updatePosition(this._updateElment.controller, new Vec2(x, y), this._lastFocos);
         
-        if (this._updateElment.controller instanceof SegmentController) {
-            var seg = this._updateElment.controller;
-            //1 找到2个corner
-            var coners = seg.toCorners();
-            //2 找到所有线段
-            var startCurves;
-            var endCurves;
-            var angle = seg.getAngle();
-            
-            // 得到差别最大的两个线段
-            var minS = 0;
-            var minE = 0;
-            for (var i = 0; i < coners[0].mCurves.length; i++) {
-                if (coners[0].mCurves[i].mId !== seg.mId) {
-                    coners[0].mCurves[i].getAngle();
-                    var diff = Math.abs(angle - coners[0].mCurves[i].getAngle());
-                    while(diff > Math.PI) {
-                        diff = diff - Math.PI;
-                    }
-                    if (diff > minS) {
-                        minS = diff;
-                        startCurves = coners[0].mCurves[i];
-                    }
-                    //startCurves.push(coners[0].mCurves[i]);
-                }
-            }
-            for (var i = 0; i < coners[1].mCurves.length; i++) {
-                if (coners[1].mCurves[i].mId !== seg.mId) {
-                    coners[1].mCurves[i].getAngle();
-                    //endCurves.push(coners[1].mCurves[i]);
-                    var diff = Math.abs(angle - coners[1].mCurves[i].getAngle());
-                    while(diff > Math.PI) {
-                        diff = diff - Math.PI;
-                    }
-                    if (diff > minE) {
-                        minE = diff;
-                        endCurves = coners[1].mCurves[i];
-                    }
-                }
-            }
-            
-            var newEdge;
-            if (MyNumber.isEqual(angle, Math.PI / 2)) {
-                newEdge = new MyEdge(new Vec2(x, y), new Vec2(x, y + 1));
-            } else {
-                newEdge = new MyEdge(new Vec2(x, y), new Vec2(x + 1, y + Math.tan(angle)));
-            }
-            
-            var s = MyEdge.getIntersection(newEdge, startCurves.getTheStartEndEdge());
-            var e = MyEdge.getIntersection(newEdge, endCurves.getTheStartEndEdge());
-            
-            
-            //更新曲线的曲率了
-            var arc = [];
-            for (var i = 0; i < coners[0].mCurves.length; i++) {
-                if (coners[0].mCurves[i] instanceof CurveController) {
-                    arc.push(coners[0].mCurves[i].getCurveFromController().mArcAngle);
-                }
-            }
-            
-            //更新完这个位置
-            coners[0].mPosition.mX = s.mX;
-            coners[0].mPosition.mY = s.mY;
-            
-            var idx = 0;
-            for (var i = 0; i < coners[0].mCurves.length; i++) {
-                if (coners[0].mCurves[i] instanceof CurveController) {
-                    coners[0].mCurves[i].adjustCurve(arc[idx]);
-                    idx++;
-                }
-            }
-            
-            var arc = [];
-            for (var i = 0; i < coners[1].mCurves.length; i++) {
-                if (coners[1].mCurves[i] instanceof CurveController) {
-                    arc.push(coners[1].mCurves[i].getCurveFromController().mArcAngle);
-                }
-            }
-            
-            //更新完这个位置
-            coners[1].mPosition.mX = e.mX;
-            coners[1].mPosition.mY = e.mY;
-            
-            var idx = 0;
-            for (var i = 0; i < coners[1].mCurves.length; i++) {
-                if (coners[1].mCurves[i] instanceof CurveController) {
-                    coners[1].mCurves[i].adjustCurve(arc[idx]);
-                    idx++;
-                }
-            }
-            
-            var analysis = new Analysis(this._mFloor);
-            analysis.execute();
-            [this._outputResult,  this._innerResult] = Converter.outputGeo(this._mFloor);
-            
-        }
-        
-        var overlapped = this._checkOverlap();
-        //console.log("XXXXX: " + overlapped);
-        //console.log(x + " " + y);
-        //console.log(this._lastFocos.mX + " " + this._lastFocos.mY);
-        
-        if (overlapped)
-        {
-            if (this._updateElment.controller instanceof MyCorner) {
-                var arc = [];
-                for (var i = 0; i < this._updateElment.controller.mCurves.length; i++) {
-                    if (this._updateElment.controller.mCurves[i] instanceof CurveController) {
-                        arc.push(this._updateElment.controller.mCurves[i].getCurveFromController().mArcAngle);
-                    }
-                }
-                this._updateElment.controller.mPosition.mX = this._lastFocos.mX;
-                this._updateElment.controller.mPosition.mY = this._lastFocos.mY;
-                var idx = 0;
-                for (var i = 0; i < this._updateElment.controller.mCurves.length; i++) {
-                    if (this._updateElment.controller.mCurves[i] instanceof CurveController) {
-                        this._updateElment.controller.mCurves[i].adjustCurve(arc[idx]);
-                        idx++;
-                    }
-                }
-            }
-            
-            
-            if (this._updateElment.controller instanceof CurveController) {
-                this._updateElment.controller.mCurvePoint.mX = this._lastFocos.mX;
-                this._updateElment.controller.mCurvePoint.mY = this._lastFocos.mY;
-            }
-            
-            if (this._updateElment.controller instanceof SegmentController) {
-                var seg = this._updateElment.controller;
-                //1 找到2个corner
-                var coners = seg.toCorners();
-                //2 找到所有线段
-                var startCurves;
-                var endCurves;
-                var angle = seg.getAngle();
-                
-                // 得到差别最大的两个线段
-                var minS = 0;
-                var minE = 0;
-                for (var i = 0; i < coners[0].mCurves.length; i++) {
-                    if (coners[0].mCurves[i].mId !== seg.mId) {
-                        coners[0].mCurves[i].getAngle();
-                        var diff = Math.abs(angle - coners[0].mCurves[i].getAngle());
-                        while(diff > Math.PI) {
-                            diff = diff - Math.PI;
-                        }
-                        if (diff > minS) {
-                            minS = diff;
-                            startCurves = coners[0].mCurves[i];
-                        }
-                        //startCurves.push(coners[0].mCurves[i]);
-                    }
-                }
-                for (var i = 0; i < coners[1].mCurves.length; i++) {
-                    if (coners[1].mCurves[i].mId !== seg.mId) {
-                        coners[1].mCurves[i].getAngle();
-                        //endCurves.push(coners[1].mCurves[i]);
-                        var diff = Math.abs(angle - coners[1].mCurves[i].getAngle());
-                        while(diff > Math.PI) {
-                            diff = diff - Math.PI;
-                        }
-                        if (diff > minE) {
-                            minE = diff;
-                            endCurves = coners[1].mCurves[i];
-                        }
-                    }
-                }
-                
-                var newEdge;
-                if (MyNumber.isEqual(angle, Math.PI / 2)) {
-                    newEdge = new MyEdge(new Vec2(this._lastFocos.mX, this._lastFocos.mY), new Vec2(this._lastFocos.mX, this._lastFocos.mY + 1));
-                } else {
-                    newEdge = new MyEdge(new Vec2(this._lastFocos.mX, this._lastFocos.mY), new Vec2(this._lastFocos.mX + 1, this._lastFocos.mY + Math.tan(angle)));
-                }
-                
-                var s = MyEdge.getIntersection(newEdge, startCurves.getTheStartEndEdge());
-                var e = MyEdge.getIntersection(newEdge, endCurves.getTheStartEndEdge());
-                
-                
-                //更新曲线的曲率了
-                var arc = [];
-                for (var i = 0; i < coners[0].mCurves.length; i++) {
-                    if (coners[0].mCurves[i] instanceof CurveController) {
-                        arc.push(coners[0].mCurves[i].getCurveFromController().mArcAngle);
-                    }
-                }
-                
-                //更新完这个位置
-                coners[0].mPosition.mX = s.mX;
-                coners[0].mPosition.mY = s.mY;
-                
-                var idx = 0;
-                for (var i = 0; i < coners[0].mCurves.length; i++) {
-                    if (coners[0].mCurves[i] instanceof CurveController) {
-                        coners[0].mCurves[i].adjustCurve(arc[idx]);
-                        idx++;
-                    }
-                }
-                
-                arc = [];
-                for (var i = 0; i < coners[1].mCurves.length; i++) {
-                    if (coners[1].mCurves[i] instanceof CurveController) {
-                        arc.push(coners[1].mCurves[i].getCurveFromController().mArcAngle);
-                    }
-                }
-                
-                //更新完这个位置
-                coners[1].mPosition.mX = e.mX;
-                coners[1].mPosition.mY = e.mY;
-                
-                idx = 0;
-                for (var i = 0; i < coners[1].mCurves.length; i++) {
-                    if (coners[1].mCurves[i] instanceof CurveController) {
-                        coners[1].mCurves[i].adjustCurve(arc[idx]);
-                        idx++;
-                    }
-                }
-                
-                var analysis = new Analysis(this._mFloor);
-                analysis.execute();
-                [this._outputResult,  this._innerResult] = Converter.outputGeo(this._mFloor);
-            }
-            
-            
-            var analysis = new Analysis(this._mFloor);
-            analysis.execute();
-            [this._outputResult,  this._innerResult] = Converter.outputGeo(this._mFloor);
-            
-            //this._updateElment = null;
-            //this._focus = null;
-            //this._lastFocos = null;
-        }
+        [this._outputResult,  this._innerResult] = Converter.outputGeo(this._mFloor);
+
         this.render(x, y);
         if (overlapped) {
             return;
         }
-        this._lastFocos.mX = x;
-        this._lastFocos.mY = y;
+        this._lastFocos.set(x, y);
     }
     
 }
@@ -1422,7 +1146,7 @@ Canvas.prototype._renderMarkerLines = function() {
                             analysis.execute();
                             [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
                             
-                            var overlapped = that._checkOverlap();
+                            var overlapped = that._mFloor.checkOverlap();
                         
                             if (overlapped)
                             {
@@ -1520,7 +1244,7 @@ Canvas.prototype._renderMarkerLines = function() {
                                             analysis.execute();
                                             [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
                                             
-                                            var overlapped = that._checkOverlap();
+                                            var overlapped = that._mFloor.checkOverlap();
                                         
                                             if (overlapped)
                                             {
@@ -1560,7 +1284,7 @@ Canvas.prototype._renderMarkerLines = function() {
                                             analysis.execute();
                                             [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
                                             
-                                            var overlapped = that._checkOverlap();
+                                            var overlapped = that._mFloor.checkOverlap();
                                         
                                             if (overlapped)
                                             {
@@ -1650,7 +1374,7 @@ Canvas.prototype._renderMarkerLines = function() {
                             analysis.execute();
                             [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
                             
-                            var overlapped = that._checkOverlap();
+                            var overlapped = that._mFloor.checkOverlap();
                         
                             if (overlapped)
                             {

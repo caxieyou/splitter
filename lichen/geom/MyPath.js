@@ -108,7 +108,7 @@ MyPath.prototype.buildPolygon = function()
     this.mArea = this.mPolygon.getSignedArea();
 }
 
-MyPath.prototype.addONE_PART = function(param1)
+MyPath.prototype.addSection = function(param1)
 {
     this.mCurves.push(param1);
 }

@@ -136,7 +136,7 @@ MyArea.prototype.tryCalculatePolygon = function()
     }
 }
 
-MyArea.prototype.addONE_PART = function(param1)
+MyArea.prototype.addSection = function(param1)
 {
     return ArrayHelperClass.ifHasAndSave(this.mCurves,param1);
 }
@@ -227,7 +227,7 @@ MyArea.prototype.getAbsArea = function()
     return Math.abs(this.getPolygon().getSignedArea());
 }
 
-MyArea.prototype.removeSpecificCurve_AH = function(param1)
+MyArea.prototype.removeSection = function(param1)
 {
     return ArrayHelperClass.removeItem(this.mCurves, param1);
 }

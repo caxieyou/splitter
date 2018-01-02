@@ -7,7 +7,7 @@ WallCurveOperation.prototype.onSplitCurve = function(param1)
 {
     var _loc1_ = new MyCorner();
     _loc1_.mPosition = param1.getCenter();
-    this.mFloor.checkDupAdd(_loc1_);
+    this.mFloor.addCorner(_loc1_);
     param1.updateInfo(_loc1_);
     var analysis = new Analysis(this.mFloor);
     analysis.execute();
@@ -46,11 +46,11 @@ WallCurveOperation.prototype.onToLine = function(param1)
     }
     
     
-    _loc7_.removeSpecificCurve_AH(param1);
-    _loc8_.removeSpecificCurve_AH(param1);
+    _loc7_.removeSection(param1);
+    _loc8_.removeSection(param1);
     
-    this.mFloor.addONE_PART(_loc6_);
-    this.mFloor.removeSpecificCurve_AH(param1);
+    this.mFloor.addSection(_loc6_);
+    this.mFloor.removeSection(param1);
     
     var analysis = new Analysis(this.mFloor);
     analysis.execute();
@@ -85,8 +85,8 @@ WallCurveOperation.prototype.onToArc = function(param1)
         }
     }
     
-    this.mFloor.addONE_PART(_loc7_);
-    this.mFloor.removeSpecificCurve_AH(param1);
+    this.mFloor.addSection(_loc7_);
+    this.mFloor.removeSection(param1);
     
     var analysis = new Analysis(this.mFloor);
     analysis.execute();

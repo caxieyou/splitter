@@ -36,12 +36,51 @@ MyCorner.prototype.clone = function()
     _loc1_.mPosition = this.mPosition;
     return _loc1_;
 }
-MyCorner.prototype.addONE_PART = function(param1)
+MyCorner.prototype.addSection = function(param1)
 {
     return ArrayHelperClass.ifHasAndSave(this.mCurves,param1);
 }
 
-MyCorner.prototype.removeSpecificCurve_AH = function(param1)
+MyCorner.prototype.removeSection = function(param1)
 {
     return ArrayHelperClass.removeItem(this.mCurves,param1);
 }
+
+MyCorner.prototype.updatePosition = function(x, y)
+{
+    var arc = [];
+    for (var i = 0; i < this.mCurves.length; i++) {
+        if (this.mCurves[i] instanceof CurveController) {
+            arc.push(this.mCurves[i].getCurveFromController().mArcAngle);
+        }
+    }
+    
+    this.mPosition.set(x, y);
+    var idx = 0;
+    for (var i = 0; i < this.mCurves.length; i++) {
+        if (this.mCurves[i] instanceof CurveController) {
+            this.mCurves[i].adjustCurve(arc[idx]);
+            idx++;
+        }
+    }
+}
+
+MyCorner.updatePosition = function(corner, x, y)
+{
+    var arc = [];
+    for (var i = 0; i < corner.mCurves.length; i++) {
+        if (corner.mCurves[i] instanceof CurveController) {
+            arc.push(corner.mCurves[i].getCurveFromController().mArcAngle);
+        }
+    }
+    
+    corner.mPosition.set(x, y);
+    var idx = 0;
+    for (var i = 0; i < corner.mCurves.length; i++) {
+        if (corner.mCurves[i] instanceof CurveController) {
+            corner.mCurves[i].adjustCurve(arc[idx]);
+            idx++;
+        }
+    }
+}
+

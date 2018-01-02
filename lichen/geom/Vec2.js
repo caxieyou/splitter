@@ -230,8 +230,6 @@ Vec2.prototype.set = function(param1, param2)
         param2 = 0;
     }
 
-    param1 = param1;
-    param2 = param2;
     this.mX = param1;
     this.mY = param2;
     return this;
