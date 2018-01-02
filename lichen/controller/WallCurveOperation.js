@@ -11,6 +11,7 @@ WallCurveOperation.prototype.onSplitCurve = function(param1)
     param1.updateInfo(_loc1_);
     var analysis = new Analysis(this.mFloor);
     analysis.execute();
+    this.mFloor._updateGeoStructure();
 }
 
 WallCurveOperation.prototype.onToLine = function(param1)

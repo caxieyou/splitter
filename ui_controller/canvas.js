@@ -12,8 +12,6 @@ function Canvas(name) {
     this._renderer = new Renderer();
     this._canvas = document.getElementById(name);
     this._renderer.init(this._canvas);
-    this._outputResult = null;
-    this._innerResult = null;
     this._currentStatus = STATUS.NOT_STARTED;
     this._type = null;
     this._mEdge = new MyEdge(new Vec2(), new Vec2());
@@ -124,26 +122,8 @@ Canvas.prototype._renderCurrentObject = function() {
 Canvas.prototype.split = function(polygon) {
     var splitter = new Splitter(polygon, this._mFloor, this._mFloor.generatePolyTree());
     splitter.execute();
-    var analysis = new Analysis(this._mFloor);
-    analysis.execute();
-    /*
-    var single = [];
-    for (var i = 0; i < this._mFloor.mCurves.length; i++) {
-        if (this._mFloor.mCurves[i].mStart.mCurves.length < 2 || this._mFloor.mCurves[i].mEnd.mCurves.length < 2) {
-            single.push(this._mFloor.mCurves[i]);
-            //this._mWallCurveOperation.onDelete(this._mFloor.mCurves[i]);
-        }
-    }
-    if (single.length > 0) {
-        for (var i = 0; i < single.length; i++) {
-            single[i].dispose();
-        }
-        var analysis = new Analysis(this._mFloor);
-        analysis.execute();
-    }
-    */
-    [this._outputResult,  this._innerResult] = Converter.outputGeo(this._mFloor);
     
+    this._mFloor.Analysis();
 }
 
 Canvas.prototype.createRect = function(pnt0, pnt1) {
@@ -561,10 +541,9 @@ Canvas.prototype.checkStatus = function() {
 }
 
 Canvas.prototype.renderAreaPicked = function(x, y) {
-    for (var i = 0; i < this._innerResult.length; i++) {
-        if (this._innerResult[i].contains(new Vec2(x, y))) {
-            //return this._outputResult[i];
-            this._pickedArea = this._outputResult[i];
+    for (var i = 0; i < this._mFloor.mAreasPolytree.length; i++) {
+        if (this._mFloor.mAreasPolytree[i].contains(new Vec2(x, y))) {
+            this._pickedArea = this._mFloor.mOutput[i];//this._outputResult[i];
             this.render();
             break;
         }
@@ -600,33 +579,24 @@ Canvas.prototype.recordMouseUp = function(x, y) {
 Canvas.prototype.onSplitCurve = function() {
     this._mWallCurveOperation.onSplitCurve(this._operationCurve);
     this._operationCurve = null;
-    //this._outputResult = Converter.outputGeo(this._mFloor);
-    [this._outputResult,  this._innerResult] = Converter.outputGeo(this._mFloor);
     this.render();
 }
 
 Canvas.prototype.onToLine = function() {
     this._mWallCurveOperation.onToLine(this._operationCurve);
     this._operationCurve = null;
-    //this._outputResult = Converter.outputGeo(this._mFloor);
-    [this._outputResult,  this._innerResult] = Converter.outputGeo(this._mFloor);
     this.render();
 }
 
 Canvas.prototype.onToArc = function() {
     this._mWallCurveOperation.onToArc(this._operationCurve);
     this._operationCurve = null;
-    //this._outputResult = Converter.outputGeo(this._mFloor);
-    [this._outputResult,  this._innerResult] = Converter.outputGeo(this._mFloor);
-    console.log(this._outputResult);
     this.render();
 }
 
 Canvas.prototype.onDelete = function() {
     this._mWallCurveOperation.onDelete(this._operationCurve);
     this._operationCurve = null;
-    //this._outputResult = Converter.outputGeo(this._mFloor);
-    [this._outputResult,  this._innerResult] = Converter.outputGeo(this._mFloor);
     this.render();
 }
 
@@ -646,7 +616,6 @@ Canvas.prototype.updateElement = function(x, y){
         
         var overlapped = this._mFloor.updatePosition(this._updateElment.controller, new Vec2(x, y), this._lastFocos);
         
-        [this._outputResult,  this._innerResult] = Converter.outputGeo(this._mFloor);
 
         this.render(x, y);
         if (overlapped) {
@@ -674,10 +643,10 @@ Canvas.prototype.createElement = function() {
 }
 
 Canvas.prototype._renderOutput = function() {
-    if (this._outputResult == null) {
+    if (this._mFloor.mOutput == null) {
         return;
     }
-    var res = this._outputResult;
+    var res = this._mFloor.mOutput;
     for (var i = 0; i < res.length; i++) {
         for (var j = 0; j < res[i].mOutline.edges.length; j++) {
             var edge = res[i].mOutline.edges[j];
@@ -909,19 +878,15 @@ Canvas.prototype._renderMarkerLines = function() {
                     pt1.addBy(dir.mulBy(dis));
                     curve.mCurvePoint.copy(pt1);
                     
+                    that._mFloor.Analysis();
                     
-                    var analysis = new Analysis(that._mFloor);
-                    analysis.execute();
-                    [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
                     
                     var overlapped = that._checkOverlap();
                 
                     if (overlapped)
                     {
                         curve.mCurvePoint.copy(originalCurvePoint);
-                        var analysis = new Analysis(that._mFloor);
-                        analysis.execute();
-                        [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
+                        that._mFloor.Analysis();
                         
                     } else {
                         that._pickedArea = null;
@@ -1012,10 +977,7 @@ Canvas.prototype._renderMarkerLines = function() {
                                             seg2.mStart.mPosition.mY = seg2.mStart.mPosition.mY - 0.5 * Math.sign(distance) * (dis - Math.abs(distance));
                                             seg2.mEnd.mPosition.mY = seg2.mEnd.mPosition.mY - 0.5 * Math.sign(distance) * (dis - Math.abs(distance));
                                             
-                                            var analysis = new Analysis(that._mFloor);
-                                            analysis.execute();
-                                            [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
-                                            
+                                            that._mFloor.Analysis();
                                             var overlapped = that._checkOverlap();
                                         
                                             if (overlapped)
@@ -1027,9 +989,7 @@ Canvas.prototype._renderMarkerLines = function() {
                                                 seg2.mStart.mPosition.mY = originalY2;
                                                 seg2.mEnd.mPosition.mY = originalY2;
                                                 
-                                                var analysis = new Analysis(that._mFloor);
-                                                analysis.execute();
-                                                [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
+                                                that._mFloor.Analysis();
                                                 
                                             } else {
                                                 that._pickedArea = null;
@@ -1052,9 +1012,7 @@ Canvas.prototype._renderMarkerLines = function() {
                                             seg.mStart.mPosition.mY = seg.mStart.mPosition.mY + Math.sign(distance) * (dis - Math.abs(distance));
                                             seg.mEnd.mPosition.mY = seg.mEnd.mPosition.mY + Math.sign(distance) * (dis - Math.abs(distance));
                                             
-                                            var analysis = new Analysis(that._mFloor);
-                                            analysis.execute();
-                                            [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
+                                            that._mFloor.Analysis();
                                             
                                             var overlapped = that._checkOverlap();
                                         
@@ -1063,11 +1021,7 @@ Canvas.prototype._renderMarkerLines = function() {
                                                 
                                                 seg.mStart.mPosition.mY = originalY;
                                                 seg.mEnd.mPosition.mY = originalY;
-                                                
-                                                var analysis = new Analysis(that._mFloor);
-                                                analysis.execute();
-                                                [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
-                                                
+                                                that._mFloor.Analysis();
                                             } else {
                                                 that._pickedArea = null;
                                             }
@@ -1142,10 +1096,7 @@ Canvas.prototype._renderMarkerLines = function() {
                             seg.mStart.mPosition.mY = seg.mStart.mPosition.mY + Math.sign(distance) * (dis - Math.abs(distance));
                             seg.mEnd.mPosition.mY = seg.mEnd.mPosition.mY + Math.sign(distance) * (dis - Math.abs(distance));
                             
-                            var analysis = new Analysis(that._mFloor);
-                            analysis.execute();
-                            [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
-                            
+                            that._mFloor.Analysis();
                             var overlapped = that._mFloor.checkOverlap();
                         
                             if (overlapped)
@@ -1153,11 +1104,7 @@ Canvas.prototype._renderMarkerLines = function() {
                                 
                                 seg.mStart.mPosition.mY = originalY;
                                 seg.mEnd.mPosition.mY = originalY;
-                                
-                                var analysis = new Analysis(that._mFloor);
-                                analysis.execute();
-                                [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
-                                
+                                that._mFloor.Analysis();
                             } else {
                                 that._pickedArea = null;
                             }
@@ -1240,10 +1187,7 @@ Canvas.prototype._renderMarkerLines = function() {
                                             seg2.mStart.mPosition.mX = seg2.mStart.mPosition.mX - 0.5 * Math.sign(distance) * (dis - Math.abs(distance));
                                             seg2.mEnd.mPosition.mX = seg2.mEnd.mPosition.mX - 0.5 * Math.sign(distance) * (dis - Math.abs(distance));
                                             
-                                            var analysis = new Analysis(that._mFloor);
-                                            analysis.execute();
-                                            [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
-                                            
+                                            that._mFloor.Analysis();
                                             var overlapped = that._mFloor.checkOverlap();
                                         
                                             if (overlapped)
@@ -1254,11 +1198,7 @@ Canvas.prototype._renderMarkerLines = function() {
                                                 
                                                 seg2.mStart.mPosition.mX = originalX2;
                                                 seg2.mEnd.mPosition.mX = originalX2;
-                                                
-                                                var analysis = new Analysis(that._mFloor);
-                                                analysis.execute();
-                                                [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
-                                                
+                                                that._mFloor.Analysis();
                                             } else {
                                                 that._pickedArea = null;
                                             }
@@ -1280,10 +1220,7 @@ Canvas.prototype._renderMarkerLines = function() {
                                             seg.mStart.mPosition.mX = seg.mStart.mPosition.mX + Math.sign(distance) * (dis - Math.abs(distance));
                                             seg.mEnd.mPosition.mX = seg.mEnd.mPosition.mX + Math.sign(distance) * (dis - Math.abs(distance));
                                             
-                                            var analysis = new Analysis(that._mFloor);
-                                            analysis.execute();
-                                            [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
-                                            
+                                            that._mFloor.Analysis();
                                             var overlapped = that._mFloor.checkOverlap();
                                         
                                             if (overlapped)
@@ -1292,10 +1229,7 @@ Canvas.prototype._renderMarkerLines = function() {
                                                 seg.mStart.mPosition.mX = originalX;
                                                 seg.mEnd.mPosition.mX = originalX;
                                                 
-                                                var analysis = new Analysis(that._mFloor);
-                                                analysis.execute();
-                                                [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
-                                                
+                                                that._mFloor.Analysis();
                                             } else {
                                                 that._pickedArea = null;
                                             }
@@ -1369,11 +1303,7 @@ Canvas.prototype._renderMarkerLines = function() {
                             
                             seg.mStart.mPosition.mX = seg.mStart.mPosition.mX + Math.sign(distance) * (dis - Math.abs(distance));
                             seg.mEnd.mPosition.mX = seg.mEnd.mPosition.mX + Math.sign(distance) * (dis - Math.abs(distance));
-                            
-                            var analysis = new Analysis(that._mFloor);
-                            analysis.execute();
-                            [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
-                            
+                            that._mFloor.Analysis();
                             var overlapped = that._mFloor.checkOverlap();
                         
                             if (overlapped)
@@ -1381,13 +1311,9 @@ Canvas.prototype._renderMarkerLines = function() {
                                 
                                 seg.mStart.mPosition.mX = originalX;
                                 seg.mEnd.mPosition.mX = originalX;
-                                
-                                
-                                
-                                var analysis = new Analysis(that._mFloor);
-                                analysis.execute();
-                                [that._outputResult,  that._innerResult] = Converter.outputGeo(that._mFloor);
-                                
+                                that._mFloor.Analysis();
+                            } else {
+                                that._pickedArea = null;
                             }
                             that.render();
                             
@@ -1594,8 +1520,6 @@ Canvas.prototype.render = function(x, y) {
 Canvas.prototype.clear = function() {
     this._mFloor = new MyFloor();
     this._mWallCurveOperation = new WallCurveOperation(this._mFloor);
-    this._outputResult = null;
-    this._innerResult = null;
     this._currentStatus = STATUS.NOT_STARTED;
     this._type = null;
     this._mEdge = new MyEdge(new Vec2(), new Vec2());
@@ -1617,5 +1541,3 @@ Canvas.prototype.clear = function() {
    this._pickedArea = null;
    this._initialize();
 }
-
-

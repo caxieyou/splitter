@@ -4,6 +4,8 @@ function MyFloor() {
     this.mCorners;
     this.mHoles;
     this.mProfile;
+    this.mOutput;
+    this.mAreasPolytree;
     this.initialize();
 }
 
@@ -13,12 +15,15 @@ MyFloor.prototype.initialize = function() {
     this.mCorners = [];
     this.mHoles = [];
     this.mProfile = null;
+    this.mAreasPolytree = null;
 }
 
 MyFloor.prototype.setProfile = function(rect) {
     this.mProfile = new MyPolytree();
     this.mProfile.mOutLines = rect;
     this.mProfile.mHoles = [];
+    this.mOutput = null;
+
 }
 
 MyFloor.prototype.generatePolyTree = function()
@@ -111,23 +116,6 @@ MyFloor.prototype.removeSection = function(param1)
     return ArrayHelperClass.removeItem(this.mCurves, param1);
 }
 
-MyFloor.prototype.updatePosition = function(sub, newPos, oldPos)
-{
-    sub.updatePosition(newPos.mX, newPos.mY);
-    var analysis = new Analysis(this);
-    analysis.execute();
-    
-    var overlapped = this.checkOverlap();
-    
-    if (overlapped) {
-        sub.updatePosition(oldPos.mX, oldPos.mY);
-        var analysis = new Analysis(this);
-        analysis.execute();
-    }
-    
-    return overlapped;
-}
-
 MyFloor.prototype.checkOverlap = function()  {
     var overlapped = false;
     for (var i = 0; i < this.mCurves.length; i++) {
@@ -143,8 +131,180 @@ MyFloor.prototype.checkOverlap = function()  {
     return overlapped;
 }
 
+MyFloor.prototype._updateGeoStructure = function() {
+    var holesList = [];
+    var areas = this.mAreas;
+    for (var i = 0; i < areas.length; i++) {
+        var area = areas[i];
+        holesList.push([]);
+        for (var j = 0; j < areas.length; j++) {
+            if(i == j) {
+                continue;
+            }
+            
+            if (area.isIncludedArea(areas[j])) {
+                if (holesList[i].length == 0) {
+                    holesList[i].push(areas[j]);
+                } else {
+                    var isAdd = true;
+                    for (var k = 0; k < holesList[i].length; k++) {
+                        if (holesList[i][k].isIncludedArea(areas[j])) {
+                            isAdd = false;
+                            break;
+                        }
+                        if (areas[j].isIncludedArea(holesList[i][k])) {
+                            holesList[i][k] = areas[j];
+                            isAdd = false;
+                            break;
+                        }
+                    }
+                    if (isAdd) {
+                        holesList[i].push(areas[j]);
+                    }
+                }
+            }
+        }
+    }
 
+    this.mOutput = [];
+    this.mAreasPolytree = [];
+    
+    var polyTree = null;
+    for (var i = 0; i < areas.length; i++) {
+        var res = MyArea.outputStructures(areas[i], holesList[i]);
+        var res2 = MyArea.outputStructures2(areas[i], holesList[i]);
+        this.mOutput.push(res);
+        this.mAreasPolytree.push(res2);
+    }
+    console.log("GEOM INFO:");
+}
 
+MyFloor.prototype.Analysis = function() {
+    var analysis = new Analysis(this);
+    analysis.execute();
+    this._updateGeoStructure();
+}
+
+MyFloor.prototype.updatePosition = function(sub, newPos, oldPos)
+{
+    sub.updatePosition(newPos.mX, newPos.mY);
+    this.Analysis();
+
+    var overlapped = this.checkOverlap();
+    
+    if (overlapped) {
+        sub.updatePosition(oldPos.mX, oldPos.mY);
+        this.Analysis();
+    }
+    
+    return overlapped;
+}
+
+MyFloor.prototype._seperateType = function(pickedArea) {
+    var curves = [];
+    var segments = [];
+    var boundries = [];
+    var validSegmentIndex = [];
+    var validCurveIndex = [];
+    for (var i = 0; i < this.mCurves.length; i++) {
+        if (this.mCurves[i].isBoundry) {
+            boundries.push(this.mCurves[i]);
+        } else if (this.mCurves[i] instanceof SegmentController) {
+            var seg = this.mCurves[i];
+            segments.push(seg);
+            
+            if (pickedArea) {
+                for (var j = 0; j < pickedArea.mOutline.edges.length; j++) {
+                    var edge = pickedArea.mOutline.edges[j];
+                    if (edge instanceof MyEdge && edge.isSameAsEdgeStartOrEnd(seg.mStart.mPosition) && edge.isSameAsEdgeStartOrEnd(seg.mEnd.mPosition)) {
+                        validSegmentIndex.push(segments.length - 1);
+                    }
+                }
+                for (var k = 0; k < pickedArea.mHoles.length; k++) {
+                    var poly = pickedArea.mHoles[k];
+                    for (var j = 0; j < poly.edges.length; j++) {
+                        var edge = poly.edges[j];
+                        if (edge instanceof MyEdge  && edge.isSameAsEdgeStartOrEnd(seg.mStart.mPosition) && edge.isSameAsEdgeStartOrEnd(seg.mEnd.mPosition)) {
+                            validSegmentIndex.push(segments.length - 1);
+                        }
+                    }
+                }
+            }
+        } else if (this.mCurves[i] instanceof CurveController) {
+            curves.push(this.mCurves[i]);
+            if (pickedArea) {
+                var cur = this.mCurves[i].getCurveFromController();
+                for (var j = 0; j < pickedArea.mOutline.edges.length; j++) {
+                    var edge = pickedArea.mOutline.edges[j];
+                    if (edge instanceof MyCurve && MyCurve.isSameCurve(cur, edge)) {
+                        validCurveIndex.push(curves.length - 1);
+                    }
+                }
+                
+                
+                for (var k = 0; k < pickedArea.mHoles.length; k++) {
+                    var poly = pickedArea.mHoles[k];
+                    for (var j = 0; j < poly.edges.length; j++) {
+                        var edge = poly.edges[j];
+                        if (edge instanceof MyCurve && MyCurve.isSameCurve(cur, edge)) {
+                            validCurveIndex.push(curves.length - 1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return [curves, segments, boundries, validSegmentIndex, validCurveIndex];
+}
+
+//画内部标注线
+MyFloor.prototype._renderZoneSize = function(segments, validIndex, renderer) {
+    for (var i = 0; i < segments.length; i++) {
+        var segment = segments[i];
+        var edge = segment.getTheStartEndEdge();
+        var start = edge.mStart.clone();
+        var end = edge.mEnd.clone();
+        var center = edge.getCenter();
+        var area = segment.mAreas[segment.mAreas.length - 1];
+        var angle = edge.getAngle();
+        angle = angle + Math.PI / 2;
+        var offset = 10;
+        var offvec = new Vec2(offset * Math.cos(angle), offset * Math.sin(angle));
+        center.addBy(offvec);
+        
+        if (area.containsPoint(center)) {
+            start.sub(offvec);
+            end.sub(offvec);
+            
+        } else {
+            start.addBy(offvec);
+            end.addBy(offvec);
+        }
+        if (validIndex.indexOf(i) > -1) {
+            renderer.drawDimensions({x: start.mX,y: start.mY}, {x: end.mX,y: end.mY});
+        }
+    }
+}
+
+MyFloor.prototype._renderCurveHeight = function(curves, validCurveIndex, renderer) {
+}
+
+MyFloor.prototype.renderMarkerLines = function(flags, pickedArea, renderer)  {
+    //1. seperate the lines
+    var curves, segments, boundries, validSegmentIndex, validCurveIndex;
+    [curves, segments, boundries, validSegmentIndex, validCurveIndex] = this._seperateType(pickedArea);
+    
+    //2. renderZoneSize
+    if (flags.isZoneSizeEnabled) {
+        this._renderZoneSize(segments, validSegmentIndex, renderer);
+    }
+    
+    //3. renderCurveHeight
+    if (flags.isCrownHeightEnabled) {
+        this._renderCurveHeight(curves, validCurveIndex, renderer);
+    }
+    
+}
 
 
 
