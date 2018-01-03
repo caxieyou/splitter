@@ -852,6 +852,23 @@ Renderer = function () {
         return tt;
     }
     
+	/***
+	 * 绘制文本
+	 * @param {Object} txt 文本内容
+	 * @param {Object} pos 位置
+	 * @param {Object} fontSize 字体大小
+	 * @param {Object} color 文本颜色
+	 */
+    this.drawText = function(txt, pos, fontSize, color){
+    	if(fontSize === undefined) fontSize = 18;
+    	if(color === undefined) color = "#000";
+    	this.ctx.fillStyle = color;
+		this.ctx.font = fontSize + "px 微软雅黑";
+	    this.ctx.textBaseline = 'middle';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText(txt, pos.x, pos.y);
+    }
+    
     this.textInputs = [];
 	
 	this.updateTextInputs = function(offsetx, offsety){
