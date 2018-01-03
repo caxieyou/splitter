@@ -52,7 +52,7 @@ Analysis.prototype.addNotHoleParts = function(param1, param2)
         if(_loc3_.mAreas.length < 2)
         {
             _loc3_.isHasAndSaveOnCurve(param1);
-            param1.addONE_PART(_loc3_);
+            param1.addSection(_loc3_);
         }
     }
 }
@@ -133,7 +133,7 @@ private function seperateAreasInClip() : void
           if(polygonWithHole.contains(tmpCurve.getCenter()))
           {
              tmpCurve.isHasAndSaveOnCurve(tmpArea);
-             tmpArea.addONE_PART(tmpCurve);
+             tmpArea.addSection(tmpCurve);
           }
        }
     }
@@ -204,7 +204,7 @@ Analysis.prototype.seperateAreasInClip = function()
                 if(polygonWithHole.contains(this.mCurves[j].getCenter()))
                 {
                     this.mCurves[j].isHasAndSaveOnCurve(areas[k]);
-                    areas[k].addONE_PART(this.mCurves[j]);
+                    areas[k].addSection(this.mCurves[j]);
                 }
             }
         }
@@ -620,7 +620,7 @@ package -__--__-__---
             if(_loc3_.areas.length < 2)
             {
                _loc3_.isHasAndSaveOnCurve(param1);
-               param1.addONE_PART(_loc3_);
+               param1.addSection(_loc3_);
             }
          }
       }

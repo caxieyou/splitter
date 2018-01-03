@@ -4,13 +4,13 @@ function curveCornerHelperClass(param1) {
     
     for (var i = 0; i < param1.length; i++)
     {
-        this.addONE_PART(param1[i]);
+        this.addSection(param1[i]);
     }
          
 }
 curveCornerHelperClass.CONST_STRING_ARROW = ">>";
 
-curveCornerHelperClass.prototype.checkDupAdd = function(param1)
+curveCornerHelperClass.prototype.addCorner = function(param1)
 {
     if(!this.mMap2.hasKey(param1))
     {
@@ -23,12 +23,12 @@ curveCornerHelperClass.prototype.getCurvesByCorner = function(param1)
     return this.mMap2.itemFor(param1);
 }
 
-curveCornerHelperClass.prototype.addONE_PART = function(param1)
+curveCornerHelperClass.prototype.addSection = function(param1)
 {
     var _loc2_ = param1.mStart;
     var _loc3_ = param1.mEnd;
-    this.checkDupAdd(_loc2_);
-    this.checkDupAdd(_loc3_);
+    this.addCorner(_loc2_);
+    this.addCorner(_loc3_);
     ArrayHelperClass.ifHasAndSave(this.getCurvesByCorner(_loc2_),param1);
     ArrayHelperClass.ifHasAndSave(this.getCurvesByCorner(_loc3_),param1);
 }
@@ -100,7 +100,7 @@ curveCornerHelperClass.prototype.getPathByCornerCurve = function(param1, param2,
     {
         return;
     }
-    param3.addONE_PART(param2);
+    param3.addSection(param2);
     this.addOne_to_map(param1,param2);
     var _loc4_ = param2.getStartOrEndOrNull(param1);
     var _loc5_ = this.getCurvesByCorner(_loc4_);

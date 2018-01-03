@@ -1,8 +1,8 @@
-function CurveRelationHelper_XX() {
+function CurveRelationHelper() {
 
 }
 
-CurveRelationHelper_XX.getTheClosestCurve_ax = function(param1, param2, param3, param4, param5)
+CurveRelationHelper.getTheClosestCurve_ax = function(param1, param2, param3, param4, param5)
 {
     if (param3 == null || param3 == undefined) {
         param3 = false;
