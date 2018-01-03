@@ -6,6 +6,7 @@ function MyFloor() {
     this.mProfile;
     this.mOutput;
     this.mAreasPolytree;
+    this.mPickedArea;
     this.initialize();
 }
 
@@ -16,6 +17,7 @@ MyFloor.prototype.initialize = function() {
     this.mHoles = [];
     this.mProfile = null;
     this.mAreasPolytree = null;
+    this.mPickedArea = null;
 }
 
 MyFloor.prototype.setProfile = function(rect) {
@@ -116,6 +118,24 @@ MyFloor.prototype.removeSection = function(param1)
     return ArrayHelperClass.removeItem(this.mCurves, param1);
 }
 
+MyFloor.prototype.clearPickedArea = function() {
+    this.mPickedArea = null;
+}
+
+MyFloor.prototype.getPickedArea = function(x, y) {
+    if (x == undefined) {
+        return this.mPickedArea;
+    }
+    this.mPickedArea = null;
+    for (var i = 0; i < this.mAreasPolytree.length; i++) {
+        if (this.mAreasPolytree[i].contains(new Vec2(x, y))) {
+            this.mPickedArea = this.mOutput[i];
+            break;
+        }
+    }
+    return this.mPickedArea;
+}
+
 MyFloor.prototype.checkOverlap = function()  {
     var overlapped = false;
     for (var i = 0; i < this.mCurves.length; i++) {
@@ -187,25 +207,43 @@ MyFloor.prototype.Analysis = function() {
 
 MyFloor.prototype.updatePosition = function(sub, newPos, oldPos)
 {
-    sub.updatePosition(newPos.mX, newPos.mY);
+    if (sub instanceof Array) {
+        for (var i = 0; i < sub.length; i++) {
+            sub[i].updatePosition(newPos[i].mX, newPos[i].mY);
+        }
+    } else {
+        sub.updatePosition(newPos.mX, newPos.mY);
+    }
+    
+
     this.Analysis();
 
     var overlapped = this.checkOverlap();
     
     if (overlapped) {
-        sub.updatePosition(oldPos.mX, oldPos.mY);
+        
+        if (sub instanceof Array) {
+            for (var i = 0; i < sub.length; i++) {
+                sub[i].updatePosition(oldPos[i].mX, oldPos[i].mY);
+            }
+        } else {
+            sub.updatePosition(oldPos.mX, oldPos.mY);
+        }
         this.Analysis();
+    } else {
+        this.clearPickedArea();
     }
     
     return overlapped;
 }
 
-MyFloor.prototype._seperateType = function(pickedArea) {
+MyFloor.prototype._seperateType = function() {
     var curves = [];
     var segments = [];
     var boundries = [];
     var validSegmentIndex = [];
     var validCurveIndex = [];
+    var pickedArea = this.mPickedArea;
     for (var i = 0; i < this.mCurves.length; i++) {
         if (this.mCurves[i].isBoundry) {
             boundries.push(this.mCurves[i]);
@@ -256,6 +294,43 @@ MyFloor.prototype._seperateType = function(pickedArea) {
     }
     return [curves, segments, boundries, validSegmentIndex, validCurveIndex];
 }
+MyFloor.prototype.renderPickedArea = function(renderer) {
+    if (!this.mPickedArea) {
+        return;
+    }
+    renderer.drawArea(this.mPickedArea);
+    this.renderOutput(renderer);
+    renderer.drawAreaDots(this.mPickedArea);
+}
+
+MyFloor.prototype.renderOutput = function(renderer) {
+    if (this.mOutput == null) {
+        return;
+    }
+    var res = this.mOutput;
+    for (var i = 0; i < res.length; i++) {
+        for (var j = 0; j < res[i].mOutline.edges.length; j++) {
+            var edge = res[i].mOutline.edges[j];
+            if (edge instanceof MyEdge) {
+                renderer.drawLine(edge);
+            }else if (edge instanceof MyCurve) {
+                renderer.drawArc(edge);
+            }
+        }
+        
+        for (var j = 0; j < res[i].mHoles.length; j++) {
+            for (var k = 0; k < res[i].mHoles[j].edges.length; k++) {
+                var edge = res[i].mHoles[j].edges[k];
+                if (edge instanceof MyEdge) {
+                    renderer.drawLine(edge);
+                } else if (edge instanceof MyCurve) {
+                    renderer.drawArc(edge);
+                }
+            }
+        }
+        
+    }
+}
 
 //画内部标注线
 MyFloor.prototype._renderZoneSize = function(segments, validIndex, renderer) {
@@ -289,10 +364,10 @@ MyFloor.prototype._renderZoneSize = function(segments, validIndex, renderer) {
 MyFloor.prototype._renderCurveHeight = function(curves, validCurveIndex, renderer) {
 }
 
-MyFloor.prototype.renderMarkerLines = function(flags, pickedArea, renderer)  {
+MyFloor.prototype.renderMarkerLines = function(flags, renderer)  {
     //1. seperate the lines
     var curves, segments, boundries, validSegmentIndex, validCurveIndex;
-    [curves, segments, boundries, validSegmentIndex, validCurveIndex] = this._seperateType(pickedArea);
+    [curves, segments, boundries, validSegmentIndex, validCurveIndex] = this._seperateType();
     
     //2. renderZoneSize
     if (flags.isZoneSizeEnabled) {

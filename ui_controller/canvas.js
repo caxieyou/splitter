@@ -38,9 +38,7 @@ function Canvas(name) {
         isStartEndSame : [],
         isEndIntersect : []
     };
-   this._pickedArea = null;
-   this._initialize();
-   
+    this._initialize();
 }
 
 Canvas.prototype._initialize = function() {
@@ -170,14 +168,11 @@ Canvas.prototype.setType = function(type) {
         this._currentStatus = STATUS.LINE_START;
     }
     if (this._type == null) {
-        
         document.body.style.cursor = "default";
-        
-        
     } else {
         document.body.style.cursor = "crosshair";
     }
-    this._pickedArea = null;
+    this._mFloor.clearPickedArea();
     this.render();
 }
 
@@ -238,7 +233,6 @@ Canvas.prototype.setStartPoint = function(x, y) {
         this._linePoint.mY = y;
         this._currentStatus = STATUS.LINE_DRAWING;
         this._curentLine0 = null;
-        //if (this._linePoints[this._linePoints.length - 1].length === 1) {
         this._lineIntersect.isStartIntersect.push(false);
         this._lineIntersect.isSelfIntersect.push(false);
         this._lineIntersect.isStartEndSame.push(false);
@@ -532,21 +526,15 @@ Canvas.prototype.checkStatus = function() {
         this._currentStatus = STATUS.NOT_STARTED;
         return true;
     } else if (this._currentStatus == STATUS.LINE_START){
-        //this._currentStatus = STATUS.NOT_STARTED;
         return true;
     } else if (this._currentStatus == STATUS.LINE_DRAWING){
-        //this._currentStatus = STATUS.NOT_STARTED;
         return true;
     }
 }
 
 Canvas.prototype.renderAreaPicked = function(x, y) {
-    for (var i = 0; i < this._mFloor.mAreasPolytree.length; i++) {
-        if (this._mFloor.mAreasPolytree[i].contains(new Vec2(x, y))) {
-            this._pickedArea = this._mFloor.mOutput[i];//this._outputResult[i];
-            this.render();
-            break;
-        }
+    if (this._mFloor.getPickedArea(x, y)) {
+        this.render();
     }
 }
 
@@ -612,18 +600,14 @@ Canvas.prototype.updateElement = function(x, y){
     
     if (this._updateElment) {
         console.log("controller been called: " + x + " " + y);
-        this._pickedArea = null;
-        
         var overlapped = this._mFloor.updatePosition(this._updateElment.controller, new Vec2(x, y), this._lastFocos);
-        
-
         this.render(x, y);
         if (overlapped) {
             return;
         }
+        this._mFloor.clearPickedArea();
         this._lastFocos.set(x, y);
     }
-    
 }
 
 Canvas.prototype.createElement = function() {
@@ -642,34 +626,7 @@ Canvas.prototype.createElement = function() {
     }
 }
 
-Canvas.prototype._renderOutput = function() {
-    if (this._mFloor.mOutput == null) {
-        return;
-    }
-    var res = this._mFloor.mOutput;
-    for (var i = 0; i < res.length; i++) {
-        for (var j = 0; j < res[i].mOutline.edges.length; j++) {
-            var edge = res[i].mOutline.edges[j];
-            if (edge instanceof MyEdge) {
-                this._renderer.drawLine(edge);
-            }else if (edge instanceof MyCurve) {
-                this._renderer.drawArc(edge);
-            }
-        }
-        
-        for (var j = 0; j < res[i].mHoles.length; j++) {
-            for (var k = 0; k < res[i].mHoles[j].edges.length; k++) {
-                var edge = res[i].mHoles[j].edges[k];
-                if (edge instanceof MyEdge) {
-                    this._renderer.drawLine(edge);
-                } else if (edge instanceof MyCurve) {
-                    this._renderer.drawArc(edge);
-                }
-            }
-        }
-        
-    }
-}
+
 
 Canvas.prototype._renderFocusObject = function(x, y) {
     if (this._type != null || (x == undefined && y == undefined)) {
@@ -762,61 +719,9 @@ Canvas.prototype._renderFocusObject = function(x, y) {
 }
 
 Canvas.prototype._renderMarkerLines = function() {
-    var curves = [];
-    var segments = [];
-    var boundries = [];
-    var validIndex = [];
-    var validCurveIndex = [];
-    for (var i = 0; i < this._mFloor.mCurves.length; i++) {
-        if (this._mFloor.mCurves[i].isBoundry) {
-            boundries.push(this._mFloor.mCurves[i]);
-        } else if (this._mFloor.mCurves[i] instanceof SegmentController) {
-            var seg = this._mFloor.mCurves[i];
-            segments.push(seg);
-            
-            if (this._pickedArea) {
-                //console.log(this._pickedArea);
-                for (var j = 0; j < this._pickedArea.mOutline.edges.length; j++) {
-                    var edge = this._pickedArea.mOutline.edges[j];
-                    if (edge instanceof MyEdge && edge.isSameAsEdgeStartOrEnd(seg.mStart.mPosition) && edge.isSameAsEdgeStartOrEnd(seg.mEnd.mPosition)) {
-                        validIndex.push(segments.length - 1);
-                    }
-                }
-                for (var k = 0; k < this._pickedArea.mHoles.length; k++) {
-                    var poly = this._pickedArea.mHoles[k];
-                    for (var j = 0; j < poly.edges.length; j++) {
-                        var edge = poly.edges[j];
-                        if (edge instanceof MyEdge  && edge.isSameAsEdgeStartOrEnd(seg.mStart.mPosition) && edge.isSameAsEdgeStartOrEnd(seg.mEnd.mPosition)) {
-                            validIndex.push(segments.length - 1);
-                        }
-                    }
-                }
-            }
-        } else if (this._mFloor.mCurves[i] instanceof CurveController) {
-            curves.push(this._mFloor.mCurves[i]);
-            if (this._pickedArea) {
-                var cur = this._mFloor.mCurves[i].getCurveFromController();
-                for (var j = 0; j < this._pickedArea.mOutline.edges.length; j++) {
-                    var edge = this._pickedArea.mOutline.edges[j];
-                    if (edge instanceof MyCurve && MyCurve.isSameCurve(cur, edge)) {
-                        validCurveIndex.push(curves.length - 1);
-                    }
-                }
-                
-                
-                for (var k = 0; k < this._pickedArea.mHoles.length; k++) {
-                    var poly = this._pickedArea.mHoles[k];
-                    for (var j = 0; j < poly.edges.length; j++) {
-                        var edge = poly.edges[j];
-                        if (edge instanceof MyCurve && MyCurve.isSameCurve(cur, edge)) {
-                            validCurveIndex.push(curves.length - 1);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
+    var curves, segments, boundries, validIndex, validCurveIndex;
+    [curves, segments, boundries, validIndex, validCurveIndex] = this._mFloor._seperateType();
+
     if (this._flags.isZoneSizeEnabled) {
         //画内部标注线
         for (var i = 0; i < segments.length; i++) {
@@ -865,58 +770,62 @@ Canvas.prototype._renderMarkerLines = function() {
             
             if (validCurveIndex.indexOf(i) > -1) {
                 this._renderer.drawDimensions({x: pt0.mX,y: pt0.mY}, {x: pt1.mX,y: pt1.mY}, null, true, 
-                function(dis, canvas, curve, seg2, distance) {
-                    var originalCurvePoint = curve.mCurvePoint.clone();
-                    
-                    var pt0 = curve.getCenter();
-                    var pt1 = curve.getTheStartEndEdge().getCenter();
-                    
-                    var dir = new Vec2(pt0.mX - pt1.mX, pt0.mY - pt1.mY);
-                    dir.normalize();
-                    //var angle = dir.getAngle();
-                    
-                    pt1.addBy(dir.mulBy(dis));
-                    curve.mCurvePoint.copy(pt1);
-                    
-                    that._mFloor.Analysis();
-                    
-                    
-                    var overlapped = that._checkOverlap();
-                
-                    if (overlapped)
-                    {
-                        curve.mCurvePoint.copy(originalCurvePoint);
-                        that._mFloor.Analysis();
-                        
-                    } else {
-                        that._pickedArea = null;
-                    }
-                    
-                    that.render();
-                    
-                }, that, curves[i], null, null);
+                Utility.DrawDimensionCallback, that, curves[i]);
             }
-            
         }
     }
     
-    
     for (var i = 0; i < segments.length; i++) {
         
-        var edge = segments[i].getTheStartEndEdge();
-        var angle = edge.getAngle();
+        var segmentObj = segments[i];
+        var edgeObj = segmentObj.getTheStartEndEdge();
+        var angleObj = edgeObj.getAngle();
         
-        if (Angle.isHorizontal(angle)) {
+        var isHorizontalObj = Angle.isHorizontal(angleObj);
+        var isVerticalObj = Angle.isVertical(angleObj);
+        
+        var _segments = null;
+        var idx = -1;
+        
+        if (this._flags.isRelativeDistanceEnabled) {
+            _segments = segments;
+            idx = i+1;
+        }
+        
+        if (this._flags.isAbosoluteMarginEnabled) {
+            _segments = boundries;
+            idx = 0;
+        }
+        
+        if(!_segments) {
+            break;
+        }
+        
+        for (var j = idx; j < _segments.length; j++) {
+            var segmentSbj = _segments[j];
+            var edgeSbj = segmentSbj.getTheStartEndEdge();
+            var angleSbj = edgeSbj.getAngle();
+            
+            var isHorizontalSbj = Angle.isHorizontal(angleSbj);
+            var isVerticalObSbj = Angle.isVertical(angleSbj);
+            
             var maxDis = -Number.MAX_VALUE;
             var sign = 0;
             var center;
             var markLine = new MyEdge(new Vec2(), new Vec2());
-            
-            if (this._flags.isRelativeDistanceEnabled) {
-                for (var j = i+1; j < segments.length; j++) {
-                    var edge2 = segments[j].getTheStartEndEdge();
-                    var angle2 = edge2.getAngle();
-                    if (Angle.isHorizontal(angle2) && !SegmentController.isWithinSameArea(segments[i],segments[j]) && MyEdge.getValidHorizontalSection(edge, edge2, markLine)) {
+            if (!SegmentController.isWithinSameArea(segmentObj,segmentSbj)) {
+                var direction = -1;
+                
+                if (isHorizontalObj && isHorizontalSbj && MyEdge.getValidHorizontalSection(edgeObj, edgeSbj, markLine)) {
+                    direction = 0;
+                }
+                
+                if (isVerticalObj && isVerticalObSbj && MyEdge.getValidVerticalSection(edgeObj, edgeSbj, markLine)) {
+                    direction = 1;
+                }
+                
+                if (direction > -1) {
+                    if (this._flags.isRelativeDistanceEnabled) {
                         var valid = true;
                         
                         for (var m = 0; m < this._mFloor.mCurves.length; m++) {
@@ -933,8 +842,14 @@ Canvas.prototype._renderMarkerLines = function() {
                             }
                         }
                         if(valid) {
-                            sign = Math.sign(segments[i].mStart.mPosition.mY - segments[j].mStart.mPosition.mY);
-                            var distance = Math.abs(segments[i].mStart.mPosition.mY - segments[j].mStart.mPosition.mY);
+                            var distance;
+                            if (direction == 0) {
+                                distance = segments[i].mStart.mPosition.mY - _segments[j].mStart.mPosition.mY;
+                            } else {
+                                distance = segments[i].mStart.mPosition.mX - _segments[j].mStart.mPosition.mX;
+                            }
+                            sign = Math.sign(distance);
+                            distance = Math.abs(distance);
                             center = markLine.mStart.clone();
                                 
                             if (validIndex.indexOf(i) > -1 || validIndex.indexOf(j) > -1) {
@@ -952,7 +867,7 @@ Canvas.prototype._renderMarkerLines = function() {
                                     }
                                 }
                                 
-                                var corners = segments[j].toCorners();
+                                var corners = _segments[j].toCorners();
                                 for (var n = 0; n < corners.length; n++) {
                                     var corner = corners[n];
                                     for (var p = 0; p < corner.mCurves.length; p++) {
@@ -963,86 +878,26 @@ Canvas.prototype._renderMarkerLines = function() {
                                     }
                                 }
                                 
-                                if (arcValid_i || arcValid_j) {
+                                var seg0 = arcValid_i ? segments[i] : null;
+                                var seg1 = arcValid_j ? _segments[j] : null;
+                                
+                                if (seg0 || seg1) {
                                     var that = this;
-                                    if (arcValid_i && arcValid_j) {
-                                        this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX,y: center.mY - sign * distance}, null, true,
-                                        function(dis, canvas, seg, seg2, distance) {
-                                            var originalY1 = seg.mStart.mPosition.mY;
-                                            var originalY2 = seg2.mStart.mPosition.mY;
-                                            
-                                            seg.mStart.mPosition.mY = seg.mStart.mPosition.mY + 0.5 * Math.sign(distance) * (dis - Math.abs(distance));
-                                            seg.mEnd.mPosition.mY = seg.mEnd.mPosition.mY + 0.5 * Math.sign(distance) * (dis - Math.abs(distance));
-                                            
-                                            seg2.mStart.mPosition.mY = seg2.mStart.mPosition.mY - 0.5 * Math.sign(distance) * (dis - Math.abs(distance));
-                                            seg2.mEnd.mPosition.mY = seg2.mEnd.mPosition.mY - 0.5 * Math.sign(distance) * (dis - Math.abs(distance));
-                                            
-                                            that._mFloor.Analysis();
-                                            var overlapped = that._checkOverlap();
-                                        
-                                            if (overlapped)
-                                            {
-                                                
-                                                seg.mStart.mPosition.mY = originalY1;
-                                                seg.mEnd.mPosition.mY = originalY1;
-                                                
-                                                seg2.mStart.mPosition.mY = originalY2;
-                                                seg2.mEnd.mPosition.mY = originalY2;
-                                                
-                                                that._mFloor.Analysis();
-                                                
-                                            } else {
-                                                that._pickedArea = null;
-                                            }
-                                            that.render();
-                                            
-                                        }, that, segments[i], segments[j], sign * distance);
-                                    } else {
-                                        var seg; 
-                                        if (arcValid_i) {
-                                            seg = segments[i];
-                                        }
-                                        if (arcValid_j) {
-                                            seg = segments[j];
-                                        }
-                                        this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX,y: center.mY - sign * distance}, null, true,
-                                        function(dis, canvas, seg, seg2, distance) {
-                                            var originalY = seg.mStart.mPosition.mY;
-                                            
-                                            seg.mStart.mPosition.mY = seg.mStart.mPosition.mY + Math.sign(distance) * (dis - Math.abs(distance));
-                                            seg.mEnd.mPosition.mY = seg.mEnd.mPosition.mY + Math.sign(distance) * (dis - Math.abs(distance));
-                                            
-                                            that._mFloor.Analysis();
-                                            
-                                            var overlapped = that._checkOverlap();
-                                        
-                                            if (overlapped)
-                                            {
-                                                
-                                                seg.mStart.mPosition.mY = originalY;
-                                                seg.mEnd.mPosition.mY = originalY;
-                                                that._mFloor.Analysis();
-                                            } else {
-                                                that._pickedArea = null;
-                                            }
-                                            that.render();
-                                            
-                                        }, that, seg, null, sign * distance);
-                                    }
-                                    
+                                    this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - direction * sign * distance,y: center.mY  - (1 -  direction) * sign * distance}, null, true,
+                                       Utility.DrawDimensionCallback, that, seg0, seg1, sign * distance, direction);
                                 }
                             }
                         }
                     }
-                }
-                
-            }
-            if (this._flags.isAbosoluteMarginEnabled) {
-                for (var j = 0; j < boundries.length; j++) {
-                    var edge2 = boundries[j].getTheStartEndEdge();
-                    var angle2 = edge2.getAngle();
-                    if (Angle.isHorizontal(angle2) && !SegmentController.isWithinSameArea(segments[i],boundries[j]) && MyEdge.getValidHorizontalSection(edge, edge2, markLine)) {
-                        markLine.mEnd.mY = boundries[j].mStart.mPosition.mY;
+                    if (this._flags.isAbosoluteMarginEnabled) {
+                        
+                        if (direction == 0) {
+                            markLine.mEnd.mY = _segments[j].mStart.mPosition.mY;
+                        } else {
+                            markLine.mEnd.mX = _segments[j].mStart.mPosition.mX;
+                        }
+                        
+                        
                         var valid = true;
                         for (var m = 0; m < this._mFloor.mCurves.length; m++) {
                             if (this._mFloor.mCurves[m] instanceof CurveController) {
@@ -1058,266 +913,46 @@ Canvas.prototype._renderMarkerLines = function() {
                             }
                         }
                         if(valid) {
-                            var distance = Math.abs(segments[i].mStart.mPosition.mY - boundries[j].mStart.mPosition.mY);
-                            if (maxDis < distance) {
-                                sign = Math.sign(segments[i].mStart.mPosition.mY - boundries[j].mStart.mPosition.mY);
-                                maxDis = distance;
+                            var distance
+                            if (direction == 0) {
+                                distance = segments[i].mStart.mPosition.mY - _segments[j].mStart.mPosition.mY;
+                            } else {
+                                distance = segments[i].mStart.mPosition.mX - _segments[j].mStart.mPosition.mX;
+                            }
+                            if (maxDis < Math.abs(distance)) {
+                                sign = Math.sign(distance);
+                                maxDis = Math.abs(distance);
                                 center = markLine.mStart.clone();
                             }
                         }
-                    }
-                }
-                
-                if (maxDis > -Number.MAX_VALUE && validIndex.indexOf(i) > -1) {
-                    var arcValid = true;
-                    for (var k = 0; k < segments[i].mAreas.length; k++) {
-                        var area = segments[i].mAreas[k];
-                        for (var m = 0; m < area.mCurves.length; m++) {
-                            var curve = area.mCurves[m];
-                            var corners = curve.toCorners();
-                            for (var n = 0; n < corners.length; n++) {
-                                var corner = corners[n];
-                                for (var p = 0; p < corner.mCurves.length; p++) {
-                                    if (corner.mCurves[p] instanceof CurveController) {
-                                        arcValid = false;
-                                        break;
-                                    }
-                                }
-                            }
-                            
-                        }
-                    }
-                    if (arcValid) {
-                        var that = this;
-                        this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX,y: center.mY - sign * maxDis}, null, true,
-                        function(dis, canvas, seg, seg2, distance) {
-                            var originalY = seg.mStart.mPosition.mY;
-                            
-                            seg.mStart.mPosition.mY = seg.mStart.mPosition.mY + Math.sign(distance) * (dis - Math.abs(distance));
-                            seg.mEnd.mPosition.mY = seg.mEnd.mPosition.mY + Math.sign(distance) * (dis - Math.abs(distance));
-                            
-                            that._mFloor.Analysis();
-                            var overlapped = that._mFloor.checkOverlap();
                         
-                            if (overlapped)
-                            {
-                                
-                                seg.mStart.mPosition.mY = originalY;
-                                seg.mEnd.mPosition.mY = originalY;
-                                that._mFloor.Analysis();
-                            } else {
-                                that._pickedArea = null;
-                            }
-                            that.render();
-                            
-                        }, that, segments[i], null, sign * maxDis);
-                    }
-                }
-            }
-        }
-        
-        if (Angle.isVertical(angle)) {
-            var maxDis = -Number.MAX_VALUE;
-            var sign = 0;
-            var center;
-            var markLine = new MyEdge(new Vec2(), new Vec2());
-            
-            if (this._flags.isRelativeDistanceEnabled) {
-                for (var j = i+1; j < segments.length; j++) {
-                    var edge2 = segments[j].getTheStartEndEdge();
-                    var angle2 = edge2.getAngle();
-                    if (Angle.isVertical(angle2) && !SegmentController.isWithinSameArea(segments[i],segments[j]) && MyEdge.getValidVerticalSection(edge, edge2, markLine)) {
-                        markLine.mEnd.mX = segments[j].mStart.mPosition.mX;
-                        var valid = true;
                         
-                        for (var m = 0; m < this._mFloor.mCurves.length; m++) {
-                            if (this._mFloor.mCurves[m] instanceof CurveController) {
-                                continue;
-                            }
-                            var intersects = [];
-                            if (SegmentController.isIntersectWith(markLine, this._mFloor.mCurves[m], intersects)) {
-                                if (intersects.length > 0 && !Vec2.isEqual(intersects[0], markLine.mEnd))
-                                {
-                                    valid = false;
-                                    continue;
-                                }
-                            }
-                        }
-                        if(valid) {
-                            var distance = Math.abs(segments[i].mStart.mPosition.mX - segments[j].mStart.mPosition.mX);
-                            sign = Math.sign(segments[i].mStart.mPosition.mX - segments[j].mStart.mPosition.mX);
-                            center = markLine.mStart.clone();
-                            if (validIndex.indexOf(i) > -1 || validIndex.indexOf(j) > -1) {
-                                var arcValid_i = true;
-                                var arcValid_j = true;
-                                
-                                var corners = segments[i].toCorners();
-                                for (var n = 0; n < corners.length; n++) {
-                                    var corner = corners[n];
-                                    for (var p = 0; p < corner.mCurves.length; p++) {
-                                        if (corner.mCurves[p] instanceof CurveController) {
-                                            arcValid_i = false;
-                                            break;
-                                        }
-                                    }
-                                }
-                                
-                                var corners = segments[j].toCorners();
-                                for (var n = 0; n < corners.length; n++) {
-                                    var corner = corners[n];
-                                    for (var p = 0; p < corner.mCurves.length; p++) {
-                                        if (corner.mCurves[p] instanceof CurveController) {
-                                            arcValid_j = false;
-                                            break;
-                                        }
-                                    }
-                                }
-                                
-                                if (arcValid_i || arcValid_j) {
-                                    var that = this;
-                                    if (arcValid_i && arcValid_j) {
-                                        this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - sign * distance,y: center.mY}, null, true,
-                                        function(dis, canvas, seg, seg2, distance) {
-                                            var originalX1 = seg.mStart.mPosition.mX;
-                                            var originalX2 = seg2.mStart.mPosition.mX;
-                                            
-                                            seg.mStart.mPosition.mX = seg.mStart.mPosition.mX + 0.5 * Math.sign(distance) * (dis - Math.abs(distance));
-                                            seg.mEnd.mPosition.mX = seg.mEnd.mPosition.mX + 0.5 * Math.sign(distance) * (dis - Math.abs(distance));
-                                            
-                                            seg2.mStart.mPosition.mX = seg2.mStart.mPosition.mX - 0.5 * Math.sign(distance) * (dis - Math.abs(distance));
-                                            seg2.mEnd.mPosition.mX = seg2.mEnd.mPosition.mX - 0.5 * Math.sign(distance) * (dis - Math.abs(distance));
-                                            
-                                            that._mFloor.Analysis();
-                                            var overlapped = that._mFloor.checkOverlap();
-                                        
-                                            if (overlapped)
-                                            {
-                                                
-                                                seg.mStart.mPosition.mX = originalX1;
-                                                seg.mEnd.mPosition.mX = originalX1;
-                                                
-                                                seg2.mStart.mPosition.mX = originalX2;
-                                                seg2.mEnd.mPosition.mX = originalX2;
-                                                that._mFloor.Analysis();
-                                            } else {
-                                                that._pickedArea = null;
+                        
+                        if (maxDis > -Number.MAX_VALUE && validIndex.indexOf(i) > -1) {
+                            var arcValid = true;
+                            for (var k = 0; k < segments[i].mAreas.length; k++) {
+                                var area = segments[i].mAreas[k];
+                                for (var m = 0; m < area.mCurves.length; m++) {
+                                    var curve = area.mCurves[m];
+                                    var corners = curve.toCorners();
+                                    for (var n = 0; n < corners.length; n++) {
+                                        var corner = corners[n];
+                                        for (var p = 0; p < corner.mCurves.length; p++) {
+                                            if (corner.mCurves[p] instanceof CurveController) {
+                                                arcValid = false;
+                                                break;
                                             }
-                                            that.render();
-                                            
-                                        }, that, segments[i], segments[j], sign * distance);
-                                    } else {
-                                        var seg; 
-                                        if (arcValid_i) {
-                                            seg = segments[i];
                                         }
-                                        if (arcValid_j) {
-                                            seg = segments[j];
-                                        }
-                                        this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - sign * distance,y: center.mY}, null, true,
-                                        function(dis, canvas, seg, seg2, distance) {
-                                            var originalX = seg.mStart.mPosition.mX;
-                            
-                                            seg.mStart.mPosition.mX = seg.mStart.mPosition.mX + Math.sign(distance) * (dis - Math.abs(distance));
-                                            seg.mEnd.mPosition.mX = seg.mEnd.mPosition.mX + Math.sign(distance) * (dis - Math.abs(distance));
-                                            
-                                            that._mFloor.Analysis();
-                                            var overlapped = that._mFloor.checkOverlap();
-                                        
-                                            if (overlapped)
-                                            {
-                                                
-                                                seg.mStart.mPosition.mX = originalX;
-                                                seg.mEnd.mPosition.mX = originalX;
-                                                
-                                                that._mFloor.Analysis();
-                                            } else {
-                                                that._pickedArea = null;
-                                            }
-                                            that.render();
-                                            
-                                        }, that, seg, null, sign * distance);
                                     }
+                                    
                                 }
                             }
-                        }
-                    }
-                }
-            }
-            
-            if (this._flags.isAbosoluteMarginEnabled) {
-                for (var j = 0; j < boundries.length; j++) {
-                    var edge2 = boundries[j].getTheStartEndEdge();
-                    var angle2 = edge2.getAngle();
-                    if (Angle.isVertical(angle2) && !SegmentController.isWithinSameArea(segments[i],boundries[j]) && MyEdge.getValidVerticalSection(edge, edge2, markLine)) {
-                        markLine.mEnd.mX = boundries[j].mStart.mPosition.mX;
-                        var valid = true;
-                        for (var m = 0; m < this._mFloor.mCurves.length; m++) {
-                            if (this._mFloor.mCurves[m] instanceof CurveController) {
-                                continue;
-                            }
-                            var intersects = [];
-                            if (SegmentController.isIntersectWith(markLine, this._mFloor.mCurves[m], intersects)) {
-                                if (intersects.length > 0 && !Vec2.isEqual(intersects[0], markLine.mEnd)  && SegmentController.isWithinSameArea(segments[i],this._mFloor.mCurves[m]))
-                                {
-                                    valid = false;
-                                    continue;
-                                }
+                            if (arcValid) {
+                                var that = this;
+                                this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - direction * sign * maxDis, y: center.mY - (1- direction) * sign * maxDis}, null, true,
+                                Utility.DrawDimensionCallback, that, segments[i], null, sign * maxDis, direction);
                             }
                         }
-                        if(valid) {
-                            var distance = Math.abs(segments[i].mStart.mPosition.mX - boundries[j].mStart.mPosition.mX);
-                            if (maxDis < distance) {
-                                sign = Math.sign(segments[i].mStart.mPosition.mX - boundries[j].mStart.mPosition.mX);
-                                maxDis = distance;
-                                center = markLine.mStart.clone();
-                                validJ = -1;
-                                isAbso = true;
-                            }
-                        }
-                    }
-                }
-                if (maxDis > -Number.MAX_VALUE && validIndex.indexOf(i) > -1) {
-                    var arcValid = true;
-                    for (var k = 0; k < segments[i].mAreas.length; k++) {
-                        var area = segments[i].mAreas[k];
-                        for (var m = 0; m < area.mCurves.length; m++) {
-                            var curve = area.mCurves[m];
-                            var corners = curve.toCorners();
-                            for (var n = 0; n < corners.length; n++) {
-                                var corner = corners[n];
-                                for (var p = 0; p < corner.mCurves.length; p++) {
-                                    if (corner.mCurves[p] instanceof CurveController) {
-                                        arcValid = false;
-                                        break;
-                                    }
-                                }
-                            }
-                            
-                        }
-                    }
-                    if (arcValid) {
-                        var that = this;
-                        this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - sign * maxDis,y: center.mY}, null, true,
-                        function(dis, canvas, seg, seg2, distance) {
-                            var originalX = seg.mStart.mPosition.mX;
-                            
-                            seg.mStart.mPosition.mX = seg.mStart.mPosition.mX + Math.sign(distance) * (dis - Math.abs(distance));
-                            seg.mEnd.mPosition.mX = seg.mEnd.mPosition.mX + Math.sign(distance) * (dis - Math.abs(distance));
-                            that._mFloor.Analysis();
-                            var overlapped = that._mFloor.checkOverlap();
-                        
-                            if (overlapped)
-                            {
-                                
-                                seg.mStart.mPosition.mX = originalX;
-                                seg.mEnd.mPosition.mX = originalX;
-                                that._mFloor.Analysis();
-                            } else {
-                                that._pickedArea = null;
-                            }
-                            that.render();
-                            
-                        }, that, segments[i], null, sign * maxDis);
                     }
                 }
             }
@@ -1467,14 +1102,6 @@ Canvas.prototype._renderHintPoints = function() {
     this._hintPoints = [];
 }
 
-Canvas.prototype._renderPickedArea = function() {
-    if (this._pickedArea) {
-        this._renderer.drawArea(this._pickedArea);
-        this._renderOutput();
-        this._renderer.drawAreaDots(this._pickedArea);
-    }
-}
-
 Canvas.prototype.setZoneSize = function(enabled) {
     this._flags.isZoneSizeEnabled = enabled;
     this.render();
@@ -1500,7 +1127,7 @@ Canvas.prototype.render = function(x, y) {
     this._renderer.clear();
     
     //绘制已经分析完的图元
-    this._renderOutput();
+    this._mFloor.renderOutput(this._renderer);
     
     //长方形，圆，线段等正在绘制的图元
     this._renderCurrentObject();
@@ -1509,7 +1136,7 @@ Canvas.prototype.render = function(x, y) {
     
     this._renderMarkerLines();
     
-    this._renderPickedArea();
+    this._mFloor.renderPickedArea(this._renderer);
     
     //绘制鼠标移动中经过的图元
     this._renderFocusObject(x, y);
@@ -1538,6 +1165,5 @@ Canvas.prototype.clear = function() {
         isStartEndSame : [],
         isEndIntersect : []
     };
-   this._pickedArea = null;
    this._initialize();
 }
