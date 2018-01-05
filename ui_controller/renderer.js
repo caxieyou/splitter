@@ -173,7 +173,7 @@ Renderer = function () {
         } else if(color){
             this.ctx.strokeStyle = color;
         } else {
-            this.ctx.strokeStyle = "black";
+            this.ctx.strokeStyle = "#888";
         }
         //this.ctx.strokeStyle = isFocus != undefined ? "blue" : color;
         this.ctx.stroke();
@@ -201,7 +201,7 @@ Renderer = function () {
             this.ctx.lineTo(leftUp.x, rightBottom.y);
             this.ctx.lineTo(leftUp.x, leftUp.y);
         //}
-        this.ctx.strokeStyle = "black";
+        this.ctx.strokeStyle = "#888";
         this.ctx.stroke();
         this.ctx.closePath();
     }
@@ -213,7 +213,7 @@ Renderer = function () {
         var radius = edge.getLength()
         
         this.ctx.beginPath();
-        this.ctx.strokeStyle = 'black';
+        this.ctx.strokeStyle = '#888';
         this.ctx.arc(center.x, center.y, radius, 0, Math.PI * 2, true);
         this.ctx.stroke();
         this.ctx.closePath();
@@ -247,7 +247,7 @@ Renderer = function () {
         }
         
         this.ctx.beginPath();
-        this.ctx.strokeStyle = !!isFocus ? "blue" : 'black';
+        this.ctx.strokeStyle = !!isFocus ? "blue" : '#888';
         this.ctx.arc(center.x, center.y, radius, start, end, clock < 0 ? true : false);
         this.ctx.stroke();
         this.ctx.closePath();
@@ -267,7 +267,7 @@ Renderer = function () {
                 this.ctx.lineTo(p0.x + (xpos / numDashes) * i, p0.y + (ypos / numDashes) * i);
             }
         }
-        this.ctx.strokeStyle = 'black';
+        this.ctx.strokeStyle = '#888';
         this.ctx.stroke();
         this.ctx.closePath();
     }
