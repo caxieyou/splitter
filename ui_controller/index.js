@@ -107,7 +107,7 @@ $(function() {
             canvas.render(event.offsetX, event.offsetY);
         }
     });
-
+    // 选中线段事件
     $('#props_wrap').on('click', '.props', function() {
         var type = $(this).data('type');
         //console.log(type);
@@ -212,6 +212,26 @@ $(function() {
         canvas.clear();
         return false;
     });
+    /**
+     *区域属性的数据更新方法
+     *name: String 区域名称
+     *value: Number 凸出/凹进的值(包含正负号，负号为凹进)
+     *ifShow: Boolean 是否显示区域属性
+     */
+    var refreshAreaData = function(name, value, ifShow) {
+        if(!ifShow) {
+            $('#bottom_props').hide();
+            return false;
+        }
+        $('#bottom_props').css('display', 'flex');
+        $('#bottom_props .bottom-props-name-input').val(name);
+        if(value < 0) {
+            $('#bottom_props #bulge_backoff_selects').val(1).trigger('change.select2');
+        } else {
+            $('#bottom_props #bulge_backoff_selects').val(0).trigger('change.select2');
+        }
+        $('#bottom_props .bottom-props-depth-input').val(Math.abs(value));
+    };
     // 输入框change事件
     $('body').on('keyup change', 'input.number', function() {
         var $this = $(this),
