@@ -114,7 +114,9 @@
                 <div class="bottom-props" id="bottom_props">
                     <label class="bottom-props-title">区域</label>
                     <i class="vertical-line"></i>
-                    <label class="bottom-props-name">名称：<input type="text" class="bottom-props-name-input"></label>
+                    <label class="bottom-props-name">名称：
+                        <input type="text" class="bottom-props-name-input">
+                    </label>
                     <i class="vertical-line"></i>
                     <label class="bottom-props-selects">
                         <select class="bulge-backoff-selects" id="bulge_backoff_selects">
@@ -125,14 +127,12 @@
                     <label>
                         <span class="bottom-props-depth">深度:</span>
                         <input type="text" class="bottom-props-depth-input number">
-                        <span>mm</span>  
+                        <span>mm</span>
                     </label>
                 </div>
-
                 <div class="canvas-container">
                     <canvas id="canvas" width="800" height="800"></canvas>
                 </div>
-
             </div>
         </div>
         <div id="props_wrap">
@@ -148,6 +148,15 @@
             <div class="props" data-type="delete">
                 <i class="icon iconfont">&#xe63a;</i>
                 <i class="pup">删除<i></i></i>
+            </div>
+        </div>
+        <div class="message-container">
+            <div class="message-box">
+                <div class="header">温馨提示</div>
+                <div class="message-body">
+                    <label><span>65535</span>不是一个合法的数值</label>
+                <button id="sure_btn">确定</button>
+                </div>
             </div>
         </div>
     </div>

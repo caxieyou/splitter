@@ -232,6 +232,18 @@ $(function() {
         }
         $('#bottom_props .bottom-props-depth-input').val(Math.abs(value));
     };
+    /**
+     * 设置提示框的信息
+     * message: String 不合法的数值
+     */
+    var setMessageData = function(message) {
+        $('.message-container').show();
+        $('.message-container span').text(message);
+    };
+    // 提示框确定事件
+    $('.message-container').on('click', '#sure_btn', function() {
+        $('.message-container').hide();
+    });
     // 输入框change事件
     $('body').on('keyup change', 'input.number', function() {
         var $this = $(this),
