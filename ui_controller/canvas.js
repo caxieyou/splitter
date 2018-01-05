@@ -266,9 +266,7 @@ Canvas.prototype.setStartPoint = function(x, y) {
             if (!intersectWithCurve)
             {
                 this._lineIntersect.isSelfIntersect[this._lineIntersect.isSelfIntersect.length - 1] = true;
-            }
-            
-            if (Vec2.isEqual(this._curentLine1.mStart, this._curentLine1.mEnd)) {
+            } else {
                 this._lineIntersect.isEndIntersect[this._lineIntersect.isEndIntersect.length - 1] = true;
             }
             
