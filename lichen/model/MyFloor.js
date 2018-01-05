@@ -4,56 +4,32 @@ function MyFloor() {
     this.mCorners;
     this.mHoles;
     this.mProfile;
+    this.mOutput;
+    this.mAreasPolytree;
+    this.mPickedArea;
     this.initialize();
-    /*
-    private var mAreas:Vector.<wallAreas_Class>;
-      
-    private var m_curves:Vector.<wallCurve>;
-
-    private var mModels:Vector.<§-_--_-_-----§>;
-
-    private var mBoundaries:Vector.<§-----_-__----§>;
-
-    private var mCorners:Vector.<cornerSonClass>;
-
-    private var mHoles:Vector.<wallAreas_Class>;
-
-    private var mDesignDataId:String;
-
-    private var mPosition:Vec2;
-
-    private var mDisplayInfoDataId:String;
-
-    private var mAttachedObjectId:String;
-
-    private var mAttachedObjectIds:Object;
-
-    private var mAttachedObjectType:int;
-
-    private var mLine:my2D_Edge;
-    */
 }
 
 MyFloor.prototype.initialize = function() {
-    //this.mPosition = new Vec2();
-    this.mAreas = [];//new Vector.<wallAreas_Class>();
-    this.mCurves = [];//new Vector.<wallCurve>();
-    //this.mModels = new Vector.<§-_--_-_-----§>();
-    //this.mBoundaries = new Vector.<§-----_-__----§>();
-    this.mCorners = [];//new Vector.<cornerSonClass>();
+    this.mAreas = [];
+    this.mCurves = [];
+    this.mCorners = [];
     this.mHoles = [];
     this.mProfile = null;
+    this.mAreasPolytree = null;
+    this.mPickedArea = null;
 }
 
 MyFloor.prototype.setProfile = function(rect) {
     this.mProfile = new MyPolytree();
     this.mProfile.mOutLines = rect;
     this.mProfile.mHoles = [];
+    this.mOutput = null;
+
 }
 
 MyFloor.prototype.generatePolyTree = function()
 {
-    
     //var _loc4_ = null;
     //var _loc5_ = null;
     //var _loc1_ = this.getTheBiggestAreaPath();
@@ -93,15 +69,13 @@ MyFloor.prototype.correctAreas = function()
     var _loc2_ = null;
     var _loc3_ = null;
     var _loc1_ = CurveAreaRelationshipHelper.getHoleParts(this.mAreas);
-    this.mHoles = [];//new Vector.<wallAreas_Class>();
+    this.mHoles = [];
     
     for (var i = 0; i < _loc1_.length; i++)
-    //for each(_loc2_ in _loc1_)
     {
         this.mHoles.push(_loc1_[i]);
         
         for (var j = 0; j < _loc1_[i].mCurves.length; j++)
-        //for each(_loc3_ in _loc1_[i].curves)
         {
             _loc3_ = _loc1_[i].mCurves[j];
             _loc3_.wallDleleteSame(_loc1_[i]);
@@ -110,7 +84,7 @@ MyFloor.prototype.correctAreas = function()
     ArrayHelperClass.deleteSameValues(this.mAreas,_loc1_);
 }
 
-MyFloor.prototype.addONE_PART = function(param1)
+MyFloor.prototype.addSection = function(param1)
 {
     var _loc2_ = ArrayHelperClass.ifHasAndSave(this.mCurves,param1);
     if(_loc2_)
@@ -120,7 +94,7 @@ MyFloor.prototype.addONE_PART = function(param1)
     return _loc2_;
 }
 
-MyFloor.prototype.checkDupAdd = function(param1)
+MyFloor.prototype.addCorner = function(param1)
 {
     if(param1 == null)
     {
@@ -139,422 +113,294 @@ MyFloor.prototype.removeCorner = function(param1)
     return ArrayHelperClass.removeItem(this.mCorners,param1);
 }
 
-MyFloor.prototype.removeSpecificCurve_AH = function(param1)
+MyFloor.prototype.removeSection = function(param1)
 {
     return ArrayHelperClass.removeItem(this.mCurves, param1);
 }
-/*
-package com.qunhe.instdeco.model.wall
-{
-   import §--_-__-_§.resourceGetSetInterface;
-   import §-_-_-___--_--§.CurveAreaRelationshipHelper;
-   import §-_-___---__§.my_math;
-   import §-____------_-_§.curveCornerHelperClass;
-   import §-____------_-_§.m_pathOrMyPathClass;
-   import com.qunhe.commons.lang.ArrayHelperClass;
-   import com.qunhe.commons.lang.ObjectIndex;
-   import com.qunhe.commons.math.geom.my_polygon;
-   import com.qunhe.commons.math.geom.my_Rect;
-   import com.qunhe.commons.math.geom.my_PolyTree;
-   import com.qunhe.commons.math.geom.my2D_Edge;
-   import com.qunhe.commons.math.geom.Vec2;
-   import com.qunhe.instdeco.model.decoration.resource.DecoModelAsset;
-   import com.qunhe.instdeco.model.decoration.resource.DecoResourceSet;
-   import com.qunhe.instdeco.model.wall.data.WallDesignData;
-   import com.qunhe.instdeco.model.wall.resource.ResourceSet;
-   
-   public class my_xx_wall extends ObjectIndex implements resourceGetSetInterface
-   {
-       
-      
-      private var mAreas:Vector.<wallAreas_Class>;
-      
-      private var m_curves:Vector.<wallCurve>;
-      
-      private var mModels:Vector.<§-_--_-_-----§>;
-      
-      private var mBoundaries:Vector.<§-----_-__----§>;
-      
-      private var mCorners:Vector.<cornerSonClass>;
-      
-      private var mHoles:Vector.<wallAreas_Class>;
-      
-      private var mDesignDataId:String;
-      
-      private var mPosition:Vec2;
-      
-      private var mDisplayInfoDataId:String;
-      
-      private var mAttachedObjectId:String;
-      
-      private var mAttachedObjectIds:Object;
-      
-      private var mAttachedObjectType:int;
-      
-      private var mLine:my2D_Edge;
-      
-      public function my_xx_wall()
-      {
-         super();
-         this.initialize();
-      }
-      
-      override protected function initialize() : void
-      {
-         this.mPosition = new Vec2();
-         this.mAreas = new Vector.<wallAreas_Class>();
-         this.m_curves = new Vector.<wallCurve>();
-         this.mModels = new Vector.<§-_--_-_-----§>();
-         this.mBoundaries = new Vector.<§-----_-__----§>();
-         this.mCorners = new Vector.<cornerSonClass>();
-      }
-      
-      public function deepClone() : my_xx_wall
-      {
-         var _loc1_:ResourceSet = this.getResources() as ResourceSet;
-         var _loc2_:WallDesignData = new WallDesignData(this);
-         var _loc3_:my_xx_wall = _loc2_.toObject() as my_xx_wall;
-         _loc3_.setResources(_loc1_);
-         return _loc3_;
-      }
-      
-      public function isHasAndSaveOnCurve(param1:wallAreas_Class) : Boolean
-      {
-         var _loc2_:Boolean = ArrayHelperClass.ifHasAndSave(this.mAreas,param1);
-         if(_loc2_)
-         {
-            param1.wall = this;
-         }
-         return _loc2_;
-      }
-      
-      public function wallDleleteSame(param1:wallAreas_Class) : Boolean
-      {
-         return ArrayHelperClass.removeItem(this.mAreas,param1);
-      }
-      
-      public function addONE_PART(param1:wallCurve) : Boolean
-      {
-         var _loc2_:Boolean = ArrayHelperClass.ifHasAndSave(this.m_curves,param1);
-         if(_loc2_)
-         {
-            param1.wall = this;
-         }
-         return _loc2_;
-      }
-      
-      public function removeSpecificCurve_AH(param1:wallCurve) : Boolean
-      {
-         return ArrayHelperClass.removeItem(this.m_curves,param1);
-      }
-      
-      public function checkDupAdd(param1:cornerSonClass) : Boolean
-      {
-         if(param1 == null)
-         {
-            return false;
-         }
-         var _loc2_:Boolean = ArrayHelperClass.ifHasAndSave(this.mCorners,param1);
-         if(_loc2_)
-         {
-            param1.wall = this;
-         }
-         return _loc2_;
-      }
-      
-      public function removeCorner(param1:cornerSonClass) : Boolean
-      {
-         return ArrayHelperClass.removeItem(this.mCorners,param1);
-      }
-      
-      public function addModel(param1:§-_--_-_-----§) : Boolean
-      {
-         var _loc2_:Boolean = ArrayHelperClass.ifHasAndSave(this.mModels,param1);
-         if(_loc2_)
-         {
-            param1.wall = this;
-         }
-         return _loc2_;
-      }
-      
-      public function §--_-_-_---_--§(param1:§-_--_-_-----§) : Boolean
-      {
-         return ArrayHelperClass.removeItem(this.mModels,param1);
-      }
-      
-      public function §--_----___---§(param1:Vector.<§-----_-__----§>) : void
-      {
-         var _loc2_:§-----_-__----§ = null;
-         for each(_loc2_ in param1)
-         {
-            this.addBoundary(_loc2_);
-         }
-      }
-      
-      public function addBoundary(param1:§-----_-__----§) : void
-      {
-         ArrayHelperClass.ifHasAndSave(this.mBoundaries,param1);
-      }
-      
-      public function §-__-___--___-_§(param1:§-----_-__----§) : void
-      {
-         ArrayHelperClass.removeItem(this.mBoundaries,param1);
-      }
-      
-      public function getBoundingBox() : my_Rect
-      {
-         var _loc2_:wallAreas_Class = null;
-         var _loc1_:my_Rect = new my_Rect();
-         for each(_loc2_ in this.mAreas)
-         {
-            _loc1_.§-__-___---_-__§(_loc2_.getBoundingBox());
-         }
-         return _loc1_;
-      }
-      
-      public function getResources() : DecoResourceSet
-      {
-         var _loc1_:ResourceSet = null;
-         var _loc3_:wallAreas_Class = null;
-         var _loc4_:§-----_-__----§ = null;
-         var _loc5_:wallCurve = null;
-         var _loc6_:§-_--_-_-----§ = null;
-         var _loc2_:ResourceSet = new ResourceSet();
-         for each(_loc3_ in this.mAreas)
-         {
-            _loc1_ = _loc3_.getResources() as ResourceSet;
-            _loc2_.union(_loc1_);
-         }
-         for each(_loc4_ in this.mBoundaries)
-         {
-            _loc2_.union(_loc4_.getResources());
-         }
-         for each(_loc5_ in this.m_curves)
-         {
-            _loc1_ = _loc5_.getResources() as ResourceSet;
-            _loc2_.union(_loc1_);
-         }
-         for each(_loc6_ in this.mModels)
-         {
-            _loc2_.addModelAsset(_loc6_.asset);
-         }
-         return _loc2_;
-      }
-      
-      public function setResources(param1:DecoResourceSet) : void
-      {
-         var _loc2_:§-_--_-_-----§ = null;
-         var _loc3_:wallAreas_Class = null;
-         var _loc4_:§-----_-__----§ = null;
-         var _loc5_:wallCurve = null;
-         var _loc6_:DecoModelAsset = null;
-         for each(_loc2_ in this.mModels)
-         {
-            if(_loc2_.brandGoodId != null && _loc2_.brandGoodId != "0")
-            {
-               _loc6_ = param1.getModelAsset(_loc2_.brandGoodId);
-            }
-            if(_loc6_ == null)
-            {
-               _loc2_.wall.§--_-_-_---_--§(_loc2_);
-            }
-            else
-            {
-               _loc2_.asset = _loc6_;
-            }
-         }
-         for each(_loc3_ in this.mAreas)
-         {
-            _loc3_.setResources(param1);
-         }
-         for each(_loc4_ in this.mBoundaries)
-         {
-            _loc4_.setResources(param1);
-         }
-         for each(_loc5_ in this.m_curves)
-         {
-            _loc5_.setResources(param1);
-         }
-      }
-      
-      public function getTheBiggestAreaPath() : m_pathOrMyPathClass
-      {
-         var pathFinder:curveCornerHelperClass = new curveCornerHelperClass(wallCurve.cloneAreas(this.m_curves));
-         var paths:Vector.<m_pathOrMyPathClass> = pathFinder.getPaths_eh();
-         var counterClockPaths:Vector.<m_pathOrMyPathClass> = m_pathOrMyPathClass.getCountClockWisePath(paths);
-         //从大到小排序
-         counterClockPaths.sort(function(param1:m_pathOrMyPathClass, param2:m_pathOrMyPathClass):int
-         {
-            return my_math.sign(Math.abs(param2.funcAreaGetSet) - Math.abs(param1.funcAreaGetSet));
-         });
-         if(counterClockPaths.length > 0)
-         {
-            return counterClockPaths[0];
-         }
-         return null;
-      }
-      
-      public function generatePolyTree() : my_PolyTree
-      {
-         var _loc4_:wallAreas_Class = null;
-         var _loc5_:my_PolyTree = null;
-         var _loc1_:m_pathOrMyPathClass = this.getTheBiggestAreaPath();
-         var _loc2_:my_polygon = _loc1_ != null?_loc1_.polygon:new my_polygon();
-         var _loc3_:Vector.<my_polygon> = new Vector.<my_polygon>();
-         for each(_loc4_ in this.mHoles)
-         {
-            _loc3_.push(_loc4_.polygon_Get_Or_Parameter);
-         }
-         _loc5_ = new my_PolyTree(_loc2_,_loc3_);
-         return _loc5_;
-      }
-      
-      public function correctAreas() : void
-      {
-         var _loc2_:wallAreas_Class = null;
-         var _loc3_:wallCurve = null;
-         var _loc1_:Vector.<wallAreas_Class> = CurveAreaRelationshipHelper.getHoleParts(this.mAreas);
-         this.mHoles = new Vector.<wallAreas_Class>();
-         for each(_loc2_ in _loc1_)
-         {
-            this.mHoles.push(_loc2_);
-            for each(_loc3_ in _loc2_.curves)
-            {
-               _loc3_.wallDleleteSame(_loc2_);
-            }
-         }
-         ArrayHelperClass.deleteSameValues(this.mAreas,_loc1_);
-      }
-      
-      public function get areas() : Vector.<wallAreas_Class>
-      {
-         return this.mAreas;
-      }
-      
-      public function set areas(param1:Vector.<wallAreas_Class>) : void
-      {
-         this.mAreas = param1;
-      }
-      
-      public function get curves() : Vector.<wallCurve>
-      {
-         return this.m_curves;
-      }
-      
-      public function set curves(param1:Vector.<wallCurve>) : void
-      {
-         this.m_curves = param1;
-      }
-      
-      public function get corners() : Vector.<cornerSonClass>
-      {
-         return this.mCorners;
-      }
-      
-      public function set corners(param1:Vector.<cornerSonClass>) : void
-      {
-         this.mCorners = param1;
-      }
-      
-      public function get models() : Vector.<§-_--_-_-----§>
-      {
-         return this.mModels;
-      }
-      
-      public function set models(param1:Vector.<§-_--_-_-----§>) : void
-      {
-         this.mModels = param1;
-      }
-      
-      public function get designDataId() : String
-      {
-         return this.mDesignDataId;
-      }
-      
-      public function set designDataId(param1:String) : void
-      {
-         this.mDesignDataId = param1;
-      }
-      
-      public function get position() : Vec2
-      {
-         return this.mPosition.clone();
-      }
-      
-      public function set position(param1:Vec2) : void
-      {
-         this.mPosition.copy(param1);
-      }
-      
-      public function set displayInfoDataId(param1:String) : void
-      {
-         this.mDisplayInfoDataId = param1;
-      }
-      
-      public function get displayInfoDataId() : String
-      {
-         return this.mDisplayInfoDataId;
-      }
-      
-      public function get attachedObjectId() : String
-      {
-         return this.mAttachedObjectId;
-      }
-      
-      public function set attachedObjectId(param1:String) : void
-      {
-         this.mAttachedObjectId = param1;
-      }
-      
-      public function get attachedObjectIds() : Object
-      {
-         return this.mAttachedObjectIds;
-      }
-      
-      public function set attachedObjectIds(param1:Object) : void
-      {
-         this.mAttachedObjectIds = param1;
-      }
-      
-      public function get attachedObjectType() : int
-      {
-         return this.mAttachedObjectType;
-      }
-      
-      public function set attachedObjectType(param1:int) : void
-      {
-         this.mAttachedObjectType = param1;
-      }
-      
-      public function get line() : my2D_Edge
-      {
-         return this.mLine;
-      }
-      
-      public function set line(param1:my2D_Edge) : void
-      {
-         this.mLine = param1;
-      }
-      
-      public function get boundaries() : Vector.<§-----_-__----§>
-      {
-         return this.mBoundaries;
-      }
-      
-      public function set boundaries(param1:Vector.<§-----_-__----§>) : void
-      {
-         this.mBoundaries = param1;
-      }
-      
-      public function get holes() : Vector.<wallAreas_Class>
-      {
-         return this.mHoles;
-      }
-      
-      public function set holes(param1:Vector.<wallAreas_Class>) : void
-      {
-         this.mHoles = param1;
-      }
-   }
+
+MyFloor.prototype.clearPickedArea = function() {
+    this.mPickedArea = null;
 }
-*/
+
+MyFloor.prototype.getPickedArea = function(x, y) {
+    if (x == undefined) {
+        return this.mPickedArea;
+    }
+    this.mPickedArea = null;
+    for (var i = 0; i < this.mAreasPolytree.length; i++) {
+        if (this.mAreasPolytree[i].contains(new Vec2(x, y))) {
+            this.mPickedArea = this.mOutput[i];
+            break;
+        }
+    }
+    return this.mPickedArea;
+}
+
+MyFloor.prototype.checkOverlap = function()  {
+    var overlapped = false;
+    for (var i = 0; i < this.mCurves.length; i++) {
+        for (var j = i+1; j < this.mCurves.length; j++) {
+            var curve0 = this.mCurves[i];
+            var curve1 = this.mCurves[j];
+            if (curve0.isIntersectWith(curve1)) {
+                overlapped = true;
+                break;
+            }
+        }
+    }
+    return overlapped;
+}
+
+MyFloor.prototype._updateGeoStructure = function() {
+    var holesList = [];
+    var areas = this.mAreas;
+    for (var i = 0; i < areas.length; i++) {
+        var area = areas[i];
+        holesList.push([]);
+        for (var j = 0; j < areas.length; j++) {
+            if(i == j) {
+                continue;
+            }
+            
+            if (area.isIncludedArea(areas[j])) {
+                if (holesList[i].length == 0) {
+                    holesList[i].push(areas[j]);
+                } else {
+                    var isAdd = true;
+                    for (var k = 0; k < holesList[i].length; k++) {
+                        if (holesList[i][k].isIncludedArea(areas[j])) {
+                            isAdd = false;
+                            break;
+                        }
+                        if (areas[j].isIncludedArea(holesList[i][k])) {
+                            holesList[i][k] = areas[j];
+                            isAdd = false;
+                            break;
+                        }
+                    }
+                    if (isAdd) {
+                        holesList[i].push(areas[j]);
+                    }
+                }
+            }
+        }
+    }
+
+    this.mOutput = [];
+    this.mAreasPolytree = [];
+    
+    var polyTree = null;
+    for (var i = 0; i < areas.length; i++) {
+        var res = MyArea.outputStructures(areas[i], holesList[i]);
+        var res2 = MyArea.outputStructures2(areas[i], holesList[i]);
+        this.mOutput.push(res);
+        this.mAreasPolytree.push(res2);
+    }
+    console.log("GEOM INFO:");
+}
+
+MyFloor.prototype.Analysis = function() {
+    var analysis = new Analysis(this);
+    analysis.execute();
+    this._updateGeoStructure();
+}
+
+MyFloor.prototype.updatePosition = function(sub, newPos, oldPos)
+{
+    if (sub instanceof Array) {
+        for (var i = 0; i < sub.length; i++) {
+            sub[i].updatePosition(newPos[i].mX, newPos[i].mY);
+        }
+    } else {
+        sub.updatePosition(newPos.mX, newPos.mY);
+    }
+    
+
+    this.Analysis();
+
+    var overlapped = this.checkOverlap();
+    
+    if (overlapped) {
+        
+        if (sub instanceof Array) {
+            for (var i = 0; i < sub.length; i++) {
+                sub[i].updatePosition(oldPos[i].mX, oldPos[i].mY);
+            }
+        } else {
+            sub.updatePosition(oldPos.mX, oldPos.mY);
+        }
+        this.Analysis();
+    } else {
+        this.clearPickedArea();
+    }
+    
+    return overlapped;
+}
+
+MyFloor.prototype._seperateType = function() {
+    var curves = [];
+    var segments = [];
+    var boundries = [];
+    var validSegmentIndex = [];
+    var validCurveIndex = [];
+    var pickedArea = this.mPickedArea;
+    for (var i = 0; i < this.mCurves.length; i++) {
+        if (this.mCurves[i].isBoundry) {
+            boundries.push(this.mCurves[i]);
+        } else if (this.mCurves[i] instanceof SegmentController) {
+            var seg = this.mCurves[i];
+            segments.push(seg);
+            
+            if (pickedArea) {
+                for (var j = 0; j < pickedArea.mOutline.edges.length; j++) {
+                    var edge = pickedArea.mOutline.edges[j];
+                    if (edge instanceof MyEdge && edge.isSameAsEdgeStartOrEnd(seg.mStart.mPosition) && edge.isSameAsEdgeStartOrEnd(seg.mEnd.mPosition)) {
+                        validSegmentIndex.push(segments.length - 1);
+                    }
+                }
+                for (var k = 0; k < pickedArea.mHoles.length; k++) {
+                    var poly = pickedArea.mHoles[k];
+                    for (var j = 0; j < poly.edges.length; j++) {
+                        var edge = poly.edges[j];
+                        if (edge instanceof MyEdge  && edge.isSameAsEdgeStartOrEnd(seg.mStart.mPosition) && edge.isSameAsEdgeStartOrEnd(seg.mEnd.mPosition)) {
+                            validSegmentIndex.push(segments.length - 1);
+                        }
+                    }
+                }
+            }
+        } else if (this.mCurves[i] instanceof CurveController) {
+            curves.push(this.mCurves[i]);
+            if (pickedArea) {
+                var cur = this.mCurves[i].getCurveFromController();
+                for (var j = 0; j < pickedArea.mOutline.edges.length; j++) {
+                    var edge = pickedArea.mOutline.edges[j];
+                    if (edge instanceof MyCurve && MyCurve.isSameCurve(cur, edge)) {
+                        validCurveIndex.push(curves.length - 1);
+                    }
+                }
+                
+                
+                for (var k = 0; k < pickedArea.mHoles.length; k++) {
+                    var poly = pickedArea.mHoles[k];
+                    for (var j = 0; j < poly.edges.length; j++) {
+                        var edge = poly.edges[j];
+                        if (edge instanceof MyCurve && MyCurve.isSameCurve(cur, edge)) {
+                            validCurveIndex.push(curves.length - 1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return [curves, segments, boundries, validSegmentIndex, validCurveIndex];
+}
+MyFloor.prototype.renderPickedArea = function(renderer) {
+    if (!this.mPickedArea) {
+        return;
+    }
+    renderer.drawArea(this.mPickedArea);
+    this.renderOutput(renderer);
+    renderer.drawAreaDots(this.mPickedArea);
+}
+
+MyFloor.prototype.renderOutput = function(renderer) {
+    if (this.mOutput == null) {
+        return;
+    }
+    var res = this.mOutput;
+    for (var i = 0; i < res.length; i++) {
+        for (var j = 0; j < res[i].mOutline.edges.length; j++) {
+            var edge = res[i].mOutline.edges[j];
+            if (edge instanceof MyEdge) {
+                renderer.drawLine(edge);
+            }else if (edge instanceof MyCurve) {
+                renderer.drawArc(edge);
+            }
+        }
+        
+        for (var j = 0; j < res[i].mHoles.length; j++) {
+            for (var k = 0; k < res[i].mHoles[j].edges.length; k++) {
+                var edge = res[i].mHoles[j].edges[k];
+                if (edge instanceof MyEdge) {
+                    renderer.drawLine(edge);
+                } else if (edge instanceof MyCurve) {
+                    renderer.drawArc(edge);
+                }
+            }
+        }
+        
+    }
+}
+
+//画内部标注线
+MyFloor.prototype._renderZoneSize = function(segments, validIndex, renderer) {
+    for (var i = 0; i < segments.length; i++) {
+        var segment = segments[i];
+        var edge = segment.getTheStartEndEdge();
+        var start = edge.mStart.clone();
+        var end = edge.mEnd.clone();
+        var center = edge.getCenter();
+        var area = segment.mAreas[segment.mAreas.length - 1];
+        var angle = edge.getAngle();
+        angle = angle + Math.PI / 2;
+        var offset = 10;
+        var offvec = new Vec2(offset * Math.cos(angle), offset * Math.sin(angle));
+        center.addBy(offvec);
+        
+        if (area.containsPoint(center)) {
+            start.sub(offvec);
+            end.sub(offvec);
+            
+        } else {
+            start.addBy(offvec);
+            end.addBy(offvec);
+        }
+        if (validIndex.indexOf(i) > -1) {
+            renderer.drawDimensions({x: start.mX,y: start.mY}, {x: end.mX,y: end.mY});
+        }
+    }
+}
+
+MyFloor.prototype._renderCurveHeight = function(curves, validCurveIndex, renderer) {
+}
+
+MyFloor.prototype.renderMarkerLines = function(flags, renderer)  {
+    //1. seperate the lines
+    var curves, segments, boundries, validSegmentIndex, validCurveIndex;
+    [curves, segments, boundries, validSegmentIndex, validCurveIndex] = this._seperateType();
+    
+    //2. renderZoneSize
+    if (flags.isZoneSizeEnabled) {
+        this._renderZoneSize(segments, validSegmentIndex, renderer);
+    }
+    
+    //3. renderCurveHeight
+    if (flags.isCrownHeightEnabled) {
+        this._renderCurveHeight(curves, validCurveIndex, renderer);
+    }
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

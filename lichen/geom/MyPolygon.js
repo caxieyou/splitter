@@ -121,9 +121,6 @@ MyPolygon.prototype.getBoundingBox = function()
     _loc1_.includeValues(this.mVertices);
     return _loc1_;
 }
-/*
-
-*/
 
 MyPolygon.prototype.getGravity = function()
 {

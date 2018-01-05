@@ -105,7 +105,7 @@ SegmentController.prototype.updateInfo = function(param1)
     _loc2_.updateEndCorner(this.mEnd);
     this.updateEndCorner(param1);
 
-    this.mWall.addONE_PART(_loc2_);
+    this.mWall.addSection(_loc2_);
     return _loc2_;
 }
       
@@ -175,24 +175,24 @@ SegmentController.prototype.getTheCurveStartEndEdgeToPointDistance = function(pa
 SegmentController.prototype.updateStartCorner = function(param1) {
     if(this.mStart != null)
     {
-        this.mStart.removeSpecificCurve_AH(this);
+        this.mStart.removeSection(this);
     }
     this.mStart = param1;
     if(this.mStart != null)
     {
-        this.mStart.addONE_PART(this);
+        this.mStart.addSection(this);
     }
 };
 
 SegmentController.prototype.updateEndCorner = function(param1) {
     if(this.mEnd != null)
     {
-        this.mEnd.removeSpecificCurve_AH(this);
+        this.mEnd.removeSection(this);
     }
     this.mEnd = param1;
     if(this.mEnd != null)
     {
-        this.mEnd.addONE_PART(this);
+        this.mEnd.addSection(this);
     }
 };
 
@@ -322,7 +322,7 @@ SegmentController.prototype.dispose = function()
     for (var i = 0; i < _loc1_.length; i++) {
         _loc2_ = _loc1_[i];
         if (_loc2_) {
-            _loc2_.removeSpecificCurve_AH(this);
+            _loc2_.removeSection(this);
             if(_loc2_.mCurves.length == 0)
             {
                 _loc2_.dispose();
@@ -332,12 +332,12 @@ SegmentController.prototype.dispose = function()
     
     for (var i = 0; i < this.mAreas.length; i++) {
         _loc3_ = this.mAreas[i];
-        _loc3_.removeSpecificCurve_AH(this);
+        _loc3_.removeSection(this);
     }
          
     if(this.mWall != null && !this.isBoundry)
     {
-        this.mWall.removeSpecificCurve_AH(this);
+        this.mWall.removeSection(this);
     }
 }
 
@@ -381,7 +381,7 @@ SegmentController.prototype.isCurveIntersectByAreaAndGetIntersectPoint = functio
         param4 = 1.0E-6;
     }
     
-    var _loc5_ = someArcEdgeHelper_AEE.getValidIntersectionPointBetweenArcAndEdge(param1, this.getTheStartEndEdge());
+    var _loc5_ = ArcEdgeHelper.getValidIntersectionPointBetweenArcAndEdge(param1, this.getTheStartEndEdge());
     if(!param3)
     {
         param1.removePointsNotInsideCurve(_loc5_);
@@ -409,7 +409,7 @@ SegmentController.isCurveIntersectByAreaAndGetIntersectPoint = function(param1, 
         param5 = 1.0E-6;
     }
     
-    var _loc5_ = someArcEdgeHelper_AEE.getValidIntersectionPointBetweenArcAndEdge(param2, param1);
+    var _loc5_ = ArcEdgeHelper.getValidIntersectionPointBetweenArcAndEdge(param2, param1);
     if(!param4)
     {
         param2.removePointsNotInsideCurve(_loc5_);
@@ -484,3 +484,55 @@ SegmentController.prototype.getAngle = function()
     return this.getTheStartEndEdge().getAngle();
 }
 
+SegmentController.prototype.updatePosition = function(x, y) {
+    //1 找到2个corner
+    var coners = this.toCorners();
+    //2 找到所有线段
+    var startCurves;
+    var endCurves;
+    var angle = this.getAngle();
+    
+    // 得到差别最大的两个线段
+    var minS = 0;
+    var minE = 0;
+    for (var i = 0; i < coners[0].mCurves.length; i++) {
+        if (coners[0].mCurves[i].mId !== this.mId) {
+            coners[0].mCurves[i].getAngle();
+            var diff = Math.abs(angle - coners[0].mCurves[i].getAngle());
+            while(diff > Math.PI) {
+                diff = diff - Math.PI;
+            }
+            if (diff > minS) {
+                minS = diff;
+                startCurves = coners[0].mCurves[i];
+            }
+        }
+    }
+    for (var i = 0; i < coners[1].mCurves.length; i++) {
+        if (coners[1].mCurves[i].mId !== this.mId) {
+            coners[1].mCurves[i].getAngle();
+            var diff = Math.abs(angle - coners[1].mCurves[i].getAngle());
+            while(diff > Math.PI) {
+                diff = diff - Math.PI;
+            }
+            if (diff > minE) {
+                minE = diff;
+                endCurves = coners[1].mCurves[i];
+            }
+        }
+    }
+    
+    var newEdge;
+    if (MyNumber.isEqual(angle, Math.PI / 2)) {
+        newEdge = new MyEdge(new Vec2(x, y), new Vec2(x, y + 1));
+    } else {
+        newEdge = new MyEdge(new Vec2(x, y), new Vec2(x + 1, y + Math.tan(angle)));
+    }
+    
+    var s = MyEdge.getIntersection(newEdge, startCurves.getTheStartEndEdge());
+    var e = MyEdge.getIntersection(newEdge, endCurves.getTheStartEndEdge());
+    
+    MyCorner.updatePosition(coners[0], s.mX, s.mY);
+    MyCorner.updatePosition(coners[1], e.mX, e.mY);
+    
+}

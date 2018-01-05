@@ -1,7 +1,7 @@
-function someArcEdgeHelper_AEE() {
+function ArcEdgeHelper() {
 
 }
-someArcEdgeHelper_AEE.getCurveIntersectionPoints = function(param1, param2, param3)
+ArcEdgeHelper.getCurveIntersectionPoints = function(param1, param2, param3)
 {
     if (param3 == null || param3 == undefined) {
         param3 = 1.0E-6;
@@ -21,7 +21,7 @@ someArcEdgeHelper_AEE.getCurveIntersectionPoints = function(param1, param2, para
     return _loc4_;
 }
 
-someArcEdgeHelper_AEE.getValidIntersectionPointBetweenArcAndEdge = function(param1, param2, param3)
+ArcEdgeHelper.getValidIntersectionPointBetweenArcAndEdge = function(param1, param2, param3)
 {
     if (param3 == null || param3 == undefined) {
         param3 = 1.0E-6;

@@ -1,5 +1,5 @@
 /**
- * Created by �ô���ĺ��� on 2017/8/25.
+ * Created by ????????? on 2017/8/25.
  * Integrated by Li
  */
  
@@ -173,7 +173,7 @@ Renderer = function () {
         } else if(color){
             this.ctx.strokeStyle = color;
         } else {
-            this.ctx.strokeStyle = "black";
+            this.ctx.strokeStyle = "#888";
         }
         //this.ctx.strokeStyle = isFocus != undefined ? "blue" : color;
         this.ctx.stroke();
@@ -201,7 +201,7 @@ Renderer = function () {
             this.ctx.lineTo(leftUp.x, rightBottom.y);
             this.ctx.lineTo(leftUp.x, leftUp.y);
         //}
-        this.ctx.strokeStyle = "black";
+        this.ctx.strokeStyle = "#888";
         this.ctx.stroke();
         this.ctx.closePath();
     }
@@ -213,7 +213,7 @@ Renderer = function () {
         var radius = edge.getLength()
         
         this.ctx.beginPath();
-        this.ctx.strokeStyle = 'black';
+        this.ctx.strokeStyle = '#888';
         this.ctx.arc(center.x, center.y, radius, 0, Math.PI * 2, true);
         this.ctx.stroke();
         this.ctx.closePath();
@@ -247,7 +247,7 @@ Renderer = function () {
         }
         
         this.ctx.beginPath();
-        this.ctx.strokeStyle = !!isFocus ? "blue" : 'black';
+        this.ctx.strokeStyle = !!isFocus ? "blue" : '#888';
         this.ctx.arc(center.x, center.y, radius, start, end, clock < 0 ? true : false);
         this.ctx.stroke();
         this.ctx.closePath();
@@ -267,7 +267,7 @@ Renderer = function () {
                 this.ctx.lineTo(p0.x + (xpos / numDashes) * i, p0.y + (ypos / numDashes) * i);
             }
         }
-        this.ctx.strokeStyle = 'black';
+        this.ctx.strokeStyle = '#888';
         this.ctx.stroke();
         this.ctx.closePath();
     }
@@ -280,10 +280,16 @@ Renderer = function () {
         this.textBlank =[];
     }
     
-    this.drawArea = function(output) {
+    this.drawArea = function(output, shadow) {
         var ctx = this.ctx;
         //console.log(output);
-        
+
+		if(shadow){
+	        ctx.shadowOffsetX = 5; // 阴影Y轴偏移
+			ctx.shadowOffsetY = 5; // 阴影X轴偏移
+			ctx.shadowBlur = 5; // 模糊尺寸
+			ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'; // 颜色
+		}
         ctx.beginPath();
         var prevPoint;
         var counterclockwise;
@@ -427,7 +433,9 @@ Renderer = function () {
 
             }
             ctx.globalCompositeOperation = "source-over";
+           
         }
+         ctx.restore();
     }
     
     this.drawAreaDots = function(output) {
@@ -670,7 +678,7 @@ Renderer = function () {
 		return angle - 90;
 	}
 	
-	this._makeTextInput = function(pos, value, callbackFun){
+	this._makeTextInput = function(pos, value, callbackFun, canvas, edge, edge2, distance, direction){
 		var offset = $(this.canvas).position();
 		var tt = document.createElement("input");
 		tt.className = "editText";
@@ -681,8 +689,8 @@ Renderer = function () {
 			tt.value = value;
 		if(callbackFun) {
 			tt.addEventListener("keyup", function(e) {
-				if(e.keyCode == 13 && !isNaN(tt.value))
-					callbackFun(parseInt(tt.value));
+				if(e.keyCode == 13 && !isNaN(tt.value) && tt.value > 1)
+					callbackFun(parseInt(tt.value), canvas, edge, edge2, distance, direction);
 			});
 		}
 		this.textInputs.push(tt);
@@ -753,7 +761,7 @@ Renderer = function () {
 	 * @param {Object} editable 是否可编辑，默认为不可编辑
 	 * @param {Object} callbackFun 编辑回调函数
 	 */
-    this.drawDimensions = function(p0, p1,color, editable, callbackFun) {
+    this.drawDimensions = function(p0, p1,color, editable, callbackFun, canvas, edge, edge2, distance, direction) {
         color = color || '#a2a2a2';
         var lines = [
             [p0, p1]
@@ -811,16 +819,12 @@ Renderer = function () {
             //长度
             ctx.fillStyle = "#FFF";
             ctx.fillRect(-ctx.measureText(length).width / 2, -6, ctx.measureText(length).width, 12);
-            ctx.fillStyle = '#000';
-            ctx.font = "12px 微软雅黑";
-            ctx.textBaseline = 'middle';
-            ctx.textAlign = 'center';
-            ctx.fillText(length, 0, 0);
+            this.drawText(length, 0, 0, 12);
             ctx.restore();
             ctx.translate(0, 0);
 
         } else {
-            var tt = this._makeTextInput(center, length, callbackFun);
+            var tt = this._makeTextInput(center, length, callbackFun, canvas, edge, edge2, distance, direction);
             this.textBlank.push(tt);
             return tt;
         }
@@ -842,6 +846,24 @@ Renderer = function () {
         var tt = this._makeTextInput(pos, Math.round(this._getPointsDistance(p0, p1)), callbackFun);
         //this.textBlank.push(tt);
         return tt;
+    }
+    
+	/***
+	 * 绘制文本
+	 * @param {Object} txt 文本内容
+	 * @param {Object} x 位置
+	 * @param {Object} y 位置
+	 * @param {Object} fontSize 字体大小
+	 * @param {Object} color 文本颜色
+	 */
+    this.drawText = function(txt, x, y, fontSize, color){
+    	if(fontSize === undefined) fontSize = 18;
+    	if(color === undefined) color = "#000";
+    	this.ctx.fillStyle = color;
+		this.ctx.font = fontSize + "px 微软雅黑";
+	    this.ctx.textBaseline = 'middle';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText(txt, x, y);
     }
     
     this.textInputs = [];

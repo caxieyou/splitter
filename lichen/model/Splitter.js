@@ -206,7 +206,7 @@ Splitter.prototype.getSubCurvesCircleSplitByCurves = function(param1, param2)
     return res;
 }
 
-Splitter.prototype.checkDupAdd = function(param1)
+Splitter.prototype.addCorner = function(param1)
 {
     var _loc5_ = null;
     var _loc2_ = null;
@@ -222,12 +222,12 @@ Splitter.prototype.checkDupAdd = function(param1)
         _loc3_.dispose();
     }
 
-    var _loc4_ = CurveRelationHelper_XX.getTheClosestCurve_ax(param1.mPosition.clone(), this.mWall.mCurves, false, Splitter.DISTANCE_TOLERANCE);
+    var _loc4_ = CurveRelationHelper.getTheClosestCurve_ax(param1.mPosition.clone(), this.mWall.mCurves, false, Splitter.DISTANCE_TOLERANCE);
     if(_loc4_ != null)
     {
         _loc4_.updateInfo(param1);
     }
-    this.mWall.checkDupAdd(param1);
+    this.mWall.addCorner(param1);
 }
       
 Splitter.prototype.splitCurvesIntoOneThirdCurves = function(param1)
@@ -304,10 +304,10 @@ Splitter.prototype.execute = function() {
 
     for (var i = 0; i < _loc2_.length; i++)
     {
-        this.checkDupAdd(_loc2_[i].mStart);
-        this.checkDupAdd(_loc2_[i].mEnd);
+        this.addCorner(_loc2_[i].mStart);
+        this.addCorner(_loc2_[i].mEnd);
 
-        this.mWall.addONE_PART(_loc2_[i]);
+        this.mWall.addSection(_loc2_[i]);
         var a = 0;
         a++;
     }

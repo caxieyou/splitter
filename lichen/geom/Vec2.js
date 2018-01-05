@@ -230,8 +230,6 @@ Vec2.prototype.set = function(param1, param2)
         param2 = 0;
     }
 
-    param1 = param1;
-    param2 = param2;
     this.mX = param1;
     this.mY = param2;
     return this;
@@ -256,7 +254,7 @@ Vec2.prototype.copy = function(param1)
     return this;
 }
 
-Vec2.prototype.add = function(param1)
+Vec2.prototype.addBy = function(param1)
 {
     this.mX = this.mX + param1.mX;
     this.mY = this.mY + param1.mY;
