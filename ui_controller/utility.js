@@ -73,7 +73,7 @@ Utility.DrawCurveHeightCallback = function(dis, canvas, curve) {
     
     pt1.addBy(dir.mulBy(dis));
 
-    that._mFloor.updatePosition(curve.mCurvePoint, pt1, originalCurvePoint);
+    canvas._mFloor.updatePosition(curve, pt1, originalCurvePoint);
     
     canvas.render();
 }
