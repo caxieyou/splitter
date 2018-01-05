@@ -62,7 +62,7 @@ Utility.doubleLineCallback = function(dis, canvas, seg, seg2, distance, directio
     canvas.render();
 }
 
-Utility.DrawDimensionCallback = function(dis, canvas, curve) {
+Utility.DrawCurveHeightCallback = function(dis, canvas, curve) {
     var originalCurvePoint = curve.mCurvePoint.clone();
     
     var pt0 = curve.getCenter();

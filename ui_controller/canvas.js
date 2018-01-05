@@ -770,7 +770,7 @@ Canvas.prototype._renderMarkerLines = function() {
             
             if (validCurveIndex.indexOf(i) > -1) {
                 this._renderer.drawDimensions({x: pt0.mX,y: pt0.mY}, {x: pt1.mX,y: pt1.mY}, null, true, 
-                Utility.DrawDimensionCallback, that, curves[i]);
+                Utility.DrawCurveHeightCallback, that, curves[i]);
             }
         }
     }

@@ -678,7 +678,7 @@ Renderer = function () {
 		return angle - 90;
 	}
 	
-	this._makeTextInput = function(pos, value, callbackFun, canvas, edge, edge2, distance){
+	this._makeTextInput = function(pos, value, callbackFun, canvas, edge, edge2, distance, direction){
 		var offset = $(this.canvas).position();
 		var tt = document.createElement("input");
 		tt.className = "editText";
@@ -690,7 +690,7 @@ Renderer = function () {
 		if(callbackFun) {
 			tt.addEventListener("keyup", function(e) {
 				if(e.keyCode == 13 && !isNaN(tt.value) && tt.value > 1)
-					callbackFun(parseInt(tt.value), canvas, edge, edge2, distance);
+					callbackFun(parseInt(tt.value), canvas, edge, edge2, distance, direction);
 			});
 		}
 		this.textInputs.push(tt);
@@ -761,7 +761,7 @@ Renderer = function () {
 	 * @param {Object} editable 是否可编辑，默认为不可编辑
 	 * @param {Object} callbackFun 编辑回调函数
 	 */
-    this.drawDimensions = function(p0, p1,color, editable, callbackFun, canvas, edge, edge2, distance) {
+    this.drawDimensions = function(p0, p1,color, editable, callbackFun, canvas, edge, edge2, distance, direction) {
         color = color || '#a2a2a2';
         var lines = [
             [p0, p1]
@@ -824,7 +824,7 @@ Renderer = function () {
             ctx.translate(0, 0);
 
         } else {
-            var tt = this._makeTextInput(center, length, callbackFun, canvas, edge, edge2, distance);
+            var tt = this._makeTextInput(center, length, callbackFun, canvas, edge, edge2, distance, direction);
             this.textBlank.push(tt);
             return tt;
         }
