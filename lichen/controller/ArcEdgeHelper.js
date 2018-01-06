@@ -36,5 +36,6 @@ ArcEdgeHelper.getValidIntersectionPointBetweenArcAndEdge = function(param1, para
         }
         _loc5_--;
     }
+    
     return _loc4_;
 }

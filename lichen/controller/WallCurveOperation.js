@@ -9,9 +9,11 @@ WallCurveOperation.prototype.onSplitCurve = function(param1)
     _loc1_.mPosition = param1.getCenter();
     this.mFloor.addCorner(_loc1_);
     param1.updateInfo(_loc1_);
-    var analysis = new Analysis(this.mFloor);
-    analysis.execute();
-    this.mFloor._updateGeoStructure();
+    //var analysis = new Analysis(this.mFloor);
+    //analysis.execute();
+    this.mFloor.Analysis();
+    this.mFloor.clearPickedArea();
+    //this.mFloor._updateGeoStructure();
 }
 
 WallCurveOperation.prototype.onToLine = function(param1)
@@ -52,9 +54,10 @@ WallCurveOperation.prototype.onToLine = function(param1)
     
     this.mFloor.addSection(_loc6_);
     this.mFloor.removeSection(param1);
-    
-    var analysis = new Analysis(this.mFloor);
-    analysis.execute();
+    this.mFloor.Analysis();
+    this.mFloor.clearPickedArea();
+    //var analysis = new Analysis(this.mFloor);
+    //analysis.execute();
 }
 
 WallCurveOperation.prototype.onToArc = function(param1)
@@ -89,8 +92,10 @@ WallCurveOperation.prototype.onToArc = function(param1)
     this.mFloor.addSection(_loc7_);
     this.mFloor.removeSection(param1);
     
-    var analysis = new Analysis(this.mFloor);
-    analysis.execute();
+    this.mFloor.Analysis();
+    this.mFloor.clearPickedArea();
+    //var analysis = new Analysis(this.mFloor);
+    //analysis.execute();
     return true;
 }
 
@@ -142,8 +147,9 @@ WallCurveOperation.prototype.onDelete = function(param1) {
     while((_loc1_ =  selectfunc(this.mFloor))!= null) {
         _loc1_.dispose();
     }
-    
-    var analysis = new Analysis(this.mFloor);
-    analysis.execute();
+    this.mFloor.Analysis();
+    this.mFloor.clearPickedArea();
+    //var analysis = new Analysis(this.mFloor);
+    //analysis.execute();
         
 }

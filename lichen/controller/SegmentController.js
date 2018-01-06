@@ -138,7 +138,7 @@ SegmentController.prototype.setCornerStartAndEndButHasToBeSame = function(param1
       
 SegmentController.prototype.containsPoint = function(param1)
 {
-    return this.getTheStartEndEdge().pointInEdgeOrOnEdge(param1);
+    return this.getTheStartEndEdge().pointInEdge(param1);
 }
 
 SegmentController.prototype.isValidAngleDiff = function(param1)

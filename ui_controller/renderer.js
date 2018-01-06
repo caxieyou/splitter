@@ -444,15 +444,15 @@ Renderer = function () {
             if (edge.constructor == MyCurve) {
                 var _start = edge.getSplitPosByRatio(0);
                 var _end = edge.getSplitPosByRatio(1);
-                this.drawCorner(_start, 3, 'red');
-                this.drawCorner(_end, 3, 'red');
+                this.drawCorner(_start, 3, '#2693FF');
+                this.drawCorner(_end, 3, '#2693FF');
             }
 
             if (edge.constructor == MyEdge) {
                 var _start = edge.mStart;
                 var _end = edge.mEnd;
-                this.drawCorner(_start, 3, 'red');
-                this.drawCorner(_end, 3, 'red');
+                this.drawCorner(_start, 3, '#2693FF');
+                this.drawCorner(_end, 3, '#2693FF');
             }
         }
         
@@ -465,15 +465,15 @@ Renderer = function () {
                     if (edge.constructor == MyCurve) {
                         var _start = edge.getSplitPosByRatio(0);
                         var _end = edge.getSplitPosByRatio(1);
-                        this.drawCorner(_start, 3, 'red');
-                        this.drawCorner(_end, 3, 'red');
+                        this.drawCorner(_start, 3, '#2693FF');
+                        this.drawCorner(_end, 3, '#2693FF');
                     }
 
                     if (edge.constructor == MyEdge) {
                         var _start = edge.mStart;
                         var _end = edge.mEnd;
-                        this.drawCorner(_start, 3, 'red');
-                        this.drawCorner(_end, 3, 'red');
+                        this.drawCorner(_start, 3, '#2693FF');
+                        this.drawCorner(_end, 3, '#2693FF');
                     }
                 }
             }
@@ -877,4 +877,71 @@ Renderer = function () {
 			}
 		}
 	}
+    
+    this.drawOutput = function(output, height) {
+        if (!output) {
+            return;
+        }
+        for (var j = 0; j < output.mOutline.edges.length; j++) {
+            var edge = output.mOutline.edges[j];
+            if (edge instanceof MyEdge) {
+                this.drawLine(edge, null, height ? 'blue': null);
+            }else if (edge instanceof MyCurve) {
+                this.drawArc(edge, height);
+            }
+        }
+        
+        for (var j = 0; j < output.mHoles.length; j++) {
+            for (var k = 0; k < output.mHoles[j].edges.length; k++) {
+                var edge = output.mHoles[j].edges[k];
+                if (edge instanceof MyEdge) {
+                    this.drawLine(edge, null, height ? 'blue': null);
+                } else if (edge instanceof MyCurve) {
+                    this.drawArc(edge, height);
+                }
+            }
+        }
+    }
+    
+    this.drawCornerDimentions = function(element) {
+        if (element && element.controller instanceof MyCorner) {
+            var corner = element.controller;
+            for (var i = 0; i < corner.mCurves.length; i++) {
+                if (corner.mCurves[i] instanceof SegmentController) {
+                    var curve = corner.mCurves[i];
+                    var edge = curve.getTheStartEndEdge();
+                    var start = edge.mStart.clone();
+                    var end = edge.mEnd.clone();
+                    var center = edge.getCenter();
+                    var area = curve.mAreas[curve.mAreas.length - 1];
+                    //var area = areas[0];
+                    var angle = edge.getAngle();
+                    angle = angle + Math.PI / 2;
+                    //console.log(angle);
+                    var offset = 10;
+                    center.mY += offset * Math.sin(angle);
+                    center.mX += offset * Math.cos(angle);
+                    
+                    if (area.containsPoint(center)) {
+                        
+                        start.mY -= offset * Math.sin(angle);
+                        start.mX -= offset * Math.cos(angle);
+                        
+                        end.mY -= offset * Math.sin(angle);
+                        end.mX -= offset * Math.cos(angle);
+                        
+                        
+                    } else {
+                        start.mY += offset * Math.sin(angle);
+                        start.mX += offset * Math.cos(angle);
+                        
+                        end.mY += offset * Math.sin(angle);
+                        end.mX += offset * Math.cos(angle);
+                    }
+                    
+                    this.drawDimensions({x: start.mX,y: start.mY}, {x: end.mX,y: end.mY});
+                }
+            }
+        }
+    }
 }
