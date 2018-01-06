@@ -118,7 +118,7 @@ MyEdge.getDiff = function(param1, param2, param3) {
     if (param3 == null || param3 == undefined) {
         param3 = 1;
     }
-    
+
     var angle1 = param1.getAngle();
     var angle2 = param2.getAngle();
     
@@ -127,6 +127,7 @@ MyEdge.getDiff = function(param1, param2, param3) {
         return param1;
     }
     
+
     var isStartInterSect = param2.distanceSmallThan(param1.mStart);
     var isEndInterSect = param2.distanceSmallThan(param1.mEnd);
     
@@ -138,7 +139,20 @@ MyEdge.getDiff = function(param1, param2, param3) {
     
     //no relationship
     if (!isStartInterSect && !isEndInterSect) {
-        return param1;
+        var isStartInterSect2 = param1.distanceSmallThan(param2.mStart);
+        var isEndInterSect2 = param1.distanceSmallThan(param2.mEnd);
+        if (isStartInterSect2 && isEndInterSect2) {
+            if (Vec2.distance(param1.mStart, param2.mStart) < Vec2.distance(param1.mStart, param2.mEnd)) {
+                return [new MyEdge(param1.mStart.clone(), param2.mStart.clone()),
+                        new MyEdge(param2.mEnd.clone(), param1.mEnd.clone())];
+            } else {
+                return [new MyEdge(param1.mStart.clone(), param2.mEnd.clone()),
+                    new MyEdge(param2.mStart.clone(), param1.mEnd.clone())];
+            }
+        } else {
+            return param1;
+        }
+        
     }
     
     //
@@ -191,6 +205,7 @@ MyEdge.pointInEdgeOrOnEdge = function(param1, param2, param3, param4)
             && !param3.isClose(param1,param4) 
             && !param3.isClose(param2,param4);
 }
+
 
 MyEdge.getPointVectorEdge = function(param1, param2)
 {
@@ -276,6 +291,15 @@ MyEdge.prototype.pointInEdgeOrOnEdge = function(param1, param2)
         param2 = 1.0E-6;
     }
     var res = this.distanceSmallThan(param1,param2) && !this.isSameAsEdgeStartOrEnd(param1,param2);
+    return res;
+}
+
+MyEdge.prototype.pointInEdge = function(param1, param2)
+{
+    if (param2 == null || param2 == undefined) {
+        param2 = 1.0E-6;
+    }
+    var res = this.distanceSmallThan(param1,param2);
     return res;
 }
 

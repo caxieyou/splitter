@@ -139,6 +139,17 @@ MyCurve.prototype.isInsideCurveAndNotOnCurve = function(param1, param2)
     return this.isInsideArcFan(param1,param2) && !this.isPointOnCurve(param1,param2);
 }
 
+MyCurve.prototype.isInsideCurveAndOnCurve = function(param1, param2)
+{
+    if (param2 == null || param2 == undefined) {
+        param2 = null;
+    }
+    
+    this.diagnose();
+
+    return this.isInsideArcFan(param1,param2);
+}
+
 MyCurve.prototype.isPointOnCurve = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
@@ -159,6 +170,7 @@ MyCurve.prototype.isBetweenArcAngleRange = function(param1)
     var _loc6_ = Math.max(_loc3_,_loc4_);
     var _loc7_ = this.mArcAngle > 0;
     var _loc8_ = _loc3_ < _loc4_;
+    
     if(_loc7_ && _loc8_ || !_loc7_ && !_loc8_)
     {
         return _loc2_ >= _loc5_ && _loc2_ <= _loc6_;

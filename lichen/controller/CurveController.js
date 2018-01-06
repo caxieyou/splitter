@@ -77,7 +77,7 @@ CurveController.prototype.getInnerIntersectionPoint_XX = function()
 
 CurveController.prototype.containsPoint = function(param1)
 {
-    return this.getCurveFromController().isPointOnCurve(param1);
+    return this.getCurveFromController().isInsideCurveAndOnCurve(param1);
 }
 
 CurveController.prototype.getCurveFromController = function()

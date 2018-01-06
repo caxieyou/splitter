@@ -107,6 +107,23 @@ MyArea.outputStructures2 = function(param1, param2) {
     
 }
 
+MyArea.outputStructures3 = function(param1, param2) {
+    var res = [];
+    res = res.concat(param1.mCurves);
+
+    if (param2.length == 0) {
+        return res;
+    } else {
+        res.mHoles = [];
+        for (var i = 0; i < param2.length; i++) {
+            res = res.concat(param2[i].mCurves);
+        }
+        return res;
+    }
+    
+}
+
+
 MyArea.prototype.initialize = function()
 {
     this.mCurves = [];
