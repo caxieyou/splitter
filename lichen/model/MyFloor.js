@@ -12,6 +12,7 @@ function MyFloor() {
     this.mPickedAreaControllers;
     this.mPickedDirection;
     
+    this.mKeyPoints;
     this.initialize();
 }
 
@@ -26,6 +27,7 @@ MyFloor.prototype.initialize = function() {
     this.mPickedArea = null;
     this.mPickedAreaControllers = [];
     this.mPickedDirection = false;
+    this.mKeyPoints = [];
 }
 
 MyFloor.prototype.setProfile = function(rect) {
@@ -230,6 +232,21 @@ MyFloor.prototype._updateGeoStructure = function() {
         this.mAreasPolytree.push(res2);
         this.mAreasControllers.push(res3);
     }
+    this.mKeyPoints = [];
+    for (var i = 0; i < this.mAreasPolytree.length; i++) {
+        var point =  this.mAreasPolytree[i].getValidGravityCenter();
+        if (this.mAreasPolytree[i].contains(point)) {
+            this.mKeyPoints.push(point);
+        }
+    }
+
+    for (var i = 0; i < this.mCurves.length; i++) {
+        if (!this.mCurves[i].isBoundry) {
+            this.mKeyPoints.push(this.mCurves[i].getCenter());
+        }
+    }
+    console.log(this.mKeyPoints);
+
     console.log("GEOM INFO:");
 }
 

@@ -1084,6 +1084,14 @@ Canvas.prototype._renderHintPoints = function() {
     this._hintPoints = [];
 }
 
+Canvas.prototype._renderKeyPoints = function(x, y) {
+    for (var i = 0; i < this._mFloor.mKeyPoints.length; i++) {
+        if (this._mFloor.mKeyPoints[i].isClose(new Vec2(x, y), 3)) {
+            this._renderer.drawCorner(this._mFloor.mKeyPoints[i], 8, '#f57208');
+        }
+    }
+}
+
 Canvas.prototype.setZoneSize = function(enabled) {
     this._flags.isZoneSizeEnabled = enabled;
     this.render();
@@ -1124,6 +1132,9 @@ Canvas.prototype.render = function(x, y) {
     this._renderFocusObject(x, y);
     
     this._renderHintPoints();
+    
+    //渲染那些几何中点，边界点，中心位置
+    this._renderKeyPoints(x, y);
     
     this._renderer.drawCornerDimentions(this._updateElment);
 }
