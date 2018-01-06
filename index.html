@@ -33,11 +33,27 @@
                             <img src="common/images/circle.png" class="shape-obj" data-type="circle">
                             <div class="box-info">圆形区域</div>
                         </div>
-                        <div class="box">
+                        <!-- <div class="box">
                             <img src="common/images/arc.png" class="shape-obj" data-type="arc">
                             <div class="box-info">弧形</div>
                         </div>
-<!--                         <div class="box">
+                        <div class="box">
+                            <img src="common/images/rectangle.png" class="shape-obj" data-type="">
+                            <div class="box-info"></div>
+                        </div>
+                        <div class="box">
+                            <img src="common/images/rectangle-shape.png" class="shape-obj" data-type="">
+                            <div class="box-info"></div>
+                        </div>
+                        <div class="box">
+                            <img src="common/images/L-shape.png" class="shape-obj" data-type="">
+                            <div class="box-info"></div>
+                        </div>
+                        <div class="box">
+                            <img src="common/images/pantagon.png" class="shape-obj" data-type="">
+                            <div class="box-info"></div>
+                        </div>
+                        <div class="box">
                             <img src="common/images/copy.png" class="shape-obj" data-type="copy">
                             <div class="box-info">复制</div>
                         </div>
@@ -90,19 +106,17 @@
                             <label for="zone_size">区域尺寸</label>
                         </div>
                         <div class="checkbox-row">
-                            <input type="checkbox" class="setting-display-check" id="projrcting_height">
-                            <label for="projrcting_height">凸出高度</label>
-                        </div>
-                        <div class="checkbox-row">
                             <input type="checkbox" class="setting-display-check" id="crown_height">
                             <label for="crown_height">圆弧高度</label>
                         </div>
                     </div>
                 </div>
-                <div class="bottom-props">
+                <div class="bottom-props" id="bottom_props">
                     <label class="bottom-props-title">区域</label>
                     <i class="vertical-line"></i>
-                    <label class="bottom-props-name">名称：<input type="text" class="bottom-props-name-input"></label>
+                    <label class="bottom-props-name">名称：
+                        <input type="text" class="bottom-props-name-input">
+                    </label>
                     <i class="vertical-line"></i>
                     <label class="bottom-props-selects">
                         <select class="bulge-backoff-selects" id="bulge_backoff_selects">
@@ -113,14 +127,12 @@
                     <label>
                         <span class="bottom-props-depth">深度:</span>
                         <input type="text" class="bottom-props-depth-input number">
-                        <span>mm</span>  
+                        <span>mm</span>
                     </label>
                 </div>
-
                 <div class="canvas-container">
                     <canvas id="canvas" width="800" height="800"></canvas>
                 </div>
-
             </div>
         </div>
         <div id="props_wrap">
@@ -136,6 +148,15 @@
             <div class="props" data-type="delete">
                 <i class="icon iconfont">&#xe63a;</i>
                 <i class="pup">删除<i></i></i>
+            </div>
+        </div>
+        <div class="message-container">
+            <div class="message-box">
+                <div class="header">温馨提示</div>
+                <div class="message-body">
+                    <label><span>65535</span>不是一个合法的数值</label>
+                <button id="sure_btn">确定</button>
+                </div>
             </div>
         </div>
     </div>
