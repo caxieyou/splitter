@@ -35,7 +35,6 @@ MyFloor.prototype.setProfile = function(rect) {
     this.mProfile.mOutLines = rect;
     this.mProfile.mHoles = [];
     this.mOutput = null;
-
 }
 
 MyFloor.prototype.generatePolyTree = function()

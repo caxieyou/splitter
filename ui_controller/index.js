@@ -33,7 +33,7 @@ $(function() {
         $('#props_wrap').hide();
         if(btnNum == 0) {
             //左键
-            canvas.setStartPoint(event.offsetX, event.offsetY);
+            canvas.setStartPoint();
         } else if(btnNum == 2) {
             //右键
             canvas.resetType();
@@ -88,21 +88,21 @@ $(function() {
             }
         } else if(canvas.checkStatus()) {
             canvas.createElement();
-            canvas.render(event.offsetX, event.offsetY);
+            canvas.render();
         }
         canvas.recordMouseUp(event.offsetX, event.offsetY);
     });
 
     $(document).on('mousemove', '#canvas', function(event) {
         event = event || window.event;
+        canvas.snapMouse(event.offsetX, event.offsetY);
         if(event.which == 1) {
             //按住拖动
             canvas.updateElement(event.offsetX, event.offsetY);
-
         } else if(event.which == 0) {
             //没按住拖动
-            canvas.setEndPoint(event.offsetX, event.offsetY);
-            canvas.render(event.offsetX, event.offsetY);
+            canvas.setEndPoint();
+            canvas.render();
         }
     });
     // 选中线段事件
@@ -286,6 +286,7 @@ $(function() {
     
     canvas.scale = 1;
     function onmousedown(e) {
+        /*
         if(e.target.localName == "input") return;
         if (!canvas.getFocusElement()) {
             container.addEventListener("mousemove", onmousemove);
@@ -293,9 +294,11 @@ $(function() {
             mousePos = {x:e.clientX ,y:e.clientY};
 
         }
+        */
     }
 
     function onmousemove(e) {
+        /*
         if (!canvas.getFocusElement()) {
             var offset = $canvas.position();
             $canvas.css({left:offset.left + e.clientX  - mousePos.x,top:offset.top + e.clientY - mousePos.y});
@@ -303,17 +306,21 @@ $(function() {
             canvas._renderer.updateTextInputs(e.clientX  - mousePos.x, e.clientY - mousePos.y);
             mousePos = {x:e.clientX ,y:e.clientY};
         }
+        */
     }
 
     function onmouseup(e) {
+        /*
         if (!canvas.getFocusElement()) {
             container.removeEventListener("mousemove", onmousemove);
             container.removeEventListener("mouseup", onmouseup);
             document.body.style.cursor = "default";
         }
+        */
     }
     
     function onmousewheel(e){
+        /*
         canvas.scale += e.wheelDelta * 0.0001;
         if(canvas.scale < 0.2) canvas.scale = 0.2;
         else if(canvas.scale > 2) canvas.scale = 2;
@@ -324,6 +331,7 @@ $(function() {
         $canvas.css({left:pos.left + offsetX,top:pos.top + offsetY});
         canvas._canvas.width = canvas.sWidth * canvas.scale;
         canvas._canvas.height = canvas.sHeight * canvas.scale;
+        */
     }
     
     window.onresize = function(e){

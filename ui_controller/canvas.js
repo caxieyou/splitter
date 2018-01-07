@@ -35,6 +35,99 @@ Canvas.prototype._initialize = function() {
     this._mFloor.Analysis();
     this.render();
 }
+Canvas.prototype.snapMouse = function(x, y){
+    this._mouseSnapped.set(x, y);
+    
+    if (this._type != null) {
+        var hintPoints = [];
+        var minDis = Number.MAX_VALUE;
+        var index = -1;
+        var minPoint;
+        //Do the snapping
+        for (var i = 0; i < this._mFloor.mCurves.length; i++) {
+            var curve = this._mFloor.mCurves[i];
+            var edge;
+            if (curve instanceof SegmentController) {
+                edge = curve.getTheStartEndEdge();
+            } else {
+                edge = curve.getCurveFromController();
+            }
+            
+            if (!curve.isBoundry) {
+                var point = edge.getIntersectionPointByPoint(new Vec2(x, y), true);
+                hintPoints.push(point);
+            }
+        }
+        
+        for (var i = 0; i < hintPoints.length; i++) {
+            var dis = Vec2.distance(new Vec2(x, y), hintPoints[i]);
+            if (dis < minDis) {
+                minDis = dis;
+                index = i;
+                minPoint = hintPoints[i];
+            }
+        }
+        if (minDis < Globals.SNAPPING_THRESHOLD) {
+            this._mouseSnapped.copy(minPoint);
+        }
+    } else {
+        //snapping
+        var snapX = [];
+        var snapY = [];
+        for (var j = 0; j < this._mFloor.mCurves.length; j++) {
+            if (this._mFloor.mCurves[j].isBoundry || this._mFloor.mCurves[j] instanceof CurveController) {
+                continue;
+            }
+            var edge2 = this._mFloor.mCurves[j].getTheStartEndEdge();
+            var angle2 = edge2.getAngle();
+            
+            if (Angle.isHorizontal(angle2)) {
+                snapY.push(edge2);
+            }
+            
+            if (Angle.isVertical(angle2)) {
+                snapX.push(edge2);
+            }
+        }
+        
+        var edgeX = [];
+        var edgeY = [];
+        var snappedX = false;
+        var snappedY = false;
+        var min = Globals.DISTANCE_THRESHOLD;
+        for (var i = 0; i < snapY.length; i++) {
+            var dis = Math.abs(snapY[i].mStart.mY - y);
+            if (dis <= min) {
+                min = dis;
+                this._mouseSnapped.mY = snapY[i].mStart.mY;
+                snappedY = true;
+            }
+        }
+        
+        min =  Globals.DISTANCE_THRESHOLD;
+        for (var i = 0; i < snapX.length; i++) {
+            var dis = Math.abs(snapX[i].mStart.mX - x);
+            if (dis <= min) {
+                min = dis;
+                this._mouseSnapped.mX = snapX[i].mStart.mX;
+                snappedX = true;
+            }
+        }//mouse line
+    }
+    
+    for (var i = 0; i < this._mFloor.mCorners.length; i++) {
+        if (this._mFloor.mCorners[i].mPosition.isClose(new Vec2(x, y), Globals.DISTANCE_THRESHOLD)) {
+            this._mouseSnapped.copy(this._mFloor.mCorners[i].mPosition);
+            break;
+        }
+    }
+    
+    for (var i = 0; i < this._mFloor.mKeyPoints.length; i++) {
+        if (this._mFloor.mKeyPoints[i].isClose(new Vec2(x, y), Globals.DISTANCE_THRESHOLD)) {
+            this._mouseSnapped.copy(this._mFloor.mKeyPoints[i]);
+        }
+    }//key point
+}
 
 Canvas.prototype._renderCurrentObject = function() {
     if (!this.mElmentOperation.isDrawable()) {
@@ -83,8 +176,8 @@ Canvas.prototype.createRect = function(pnt0, pnt1) {
     this.mElmentOperation.creatRect(pnt0, pnt1, this._mFloor.mCurves);
 }
 
-Canvas.prototype.creatCircle = function() {
-    this.mElmentOperation.creatCircle(this._mEdge);
+Canvas.prototype.createCircle = function() {
+    this.mElmentOperation.createCircle(this._mEdge);
 }
 
 Canvas.prototype.setType = function(type) {
@@ -102,117 +195,71 @@ Canvas.prototype.setType = function(type) {
     this.render();
 }
 
-Canvas.prototype.setStartPoint = function(x, y) {
+Canvas.prototype.setStartPoint = function() {
     if (this._type == null) {
         return false;
     }
     
-    x = this._mouseSnapped.mX;
-    y = this._mouseSnapped.mY;
-    
-    
-    var hintPoints = [];
-    var minDis = Number.MAX_VALUE;
-    var index = -1;
-    var minPoint;
-    //Do the snapping
-    for (var i = 0; i < this._mFloor.mCurves.length; i++) {
-        var curve = this._mFloor.mCurves[i];
-        var edge;
-        if (curve instanceof SegmentController) {
-            edge = curve.getTheStartEndEdge();
-        } else {
-            edge = curve.getCurveFromController();
-        }
-        
-        if (!curve.isBoundry) {
-            
-            var point = edge.getIntersectionPointByPoint(new Vec2(x, y), true);
-            hintPoints.push(point);
-        }
-    }
-    
-    for (var i = 0; i < hintPoints.length; i++) {
-        var dis = Vec2.distance(new Vec2(x, y), hintPoints[i]);
-        if (dis < minDis) {
-            minDis = dis;
-            index = i;
-            minPoint = hintPoints[i];
-        }
-    }
-    //console.log(minDis);
-    if (minDis < 3) {
-        this._hintPoints.push(minPoint);
-        
-        x = minPoint.mX;
-        y = minPoint.mY;
-    }
-    
-    if (!this._mFloor.mProfile.mOutLines.contains(new Vec2(x, y))) {
+    if (!this._mFloor.mProfile.mOutLines.contains(this._mouseSnapped)) {
         console.log("START POINT OUTSIDE OF ROOM!");
         return;
     }
     
-    if (this.mElmentOperation.lineOperationStart(x, y, this._mFloor.mCurves)) {
-        this._mEdge.mStart.set(x, y);
+    if (this.mElmentOperation.lineOperationStart(this._mouseSnapped.mX, this._mouseSnapped.mY, this._mFloor.mCurves)) {
+        this._mEdge.mStart.copy(this._mouseSnapped);
     }
     this.render();
 }
 
-Canvas.prototype.setEndPoint = function(x, y) {
-    
+Canvas.prototype.setEndPoint = function() {
     if (this._type == null) {
         return false;
     }
     
-    x = this._mouseSnapped.mX;
-    y = this._mouseSnapped.mY;
-    
-    var hintPoints = [];
-    var minDis = Number.MAX_VALUE;
-    var index = -1;
-    var minPoint;
-    //Do the snapping
-    for (var i = 0; i < this._mFloor.mCurves.length; i++) {
-        var curve = this._mFloor.mCurves[i];
-        var edge;
-        if (curve instanceof SegmentController) {
-            edge = curve.getTheStartEndEdge();
-        } else {
-            edge = curve.getCurveFromController();
-        }
-        
-        if (!curve.isBoundry) {
+    if (this._type != null) {
+        var hintPoints = [];
+        var minDis = Number.MAX_VALUE;
+        var index = -1;
+        var minPoint;
+        //Do the snapping
+        for (var i = 0; i < this._mFloor.mCurves.length; i++) {
+            var curve = this._mFloor.mCurves[i];
+            var edge;
+            if (curve instanceof SegmentController) {
+                edge = curve.getTheStartEndEdge();
+            } else {
+                edge = curve.getCurveFromController();
+            }
             
-            var point = edge.getIntersectionPointByPoint(new Vec2(x, y), true);
-            hintPoints.push(point);
+            if (!curve.isBoundry) {
+                var point = edge.getIntersectionPointByPoint(this._mouseSnapped, true);
+                hintPoints.push(point);
+            }
         }
-    }
-    
-    for (var i = 0; i < hintPoints.length; i++) {
-        var dis = Vec2.distance(new Vec2(x, y), hintPoints[i]);
-        if (dis < minDis) {
-            minDis = dis;
-            index = i;
-            minPoint = hintPoints[i];
-        }
-    }
-    //console.log(minDis);
-    if (minDis < 3) {
-        this._hintPoints.push(minPoint);
         
-        x = minPoint.mX;
-        y = minPoint.mY;
+        for (var i = 0; i < hintPoints.length; i++) {
+            var dis = Vec2.distance(this._mouseSnapped, hintPoints[i]);
+            if (dis < minDis) {
+                minDis = dis;
+                index = i;
+                minPoint = hintPoints[i];
+            }
+        }
+        if (minDis < Globals.SNAPPING_THRESHOLD) {
+            this._hintPoints.push(minPoint);
+        }
+    }
+    
+    for (var i = 0; i < this._mFloor.mCorners.length; i++) {
+        if (this._mFloor.mCorners[i].mPosition.isClose(this._mouseSnapped, Globals.DISTANCE_THRESHOLD)) {
+            this._renderer.drawCorner(this._mFloor.mKeyPoints[i], 8, '#f57208');
+            break;
+        }
     }
     
     
-    if (this._currentStatus ==  STATUS.NOT_STARTED || this._currentStatus ==  STATUS.LINE_START) {
-        return false;
-    }
-   
-    
-    if (this.mElmentOperation.lineOperationEnd(x, y, this._mFloor.mCurves)) {
-        this._mEdge.mEnd.set(x, y);
+    if (this.mElmentOperation.lineOperationEnd(this._mouseSnapped.mX, this._mouseSnapped.mY, this._mFloor.mCurves, this._hintPoints)) {
+        this._mEdge.mEnd.copy(this._mouseSnapped);
         
         if (this._mEdge.getLength() < 0.0001) {
             return false;
@@ -225,9 +272,11 @@ Canvas.prototype.setEndPoint = function(x, y) {
 }
 
 Canvas.prototype.resetType = function() {
-    if (this.mElmentOperation.reset()) {
+    if (this.mElmentOperation.reset(this._mFloor.mCurves)) {
+        
         this.setType(null);
     }
+    this._focus = null;
     this.render();
 }
 
@@ -247,17 +296,7 @@ Canvas.prototype.checkStatus = function() {
     if (this._type == null) {
         return false;
     }
-    
-    if (this._currentStatus == STATUS.SET_START) {
-        return false;
-    } else if (this._currentStatus == STATUS.DRAWING){
-        this._currentStatus = STATUS.NOT_STARTED;
-        return true;
-    } else if (this._currentStatus == STATUS.LINE_START){
-        return true;
-    } else if (this._currentStatus == STATUS.LINE_DRAWING){
-        return true;
-    }
+    return this.mElmentOperation.checkStatus();
 }
 
 Canvas.prototype.renderAreaPicked = function(x, y) {
@@ -268,7 +307,7 @@ Canvas.prototype.renderAreaPicked = function(x, y) {
 
 Canvas.prototype.isMoved = function(x, y) {
     var p = new Vec2(x, y);
-    if (p.distance(this._mouseSnapped) > 3 ) {
+    if (p.distance(this._mouseSnapped) > Globals.DISTANCE_THRESHOLD ) {
         return true;
     } else {
         return false;
@@ -277,7 +316,7 @@ Canvas.prototype.isMoved = function(x, y) {
 
 Canvas.prototype.recordMouseUp = function(x, y) {
     var p = new Vec2(x, y);
-    if (p.distance(this._mouseSnapped) > 3 ) {
+    if (p.distance(this._mouseSnapped) > Globals.DISTANCE_THRESHOLD ) {
         this._focus = null;
     }
     this._updateElment = null;
@@ -342,7 +381,7 @@ Canvas.prototype.createElement = function() {
         break;
         
         case TYPE.CIRCLE:
-            this.creatCircle();
+            this.createCircle();
         break;
         
         case TYPE.LINE :
@@ -351,10 +390,8 @@ Canvas.prototype.createElement = function() {
     }
 }
 
-
-
-Canvas.prototype._renderFocusObject = function(x, y) {
-    if (this._type != null || (x == undefined && y == undefined)) {
+Canvas.prototype._renderFocusObject = function() {
+    if (this._type != null) {
         return;
     }
     
@@ -362,7 +399,7 @@ Canvas.prototype._renderFocusObject = function(x, y) {
     if(this._mFloor.mProfile) {
         var profile = this._mFloor.mProfile.getProfile();
         for (var i = 0; i < profile.length; i++) {
-            if (profile[i].pointInEdgeOrOnEdge(new Vec2(x, y), 2.0)) {
+            if (profile[i].pointInEdgeOrOnEdge(this._mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
                 return;
             }
         }
@@ -371,17 +408,17 @@ Canvas.prototype._renderFocusObject = function(x, y) {
     if(this._mFloor.mProfile) {
         var vertices = this._mFloor.mProfile.getVertices();
         for (var i = 0; i < vertices.length; i++) {
-            if (vertices[i].isClose(new Vec2(x, y), 2.0)) {
+            if (vertices[i].isClose(this._mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
                 return;
             }
         }
     }
-    var snappingOffset = 5;
+    
     /////////////////////
     // focus on corner //
     /////////////////////
     for (var i = 0; i < this._mFloor.mCorners.length; i++) {
-        if (this._mFloor.mCorners[i].mPosition.isClose(new Vec2(x, y), snappingOffset)) {
+        if (this._mFloor.mCorners[i].mPosition.isClose(this._mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
             this._focus = {
                     geom: this._mFloor.mCorners[i].mPosition.clone(),
                     controller : this._mFloor.mCorners[i]
@@ -406,7 +443,7 @@ Canvas.prototype._renderFocusObject = function(x, y) {
         var edge;
         if (curve instanceof SegmentController) {
             var edge = curve.getTheStartEndEdge();
-            if (edge.pointInEdgeOrOnEdge(new Vec2(x, y), snappingOffset)) {
+            if (edge.pointInEdgeOrOnEdge(this._mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
                 this._focus = {
                     geom: edge,
                     controller : curve
@@ -416,7 +453,7 @@ Canvas.prototype._renderFocusObject = function(x, y) {
         } else if(curve instanceof CurveController) {
             var edge = curve.getCurveFromController();
             
-            if (edge.isInsideCurveAndNotOnCurve(new Vec2(x, y), snappingOffset)) {
+            if (edge.isInsideCurveAndNotOnCurve(this._mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
                 this._focus = {
                     geom: edge,
                     controller : curve
@@ -518,9 +555,9 @@ Canvas.prototype._renderHintPoints = function() {
     this._hintPoints = [];
 }
 
-Canvas.prototype._renderKeyPoints = function(x, y) {
+Canvas.prototype._renderKeyPoints = function() {
     for (var i = 0; i < this._mFloor.mKeyPoints.length; i++) {
-        if (this._mFloor.mKeyPoints[i].isClose(new Vec2(x, y), 3)) {
+        if (this._mFloor.mKeyPoints[i].isClose(this._mouseSnapped, Globals.DISTANCE_THRESHOLD)) {
             this._renderer.drawCorner(this._mFloor.mKeyPoints[i], 8, '#f57208');
         }
     }
@@ -546,7 +583,7 @@ Canvas.prototype.setCrownHeight = function(enabled) {
     this.render();
 }
 
-Canvas.prototype.render = function(x, y) {
+Canvas.prototype.render = function() {
     //清空canvas
     this._renderer.clear();
     
@@ -556,19 +593,19 @@ Canvas.prototype.render = function(x, y) {
     //长方形，圆，线段等正在绘制的图元
     this._renderCurrentObject();
     
-    this._renderMouseLines(x, y);
+    this._renderMouseLines();
     
     this._renderMarkerLines();
     
     this._mFloor.renderPickedArea(this._renderer);
     
     //绘制鼠标移动中经过的图元
-    this._renderFocusObject(x, y);
+    this._renderFocusObject();
     
     this._renderHintPoints();
     
     //渲染那些几何中点，边界点，中心位置
-    this._renderKeyPoints(x, y);
+    this._renderKeyPoints();
     
     //画选中点的边界的长度
     this._renderer.drawCornerDimentions(this._updateElment);

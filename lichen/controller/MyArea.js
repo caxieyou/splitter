@@ -94,11 +94,11 @@ MyArea.outputStructures2 = function(param1, param2) {
     var outline = param1.getPathPolygon();
     
     res = new MyPolytree(outline);
-
+    res.mHoles = [];
     if (param2.length == 0) {
         return res;
     } else {
-        res.mHoles = [];
+        
         for (var i = 0; i < param2.length; i++) {
             res.mHoles.push(param2[i].getPathPolygon());
         }
