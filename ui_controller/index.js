@@ -38,7 +38,6 @@ $(function() {
             //右键
             canvas.resetType();
         }
-        canvas.recordMouseDown(event.offsetX, event.offsetY);
     });
 
     $(document).on('mouseup', '#canvas', function(event) {
@@ -96,7 +95,6 @@ $(function() {
 
     $(document).on('mousemove', '#canvas', function(event) {
         event = event || window.event;
-        //console.log(event.offsetX + " " + event.offsetY);
         if(event.which == 1) {
             //按住拖动
             canvas.updateElement(event.offsetX, event.offsetY);
@@ -110,7 +108,6 @@ $(function() {
     // 选中线段事件
     $('#props_wrap').on('click', '.props', function() {
         var type = $(this).data('type');
-        //console.log(type);
         if(type === 'division') {
             canvas.onSplitCurve();
         }
@@ -188,8 +185,6 @@ $(function() {
         console.log("圆弧高度 取消选中");
     });
     
-    
-    
     // 显示菜单栏折叠与展开事件
     $('#main_container').on('click', '#setting_display_menu', function() {
         $('#setting-display').slideToggle();
@@ -208,7 +203,6 @@ $(function() {
     });
     // 清空
     $('#main_container').on('click', '#setting_empty', function() {
-        //alert('setting_empty');
         canvas.clear();
         return false;
     });
@@ -330,8 +324,6 @@ $(function() {
         $canvas.css({left:pos.left + offsetX,top:pos.top + offsetY});
         canvas._canvas.width = canvas.sWidth * canvas.scale;
         canvas._canvas.height = canvas.sHeight * canvas.scale;
-
-
     }
     
     window.onresize = function(e){

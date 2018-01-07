@@ -1,92 +1,52 @@
-var STATUS = {
-    NOT_STARTED   : -1,
-    SET_START     :  0,
-    DRAWING       :  1,
-    LINE_START    :  2,
-    LINE_DRAWING  :  3
-}
-
 function Canvas(name) {
-    this._mFloor = new MyFloor();
+    this._canvas              = document.getElementById(name);
+    this._mFloor              = new MyFloor();
     this._mWallCurveOperation = new WallCurveOperation(this._mFloor);
-    this._renderer = new Renderer();
-    this._canvas = document.getElementById(name);
-    this._renderer.init(this._canvas);
-    this._currentStatus = STATUS.NOT_STARTED;
-    this._type = null;
-    this._mEdge = new MyEdge(new Vec2(), new Vec2());
-    this._focus = null;
-    this._updateElment = null;
-    this._operationCurve = null; 
-    this._hintPoints = [];
+    this._renderer            = new Renderer();
+    this.mElmentOperation     = new ElementOperation(this._mFloor);
+    
+    //this._currentStatus       = STATUS.NOT_STARTED;
+    this._type                = null;
+    this._mEdge               = new MyEdge(new Vec2(), new Vec2());
+    this._focus               = null;
+    this._updateElment        = null;
+    this._operationCurve      = null; 
+    this._hintPoints          = [];
+    this._mouseSnapped        = new Vec2();
+
     this._flags = {
        isRelativeDistanceEnabled : false,
        isAbosoluteMarginEnabled : true,
        isZoneSizeEnabled : true,
        isCrownHeightEnabled : false
     };
-    this._mouseDown = new Vec2();
-    this._mouseUp = new Vec2();
-    this._mouseSnapped = new Vec2();
-    this._linePoints = [];
-    this._lineEdges = [];
-    this._linePoint = new Vec2();
-    this._curentLine0 = null;
-    this._curentLine1 = null;
-    this._lineIntersect = {
-        isStartIntersect : [],
-        isSelfIntersect: [],
-        isStartEndSame : [],
-        isEndIntersect : []
-    };
+    this._renderer.init(this._canvas);
     this._initialize();
 }
 
 Canvas.prototype._initialize = function() {
     //创建最外边框
-    this.createRect(new Vec2(0, 0), new Vec2(this._canvas.width, this._canvas.height));
+    this.mElmentOperation.creatRect(new Vec2(0, 0), new Vec2(this._canvas.width, this._canvas.height), this._mFloor.mCurves);
     
     //赋值最外轮廓线
     var rect = new MyRect(new Vec2(0, 0), new Vec2(this._canvas.width, this._canvas.height));
     rect = rect.toMyPolygon();
-    
     this._mFloor.setProfile(rect);
-    
     this._mFloor.Analysis();
-    //渲染
     this.render();
 }
 
 Canvas.prototype._renderCurrentObject = function() {
-    if (!(this._currentStatus == STATUS.DRAWING || 
-        this._currentStatus == STATUS.LINE_START || 
-        this._currentStatus == STATUS.LINE_DRAWING)) {
+    if (!this.mElmentOperation.isDrawable()) {
         return;
     }
     
     switch(this._type) {
         case TYPE.RECTANGLE:
         {
-            
-            var edges = [];
-            edges.push(new MyEdge(new Vec2(this._mEdge.mStart.mX, this._mEdge.mStart.mY), new Vec2(this._mEdge.mEnd.mX,   this._mEdge.mStart.mY)));
-            edges.push(new MyEdge(new Vec2(this._mEdge.mEnd.mX,   this._mEdge.mStart.mY), new Vec2(this._mEdge.mEnd.mX,   this._mEdge.mEnd.mY)));
-            edges.push(new MyEdge(new Vec2(this._mEdge.mEnd.mX,   this._mEdge.mEnd.mY),   new Vec2(this._mEdge.mStart.mX, this._mEdge.mEnd.mY)));
-            edges.push(new MyEdge(new Vec2(this._mEdge.mStart.mX, this._mEdge.mEnd.mY),   new Vec2(this._mEdge.mStart.mX, this._mEdge.mStart.mY)));
-            
-            intersects = [];
-            for (var i = 0; i < edges.length; i++) {
-                for (var j = 0; j < this._mFloor.mCurves.length; j++) {
-                    if(!this._mFloor.mCurves[j].isBoundry) {
-                        SegmentController.isIntersectWith(edges[i], this._mFloor.mCurves[j], intersects);
-                    }
-                }
-            }
-            
-            for (var i = 0; i < intersects.length; i++) {
-                this._hintPoints.push(intersects[i]);
-            }
-            
+            var edges = this._mEdge.toRectEdges();
+            var intersects = this._mFloor.getIntersectPoints(edges);
+            this._hintPoints = this._hintPoints.concat(intersects);
             this._renderer.drawRect(this._mEdge);
         }
         break;
@@ -95,26 +55,16 @@ Canvas.prototype._renderCurrentObject = function() {
         break;
         case TYPE.LINE:
         {
-            for (var i = 0; i < this._lineEdges.length; i++) {
-                for (var j = 0; j < this._lineEdges[i].length; j++) {
-                    this._renderer.drawLine(this._lineEdges[i][j]);
-                }
-                
-                //console.log(this._lineEdges);
+            [edges, eLine] = this.mElmentOperation.getDrawableLines();
+            
+            for (var i = 0; i < edges.length; i++) {
+                this._renderer.drawLine(edges[i]);
             }
             
-            if (this._currentStatus == STATUS.LINE_DRAWING) {
-                if (this._curentLine0) {
-                    this._renderer.drawLine(this._curentLine0, true);
-                }
-                if (this._curentLine1) {
-                    this._renderer.drawLine(this._curentLine1, true, 'red');
-                }
+            if (eLine) {
+                this._renderer.drawLine(eLine, true, 'red');
             }
-            
-            
         }
-            //this.renderLines.drawCircle(this._mEdge);
         break;
     }
 }
@@ -129,68 +79,19 @@ Canvas.prototype.split = function(polygon) {
 Canvas.prototype.createRect = function(pnt0, pnt1) {
     pnt0 = pnt0 || this._mEdge.mStart;
     pnt1 = pnt1 || this._mEdge.mEnd;
-    
-    var rect = new MyRect(pnt0, pnt1);
-    var polyEdges = rect.toMyPolygon().getEdges();
-    for (var i = 0; i < polyEdges.length; i++) {
-        for (var j = 0; j < this._mFloor.mCurves.length; j++) {
-            var curve = this._mFloor.mCurves[j];
-            if (curve.isBoundry || curve instanceof CurveController) {
-                continue;
-            }
-            curve = curve.getTheStartEndEdge();
-            
-            if (polyEdges[i] instanceof Array) {
-                var total = [];
-                for (var m = 0; m < polyEdges[i].length; m++) {
-                    var result = MyEdge.getDiff(polyEdges[i][m], curve);
-
-                    if (result == null) {
-
-                    }
-                    if (result instanceof Array) {
-                        total.push(result[0]);
-                        total.push(result[1]);
-                    } else {
-                        total.push(result);
-                    }
-                }
-                polyEdges[i] = total;
-            } else {
-                polyEdges[i] = MyEdge.getDiff(polyEdges[i], curve);
-            }
-        }
-    }
-    
-    
-    
-    var res = [];
-    for (var i = 0; i < polyEdges.length; i++) {
-        if (polyEdges[i] == null) {
-            //res.push(polyEdgesSplit[i]);
-        } else if (polyEdges[i] instanceof Array && polyEdges[i].length > 0) {
-            for (var j = 0; j < polyEdges[i].length; j++) {
-                res.push(polyEdges[i][j]);
-            }
-        } else {
-            res.push(polyEdges[i]);
-        }
-    }
-    if (res.length > 0) {
-        this.split(res);
-    }
+    console.log(this._mEdge);
+    this.mElmentOperation.creatRect(pnt0, pnt1, this._mFloor.mCurves);
 }
 
 Canvas.prototype.creatCircle = function() {
-    var circle = new MyCircle(this._mEdge.mStart.clone(), this._mEdge.getLength());
-    this.split(circle);
+    this.mElmentOperation.creatCircle(this._mEdge);
 }
 
 Canvas.prototype.setType = function(type) {
     this._type = type;
     
     if (this._type == TYPE.LINE) {
-        this._currentStatus = STATUS.LINE_START;
+        this.mElmentOperation.setStatus(STATUS.LINE_START);
     }
     if (this._type == null) {
         document.body.style.cursor = "default";
@@ -251,66 +152,11 @@ Canvas.prototype.setStartPoint = function(x, y) {
         console.log("START POINT OUTSIDE OF ROOM!");
         return;
     }
-    if (this._currentStatus == STATUS.LINE_START) {
-        var list = [];
-        list.push(new Vec2(x, y));
-        this._linePoints.push(list);
-        this._lineEdges.push([]);
-        console.log("press 0");
-        console.log(this._linePoints);
-        this._linePoint.mX = x;
-        this._linePoint.mY = y;
-        this._currentStatus = STATUS.LINE_DRAWING;
-        this._curentLine0 = null;
-        this._lineIntersect.isStartIntersect.push(false);
-        this._lineIntersect.isSelfIntersect.push(false);
-        this._lineIntersect.isStartEndSame.push(false);
-        this._lineIntersect.isEndIntersect.push(false);
-        for (var i = 0; i < this._mFloor.mCurves.length; i++) {
-            if (this._mFloor.mCurves[i].containsPoint(this._linePoint)) {
-                this._lineIntersect.isStartIntersect[this._lineIntersect.isStartIntersect.length - 1] = true;
-                break;
-            }
-        }
-
-    } else if (this._currentStatus == STATUS.LINE_DRAWING) {
-        this._linePoints[this._linePoints.length-1].push(new Vec2(x, y));
-        this._lineEdges[this._lineEdges.length-1].push(this._curentLine0.clone());
-        console.log("press 1");
-        console.log(this._linePoints);
-        
-        if (this._curentLine1) {
-            this._linePoints[this._linePoints.length-1][this._linePoints[this._linePoints.length-1].length - 1].mX = this._curentLine0.mEnd.mX;
-            this._linePoints[this._linePoints.length-1][this._linePoints[this._linePoints.length-1].length - 1].mY = this._curentLine0.mEnd.mY;
-            this._currentStatus = STATUS.LINE_START;
-            
-            var intersectWithCurve = false;
-            for (var i = 0; i < this._mFloor.mCurves.length; i++) {
-                if (this._mFloor.mCurves[i].containsPoint(this._curentLine0.mEnd)) {
-                    intersectWithCurve = true;
-                    break;
-                }
-            }
-            
-            if (!intersectWithCurve)
-            {
-                this._lineIntersect.isSelfIntersect[this._lineIntersect.isSelfIntersect.length - 1] = true;
-            } else {
-                this._lineIntersect.isEndIntersect[this._lineIntersect.isEndIntersect.length - 1] = true;
-            }
-            
-            this.render();
-            this._curentLine0 = null;
-            this._curentLine1 = null;
-        }
-        
-    }
     
-    if (this._currentStatus == STATUS.NOT_STARTED) {
-        this._currentStatus = STATUS.SET_START;
-        this._mEdge.mStart.mX = x;
-        this._mEdge.mStart.mY = y;
+    if (this.mElmentOperation.lineOperationStart(x, y, this._mFloor.mCurves)) {
+        this._mEdge.mStart.set(x, y);
     }
+    this.render();
 }
 
 Canvas.prototype.setEndPoint = function(x, y) {
@@ -365,189 +211,24 @@ Canvas.prototype.setEndPoint = function(x, y) {
     }
    
     
-    if (this._currentStatus == STATUS.LINE_DRAWING) {
-        this._linePoint.mX = x;
-        this._linePoint.mY = y;
+    if (this.mElmentOperation.lineOperationEnd(x, y, this._mFloor.mCurves)) {
+        this._mEdge.mEnd.set(x, y);
         
-        var lastPointArray = this._linePoints[this._linePoints.length - 1];
-        var lastPoint = lastPointArray[lastPointArray.length - 1];
-        var edge = new MyEdge(lastPoint, this._linePoint);
-        
-        var intersects = [];
-        for (var i = 0; i < this._mFloor.mCurves.length; i++) {
-            if (this._mFloor.mCurves[i].containsPoint(this._linePoint)) {
-                intersects.push(this._linePoint.clone());
-            }
-        }
-        
-        for (var i = 0; i < this._mFloor.mCurves.length; i++) {
-            var curve = this._mFloor.mCurves[i];
-            curve.isIntersectWithGeometry(edge, intersects);
-            
-        }
-        //console.log(intersects.length);
-        for (var i = 0; i < this._lineEdges.length; i++) {
-            for (var j = 0; j < this._lineEdges[i].length; j++) {
-                SegmentController.intersectSub(edge, this._lineEdges[i][j], intersects);
-            }
-            
-        }
-        
-        //console.log(intersects.length);
-        
-        var minDis = Number.MAX_VALUE;
-        var idx = 0;
-        if (intersects.length > 0) {
-            for (var i = 0; i < intersects.length; i++) {
-                var dis = Vec2.distance(intersects[i], lastPoint);
-                if (minDis > dis) {
-                    minDis = dis;
-                    idx = i;
-                }
-            }
-            
-            this._curentLine0 = new MyEdge(lastPoint, intersects[idx]);
-            this._hintPoints.push(intersects[idx].clone());
-            this._curentLine1 = new MyEdge(intersects[idx], this._linePoint);
-            //this._currentStatus = STATUS.LINE_START;
-            
+        if (this._mEdge.getLength() < 0.0001) {
+            return false;
         } else {
-            
-            this._curentLine0 = edge;
-            this._curentLine1 = null;
+            return true;
         }
-        
-        return false;
-    }
-
-    this._currentStatus = STATUS.DRAWING;
-    this._mEdge.mEnd.mX = x;
-    this._mEdge.mEnd.mY = y;
-    
-    if (this._mEdge.getLength() < 0.0001) {
-        return false;
     } else {
-        return true;
+        return false;
     }
 }
 
 Canvas.prototype.resetType = function() {
-    if (this._currentStatus  == STATUS.LINE_DRAWING) {
-        this._currentStatus = STATUS.LINE_START;
-        
-        
-        var lastPointArray = this._linePoints[this._linePoints.length - 1];
-        
-        if (lastPointArray.length < 2 || Vec2.isEqual(lastPointArray[0], lastPointArray[lastPointArray.length - 1])) {
-            // do nothing
-            this._lineIntersect.isStartEndSame[this._lineIntersect.isStartEndSame.length - 1] = true;
-        } else {
-            var firstPoint = lastPointArray[0];
-            var lastPoint = lastPointArray[lastPointArray.length - 1];
-            var edge = new MyEdge(lastPointArray[lastPointArray.length - 1], lastPointArray[0]);
-            var intersects = [];
-            for (var i = 0; i < this._mFloor.mCurves.length; i++) {
-                var curve = this._mFloor.mCurves[i];
-                curve.isIntersectWithGeometry(edge, intersects);
-            }
-            
-            for (var i = 0; i < this._lineEdges.length; i++) {
-                for (var j = 0; j < this._lineEdges[i].length; j++) {
-                    SegmentController.intersectSub(edge, this._lineEdges[i][j], intersects);
-                }
-            }
-            
-            var minDis = Number.MAX_VALUE;
-            var idx = 0;
-            if (intersects.length > 0) {
-                for (var i = 0; i < intersects.length; i++) {
-                    var dis = Vec2.distance(intersects[i], lastPoint);
-                    if (minDis > dis) {
-                        minDis = dis;
-                        idx = i;
-                    }
-                }
-                
-                lastPointArray.push(intersects[idx]);
-                this._lineEdges[this._lineEdges.length - 1].push(new MyEdge(lastPoint, intersects[idx]));
-                //证明有问题，不封闭的
-                
-            } else {
-                this._lineEdges[this._lineEdges.length - 1].push(new MyEdge(lastPoint, firstPoint));
-                //证明没有问题，封闭的
-                this._lineIntersect.isStartEndSame[this._lineIntersect.isStartEndSame.length - 1] = true;
-                
-            }
-        }
-        
-        console.log("right 0");
-    } else if (this._currentStatus  == STATUS.LINE_START) {
-        this._currentStatus = STATUS.NOT_STARTED;
-        this.setType(null);// = null;
-        var lines = [];
-        console.log(this._lineIntersect);
-        console.log(this._lineEdges);
-        for (var i = 0; i < this._lineEdges.length; i++) {
-            console.log(this._lineIntersect.isStartEndSame[i]);   // t   f
-            //console.log(this._lineIntersect.isStartIntersect[i]); // t   t
-            console.log(this._lineIntersect.isEndIntersect[i]);   // f   t
-            //console.log(this._lineIntersect.isSelfIntersect[i]);  // f   f
-            if (this._lineIntersect.isStartEndSame[i]){
-                for (var j = 0; j < this._lineEdges[i].length; j++) {
-                    lines.push(this._lineEdges[i][j]);
-                }
-            } else {
-                if (this._lineIntersect.isStartIntersect[i] && this._lineIntersect.isEndIntersect[i]) {
-                    //首尾都相交
-                    //那这些边都要
-                    for (var j = 0; j < this._lineEdges[i].length; j++) {
-                        lines.push(this._lineEdges[i][j]);
-                    }
-                }
-                if (!this._lineIntersect.isSelfIntersect[i]) {
-                    //首尾不同点，且没有自交，直接过滤
-                    continue;
-                } else if (this._lineIntersect.isStartIntersect[i]) {
-                    //首尾不同点，但是自交了，并且第一个点和已存部分有交集
-                    //那这些边都要
-                    for (var j = 0; j < this._lineEdges[i].length; j++) {
-                        lines.push(this._lineEdges[i][j]);
-                    }
-                } else {
-                    //首尾不同点，但是自交了，并且第一个点和已存部分没有交集
-                    //去掉首部相交的
-                    var idx =  -1;
-                    var lastPoint = this._linePoints[i][this._linePoints[i].length - 1];
-                    for (var j = 0; j < this._lineEdges[i].length - 1; j++) {
-                        if (this._lineEdges[i][j].pointInEdgeOrOnEdge(lastPoint)) {
-                            idx = j;
-                            break;
-                        }
-                    }
-                    this._lineEdges[i].splice(0, idx);
-                    this._lineEdges[i][0].mStart.mX = lastPoint.mX;
-                    this._lineEdges[i][0].mStart.mY = lastPoint.mY;
-                    for (var j = 0; j < this._lineEdges[i].length; j++) {
-                        lines.push(this._lineEdges[i][j]);
-                    }
-                }
-            }
-        }
-        this.split(lines);
-        this.render();
-        this._linePoints = [];
-        this._lineEdges = [];
-        this._lineIntersect.isStartIntersect = [];
-        this._lineIntersect.isSelfIntersect = [];
-        this._lineIntersect.isStartEndSame = [];
-        this._lineIntersect.isEndIntersect = [];
-        
-        console.log("right 1");
-    } else {
-        this._currentStatus = STATUS.NOT_STARTED;
+    if (this.mElmentOperation.reset()) {
         this.setType(null);
-        //this._type = null;
     }
+    this.render();
 }
 
 Canvas.prototype.getDrawType = function() {
@@ -585,16 +266,9 @@ Canvas.prototype.renderAreaPicked = function(x, y) {
     }
 }
 
-Canvas.prototype.recordMouseDown = function(x, y) {
-    this._mouseDown.mX = x;
-    this._mouseDown.mY = y;
-    
-}
-
 Canvas.prototype.isMoved = function(x, y) {
-    var dis = Math.abs(this._mouseDown.mX - x) + Math.abs(this._mouseDown.mY - y);
-    console.log(dis);
-    if (dis > 3 ) {
+    var p = new Vec2(x, y);
+    if (p.distance(this._mouseSnapped) > 3 ) {
         return true;
     } else {
         return false;
@@ -602,10 +276,8 @@ Canvas.prototype.isMoved = function(x, y) {
 }
 
 Canvas.prototype.recordMouseUp = function(x, y) {
-    this._mouseUp.mX = x;
-    this._mouseUp.mY = y;
-    
-    if (Math.abs(this._mouseDown.mX - this._mouseUp.mX) > 4 || Math.abs(this._mouseDown.mY - this._mouseUp.mY) > 4) {
+    var p = new Vec2(x, y);
+    if (p.distance(this._mouseSnapped) > 3 ) {
         this._focus = null;
     }
     this._updateElment = null;
@@ -772,245 +444,7 @@ Canvas.prototype._renderFocusObject = function(x, y) {
 }
 
 Canvas.prototype._renderMarkerLines = function() {
-    var curves, segments, boundries, validIndex, validCurveIndex;
-    [curves, segments, boundries, validIndex, validCurveIndex] = this._mFloor._seperateType();
-
-    if (this._flags.isZoneSizeEnabled) {
-        //画内部标注线
-        for (var i = 0; i < segments.length; i++) {
-            var curve = segments[i];
-            var edge = curve.getTheStartEndEdge();
-            var start = edge.mStart.clone();
-            var end = edge.mEnd.clone();
-            var center = edge.getCenter();
-            var area = curve.mAreas[curve.mAreas.length - 1];
-            //var area = areas[0];
-            var angle = edge.getAngle();
-            angle = angle + Math.PI / 2;
-            //console.log(angle);
-            var offset = 10;
-            center.mY += offset * Math.sin(angle);
-            center.mX += offset * Math.cos(angle);
-            
-            if (area.containsPoint(center)) {
-                
-                start.mY -= offset * Math.sin(angle);
-                start.mX -= offset * Math.cos(angle);
-                
-                end.mY -= offset * Math.sin(angle);
-                end.mX -= offset * Math.cos(angle);
-                
-                
-            } else {
-                start.mY += offset * Math.sin(angle);
-                start.mX += offset * Math.cos(angle);
-                
-                end.mY += offset * Math.sin(angle);
-                end.mX += offset * Math.cos(angle);
-            }
-            if (validIndex.indexOf(i) > -1) {
-                this._renderer.drawDimensions({x: start.mX,y: start.mY}, {x: end.mX,y: end.mY});
-            }
-        }
-    }
-    
-    if (this._flags.isCrownHeightEnabled) {
-        //画内部标注线
-        var that = this;
-        for (var i = 0; i < curves.length; i++) {
-            var pt0 = curves[i].getCenter();
-            var pt1 = curves[i].getTheStartEndEdge().getCenter();
-            
-            if (validCurveIndex.indexOf(i) > -1) {
-                this._renderer.drawDimensions({x: pt0.mX,y: pt0.mY}, {x: pt1.mX,y: pt1.mY}, null, true, 
-                Utility.DrawCurveHeightCallback, that, curves[i]);
-            }
-        }
-    }
-    
-    for (var i = 0; i < segments.length; i++) {
-        
-        var segmentObj = segments[i];
-        var edgeObj = segmentObj.getTheStartEndEdge();
-        var angleObj = edgeObj.getAngle();
-        
-        var isHorizontalObj = Angle.isHorizontal(angleObj);
-        var isVerticalObj = Angle.isVertical(angleObj);
-        
-        var _segments = null;
-        var idx = -1;
-        
-        if (this._flags.isRelativeDistanceEnabled) {
-            _segments = segments;
-            idx = i+1;
-        }
-        
-        if (this._flags.isAbosoluteMarginEnabled) {
-            _segments = boundries;
-            idx = 0;
-        }
-        
-        if(!_segments) {
-            break;
-        }
-        
-        for (var j = idx; j < _segments.length; j++) {
-            var segmentSbj = _segments[j];
-            var edgeSbj = segmentSbj.getTheStartEndEdge();
-            var angleSbj = edgeSbj.getAngle();
-            
-            var isHorizontalSbj = Angle.isHorizontal(angleSbj);
-            var isVerticalObSbj = Angle.isVertical(angleSbj);
-            
-            var maxDis = -Number.MAX_VALUE;
-            var sign = 0;
-            var center;
-            var markLine = new MyEdge(new Vec2(), new Vec2());
-            if (!SegmentController.isWithinSameArea(segmentObj,segmentSbj)) {
-                var direction = -1;
-                
-                if (isHorizontalObj && isHorizontalSbj && MyEdge.getValidHorizontalSection(edgeObj, edgeSbj, markLine)) {
-                    direction = 0;
-                }
-                
-                if (isVerticalObj && isVerticalObSbj && MyEdge.getValidVerticalSection(edgeObj, edgeSbj, markLine)) {
-                    direction = 1;
-                }
-                
-                if (direction > -1) {
-                    if (this._flags.isRelativeDistanceEnabled) {
-                        var valid = true;
-                        
-                        for (var m = 0; m < this._mFloor.mCurves.length; m++) {
-                            if (this._mFloor.mCurves[m] instanceof CurveController) {
-                                continue;
-                            }
-                            var intersects = [];
-                            if (SegmentController.isIntersectWith(markLine, this._mFloor.mCurves[m], intersects)) {
-                                if (intersects.length > 0 && !Vec2.isEqual(intersects[0], markLine.mEnd))
-                                {
-                                    valid = false;
-                                    continue;
-                                }
-                            }
-                        }
-                        if(valid) {
-                            var distance;
-                            if (direction == 0) {
-                                distance = segments[i].mStart.mPosition.mY - _segments[j].mStart.mPosition.mY;
-                            } else {
-                                distance = segments[i].mStart.mPosition.mX - _segments[j].mStart.mPosition.mX;
-                            }
-                            sign = Math.sign(distance);
-                            distance = Math.abs(distance);
-                            center = markLine.mStart.clone();
-                                
-                            if (validIndex.indexOf(i) > -1 || validIndex.indexOf(j) > -1) {
-                                var arcValid_i = true;
-                                var arcValid_j = true;
-                                
-                                var corners = segments[i].toCorners();
-                                for (var n = 0; n < corners.length; n++) {
-                                    var corner = corners[n];
-                                    for (var p = 0; p < corner.mCurves.length; p++) {
-                                        if (corner.mCurves[p] instanceof CurveController) {
-                                            arcValid_i = false;
-                                            break;
-                                        }
-                                    }
-                                }
-                                
-                                var corners = _segments[j].toCorners();
-                                for (var n = 0; n < corners.length; n++) {
-                                    var corner = corners[n];
-                                    for (var p = 0; p < corner.mCurves.length; p++) {
-                                        if (corner.mCurves[p] instanceof CurveController) {
-                                            arcValid_j = false;
-                                            break;
-                                        }
-                                    }
-                                }
-                                
-                                var seg0 = arcValid_i ? segments[i] : null;
-                                var seg1 = arcValid_j ? _segments[j] : null;
-                                
-                                if (seg0 || seg1) {
-                                    var that = this;
-                                    this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - direction * sign * distance,y: center.mY  - (1 -  direction) * sign * distance}, null, true,
-                                       Utility.DrawDimensionCallback, that, seg0, seg1, sign * distance, direction);
-                                }
-                            }
-                        }
-                    }
-                    if (this._flags.isAbosoluteMarginEnabled) {
-                        
-                        if (direction == 0) {
-                            markLine.mEnd.mY = _segments[j].mStart.mPosition.mY;
-                        } else {
-                            markLine.mEnd.mX = _segments[j].mStart.mPosition.mX;
-                        }
-                        
-                        
-                        var valid = true;
-                        for (var m = 0; m < this._mFloor.mCurves.length; m++) {
-                            if (this._mFloor.mCurves[m] instanceof CurveController) {
-                                continue;
-                            }
-                            var intersects = [];
-                            if (SegmentController.isIntersectWith(markLine, this._mFloor.mCurves[m], intersects)) {
-                                if (intersects.length > 0 && !Vec2.isEqual(intersects[0], markLine.mEnd) && SegmentController.isWithinSameArea(segments[i],this._mFloor.mCurves[m]))
-                                {
-                                    valid = false;
-                                    continue;
-                                }
-                            }
-                        }
-                        if(valid) {
-                            var distance
-                            if (direction == 0) {
-                                distance = segments[i].mStart.mPosition.mY - _segments[j].mStart.mPosition.mY;
-                            } else {
-                                distance = segments[i].mStart.mPosition.mX - _segments[j].mStart.mPosition.mX;
-                            }
-                            if (maxDis < Math.abs(distance)) {
-                                sign = Math.sign(distance);
-                                maxDis = Math.abs(distance);
-                                center = markLine.mStart.clone();
-                            }
-                        }
-                        
-                        
-                        
-                        if (maxDis > -Number.MAX_VALUE && validIndex.indexOf(i) > -1) {
-                            var arcValid = true;
-                            for (var k = 0; k < segments[i].mAreas.length; k++) {
-                                var area = segments[i].mAreas[k];
-                                for (var m = 0; m < area.mCurves.length; m++) {
-                                    var curve = area.mCurves[m];
-                                    var corners = curve.toCorners();
-                                    for (var n = 0; n < corners.length; n++) {
-                                        var corner = corners[n];
-                                        for (var p = 0; p < corner.mCurves.length; p++) {
-                                            if (corner.mCurves[p] instanceof CurveController) {
-                                                arcValid = false;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                    
-                                }
-                            }
-                            if (arcValid) {
-                                var that = this;
-                                this._renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - direction * sign * maxDis, y: center.mY - (1- direction) * sign * maxDis}, null, true,
-                                Utility.DrawDimensionCallback, that, segments[i], null, sign * maxDis, direction);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+    this._mFloor.renderMarkerLines(this._flags, this._renderer, this);
 }
 
 Canvas.prototype._renderMouseLines = function(x, y) {
@@ -1136,6 +570,7 @@ Canvas.prototype.render = function(x, y) {
     //渲染那些几何中点，边界点，中心位置
     this._renderKeyPoints(x, y);
     
+    //画选中点的边界的长度
     this._renderer.drawCornerDimentions(this._updateElment);
 }
 
