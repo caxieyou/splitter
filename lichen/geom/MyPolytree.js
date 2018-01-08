@@ -24,9 +24,9 @@ MyPolytree.getX_Intersections1 = function(param1, param2, param3, param4)
     {
         return MyMath.sign(param1 - param2);
     });
-    if (intersections.length === 0) {
-        debugger;
-    }
+    //if (intersections.length === 0) {
+    //    debugger;
+    //}
     return intersections;
 }
 
@@ -131,7 +131,7 @@ MyPolytree.prototype.getValidGravityCenter = function()
         xIntersections = MyPolytree.getX_Intersections1(tempPoly,yVector[j],true, MyPolytree.TOLERENCE);
         if(xIntersections.length < 2 || isNaN(xIntersections[0]) || isNaN(xIntersections[1]))
         {
-            console.error("xIntersections error!");
+            //console.error("xIntersections error!");
         }
         else
         {

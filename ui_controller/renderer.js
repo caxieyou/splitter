@@ -903,9 +903,8 @@ Renderer = function () {
         }
     }
     
-    this.drawCornerDimentions = function(element) {
-        if (element && element.controller instanceof MyCorner) {
-            var corner = element.controller;
+    this.drawCornerDimentions = function(corner) {
+        if (corner && corner instanceof MyCorner) {
             for (var i = 0; i < corner.mCurves.length; i++) {
                 if (corner.mCurves[i] instanceof SegmentController) {
                     var curve = corner.mCurves[i];

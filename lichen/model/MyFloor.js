@@ -244,8 +244,6 @@ MyFloor.prototype._updateGeoStructure = function() {
             this.mKeyPoints.push(this.mCurves[i].getCenter());
         }
     }
-    console.log(this.mKeyPoints);
-
     console.log("GEOM INFO:");
 }
 
@@ -651,17 +649,52 @@ MyFloor.prototype.renderMarkerLines = function(flags, renderer, canvas)  {
     
 }
 
-
 MyFloor.prototype.getIntersectPoints = function(edges) {
     var intersects = [];
     for (var i = 0; i < edges.length; i++) {
         for (var j = 0; j < this.mCurves.length; j++) {
             if(!this.mCurves[j].isBoundry) {
+                if (this.mCurves[j] instanceof SegmentController) {
+                    var edge = this.mCurves[j].getTheStartEndEdge();
+                    
+                    if (this.mCurves[j].containsPoint(edges[i].mStart)) {
+                        intersects.push(edges[i].mStart.clone());
+                    }
+                    if (this.mCurves[j].containsPoint(edges[i].mEnd)) {
+                        intersects.push(edges[i].mEnd.clone());
+                    }
+                    
+                    if (edges[i].pointInEdge(edge.mStart)) {
+                        intersects.push(edge.mStart.clone());
+                    }
+                    if (edges[i].pointInEdge(edge.mEnd)) {
+                        intersects.push(edge.mEnd.clone());
+                    }
+                }
+                
                 SegmentController.isIntersectWith(edges[i], this.mCurves[j], intersects);
             }
         }
     }
-    return intersects;
+    
+    var valid = [];
+    
+    for (var i = 0; i < intersects.length; i++) {
+        var isSame = false;
+        for (var j = 0; j < valid.length; j++) {
+            if (intersects[i].equals(valid[j])) {
+                isSame = true;
+                break;
+            }
+        }
+        if (!isSame) {
+            valid.push(intersects[i]);
+        }
+        
+    }
+    
+    
+    return valid;
 }
 
 

@@ -42,7 +42,7 @@ $(function() {
 
     $(document).on('mouseup', '#canvas', function(event) {
         event = event || window.event;
-
+        
         if(canvas.getDrawType() == null) {
             var elementType = canvas.getFocusElement();
             console.log(elementType);
@@ -95,12 +95,13 @@ $(function() {
 
     $(document).on('mousemove', '#canvas', function(event) {
         event = event || window.event;
-        canvas.snapMouse(event.offsetX, event.offsetY);
         if(event.which == 1) {
             //按住拖动
+            //canvas.snapMouse(event.offsetX, event.offsetY, false);
             canvas.updateElement(event.offsetX, event.offsetY);
         } else if(event.which == 0) {
             //没按住拖动
+            canvas.snapMouse(event.offsetX, event.offsetY, true);
             canvas.setEndPoint();
             canvas.render();
         }
