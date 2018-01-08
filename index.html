@@ -92,7 +92,7 @@
                         <img class="setting-empty" src="common/images/empty.png">
                         <span>清空</span>
                     </div>
-                    <div class="setting-display" id="setting-display">
+                    <div class="setting-display" id="setting_display">
                         <div class="checkbox-row">
                             <input type="checkbox" class="setting-display-check" id="relative_distance">
                             <label for="relative_distance">相对距离</label>
@@ -133,6 +133,12 @@
                 <div class="canvas-container">
                     <canvas id="canvas" width="800" height="800"></canvas>
                 </div>
+                <div class="message-box">
+                    <img src="common/images/hint.png">
+                    <div class="message-body">
+                        <label><span>65535</span>不是一个合法的数值</label>
+                    </div>
+                </div>
             </div>
         </div>
         <div id="props_wrap">
@@ -148,15 +154,6 @@
             <div class="props" data-type="delete">
                 <i class="icon iconfont">&#xe63a;</i>
                 <i class="pup">删除<i></i></i>
-            </div>
-        </div>
-        <div class="message-container">
-            <div class="message-box">
-                <div class="header">温馨提示</div>
-                <div class="message-body">
-                    <label><span>65535</span>不是一个合法的数值</label>
-                <button id="sure_btn">确定</button>
-                </div>
             </div>
         </div>
     </div>

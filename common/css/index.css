@@ -353,12 +353,12 @@ body {
 
 #main_container .settings .setting-display {
     position: absolute;
-    top: 40px;
+    top: 42px;
     width: 132px;
     border: 1px solid #d9d9d9;
     display: none;
     padding: 10px 0;
-    background-color: #f6f6f6
+    background-color: #f6f6f6;
 }
 
 #main_container .settings .setting-display .checkbox-row {
@@ -372,60 +372,29 @@ body {
     padding: 7px 0 7px 10px;
 }
 
-.message-container {
+.message-box {
     display: none;
     position: absolute;
-    width: 100%;
-    height: 100%;
-    z-index: 900;
-    background: #000;
-    opacity: .7;
-}
-
-
-.message-container .message-box {
-    position: absolute;
     left: 50%;
-    top:50%;
-    transform: translate(-50%, -50%);
-    width: 270px;
+    top: 43px;
+    transform: translate(-50%, 0);
     text-align: center;
-    padding: 0 15px 15px;
+    padding: 10px 13px 10px 10px;
     border: 1px solid #d9d9d9;
     border-radius: 5px;
     background: #fff;
 }
 
-.message-container .message-box .header{
-    height: 36px;
-    line-height: 36px;
-    border-bottom: 1px solid #cfcfcf;
-    text-align: left;
+.message-box img {
+    width: 28px;
+    height: 28px;
 }
 
-.message-container .message-box .message-body{
-    padding-top: 10px;
-}
-
-.message-container .message-box label {
+.message-box label {
+    font-size: 14px;
     display: block;
-    margin-bottom: 15px;
     line-height: 2;
 }
-
-.message-container .message-box button {
-    display: inline-block;
-    min-width: 60px;
-    height: 30px;
-    font-size: 13px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border: 1px solid grey;
-    border-radius: 5px;
-    background: #fff;
-}
-
-
 
 #setting_display_menu .setting-unfold{
     transition: all 0.5s;

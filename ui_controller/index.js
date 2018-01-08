@@ -140,6 +140,7 @@ $(function() {
         radioClass: 'iradio_minimal',
         increaseArea: '20%' // optional
     });
+
     // 绝对边距和区域尺寸默认选中
     $('#relative_distance').iCheck('uncheck');
     $('#absolute_margin').iCheck('check');
@@ -192,10 +193,17 @@ $(function() {
     
     // 显示菜单栏折叠与展开事件
     $('#main_container').on('click', '#setting_display_menu', function() {
-        $('#setting-display').slideToggle();
+        $('#setting_display').stop().slideToggle();
         $(this).toggleClass('on');
         return false;
     });
+    // 鼠标离开时隐藏
+    document.getElementById('setting_display').onmouseleave = function() {
+        if($('#setting_display_menu').hasClass('on')) {
+            $('#setting_display').stop().slideToggle();
+            $('#setting_display_menu').toggleClass('on');
+        }
+    }
     // 撤销
     $('#main_container').on('click', '#setting_goback', function() {
         alert('setting_goback');
@@ -237,13 +245,11 @@ $(function() {
      * message: String 不合法的数值
      */
     var setMessageData = function(message) {
-        $('.message-container').show();
-        $('.message-container span').text(message);
+        $('.message-box').css('display', 'flex');
+        $('.message-box span').text(message);
+        setTimeout(function() {$('.message-box').fadeOut();}, 2000);
     };
-    // 提示框确定事件
-    $('.message-container').on('click', '#sure_btn', function() {
-        $('.message-container').hide();
-    });
+
     // 输入框change事件
     $('body').on('keyup change', 'input.number', function() {
         var $this = $(this),
