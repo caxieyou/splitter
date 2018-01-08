@@ -6,7 +6,13 @@ function MyFloor() {
     this.mProfile;
     this.mOutput;
     this.mAreasPolytree;
+    this.mAreasControllers;
+    
     this.mPickedArea;
+    this.mPickedAreaControllers;
+    this.mPickedDirection;
+    
+    this.mKeyPoints;
     this.initialize();
 }
 
@@ -17,7 +23,11 @@ MyFloor.prototype.initialize = function() {
     this.mHoles = [];
     this.mProfile = null;
     this.mAreasPolytree = null;
+    this.mAreasControllers = [];
     this.mPickedArea = null;
+    this.mPickedAreaControllers = [];
+    this.mPickedDirection = false;
+    this.mKeyPoints = [];
 }
 
 MyFloor.prototype.setProfile = function(rect) {
@@ -130,6 +140,29 @@ MyFloor.prototype.getPickedArea = function(x, y) {
     for (var i = 0; i < this.mAreasPolytree.length; i++) {
         if (this.mAreasPolytree[i].contains(new Vec2(x, y))) {
             this.mPickedArea = this.mOutput[i];
+            this.mPickedAreaControllers = this.mAreasControllers[i];
+
+            
+            var segment = this.mPickedAreaControllers[0];
+            var edge = segment.getTheStartEndEdge();
+            var start = edge.mStart.clone();
+            var end = edge.mEnd.clone();
+            var center = edge.getCenter();
+
+            var angle = edge.getAngle();
+            angle = angle + Math.PI / 2;
+            var offset = 0.01;
+            var offvec = new Vec2(offset * Math.cos(angle), offset * Math.sin(angle));
+            center.addBy(offvec);
+            
+            if (this.mAreasPolytree[i].contains(center)) {
+                this.mPickedDirection = 1;
+            } else {
+                this.mPickedDirection = -1;
+            }
+            
+
+
             break;
         }
     }
@@ -188,14 +221,32 @@ MyFloor.prototype._updateGeoStructure = function() {
 
     this.mOutput = [];
     this.mAreasPolytree = [];
+    this.mAreasControllers = [];
     
     var polyTree = null;
     for (var i = 0; i < areas.length; i++) {
         var res = MyArea.outputStructures(areas[i], holesList[i]);
         var res2 = MyArea.outputStructures2(areas[i], holesList[i]);
+        var res3 = MyArea.outputStructures3(areas[i], holesList[i]);
         this.mOutput.push(res);
         this.mAreasPolytree.push(res2);
+        this.mAreasControllers.push(res3);
     }
+    this.mKeyPoints = [];
+    for (var i = 0; i < this.mAreasPolytree.length; i++) {
+        var point =  this.mAreasPolytree[i].getValidGravityCenter();
+        if (this.mAreasPolytree[i].contains(point)) {
+            this.mKeyPoints.push(point);
+        }
+    }
+
+    for (var i = 0; i < this.mCurves.length; i++) {
+        if (!this.mCurves[i].isBoundry) {
+            this.mKeyPoints.push(this.mCurves[i].getCenter());
+        }
+    }
+    console.log(this.mKeyPoints);
+
     console.log("GEOM INFO:");
 }
 
@@ -230,9 +281,32 @@ MyFloor.prototype.updatePosition = function(sub, newPos, oldPos)
             sub.updatePosition(oldPos.mX, oldPos.mY);
         }
         this.Analysis();
-    } else {
-        this.clearPickedArea();
+    } 
+    
+    if (this.mPickedArea) {
+
+        var segment = this.mPickedAreaControllers[0];
+        
+        var edge = segment.getTheStartEndEdge();
+        var start = edge.mStart.clone();
+        var end = edge.mEnd.clone();
+        var center = edge.getCenter();
+        var area = segment.mAreas[segment.mAreas.length - 1];
+        var angle = edge.getAngle();
+        angle = angle + Math.PI / 2;
+        var offset = 0.01;
+        var offvec = new Vec2(offset * Math.cos(angle), offset * Math.sin(angle));
+        if (this.mPickedDirection) {
+            center.addBy(offvec);
+        } else {
+            center.sub(offvec);
+        }
+        
+        this.getPickedArea(center.mX, center.mY);
     }
+    //else {
+    //    this.clearPickedArea();
+    //}
     
     return overlapped;
 }
@@ -309,27 +383,9 @@ MyFloor.prototype.renderOutput = function(renderer) {
     }
     var res = this.mOutput;
     for (var i = 0; i < res.length; i++) {
-        for (var j = 0; j < res[i].mOutline.edges.length; j++) {
-            var edge = res[i].mOutline.edges[j];
-            if (edge instanceof MyEdge) {
-                renderer.drawLine(edge);
-            }else if (edge instanceof MyCurve) {
-                renderer.drawArc(edge);
-            }
-        }
-        
-        for (var j = 0; j < res[i].mHoles.length; j++) {
-            for (var k = 0; k < res[i].mHoles[j].edges.length; k++) {
-                var edge = res[i].mHoles[j].edges[k];
-                if (edge instanceof MyEdge) {
-                    renderer.drawLine(edge);
-                } else if (edge instanceof MyCurve) {
-                    renderer.drawArc(edge);
-                }
-            }
-        }
-        
+        renderer.drawOutput(res[i]);
     }
+    renderer.drawOutput(this.mPickedArea, true);
 }
 
 //画内部标注线

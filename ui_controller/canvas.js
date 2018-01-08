@@ -27,6 +27,7 @@ function Canvas(name) {
     };
     this._mouseDown = new Vec2();
     this._mouseUp = new Vec2();
+    this._mouseSnapped = new Vec2();
     this._linePoints = [];
     this._lineEdges = [];
     this._linePoint = new Vec2();
@@ -51,8 +52,9 @@ Canvas.prototype._initialize = function() {
     
     this._mFloor.setProfile(rect);
     
+    this._mFloor.Analysis();
     //渲染
-    this.render(0, 0);
+    this.render();
 }
 
 Canvas.prototype._renderCurrentObject = function() {
@@ -130,10 +132,7 @@ Canvas.prototype.createRect = function(pnt0, pnt1) {
     
     var rect = new MyRect(pnt0, pnt1);
     var polyEdges = rect.toMyPolygon().getEdges();
-    //edges = subject.getEdges();
-    
     for (var i = 0; i < polyEdges.length; i++) {
-        //var edge = polyEdges[i];
         for (var j = 0; j < this._mFloor.mCurves.length; j++) {
             var curve = this._mFloor.mCurves[j];
             if (curve.isBoundry || curve instanceof CurveController) {
@@ -141,13 +140,39 @@ Canvas.prototype.createRect = function(pnt0, pnt1) {
             }
             curve = curve.getTheStartEndEdge();
             
-            polyEdges[i] = MyEdge.getDiff(polyEdges[i], curve);
+            if (polyEdges[i] instanceof Array) {
+                var total = [];
+                for (var m = 0; m < polyEdges[i].length; m++) {
+                    var result = MyEdge.getDiff(polyEdges[i][m], curve);
+
+                    if (result == null) {
+
+                    }
+                    if (result instanceof Array) {
+                        total.push(result[0]);
+                        total.push(result[1]);
+                    } else {
+                        total.push(result);
+                    }
+                }
+                polyEdges[i] = total;
+            } else {
+                polyEdges[i] = MyEdge.getDiff(polyEdges[i], curve);
+            }
         }
     }
     
+    
+    
     var res = [];
     for (var i = 0; i < polyEdges.length; i++) {
-        if (polyEdges[i]) {
+        if (polyEdges[i] == null) {
+            //res.push(polyEdgesSplit[i]);
+        } else if (polyEdges[i] instanceof Array && polyEdges[i].length > 0) {
+            for (var j = 0; j < polyEdges[i].length; j++) {
+                res.push(polyEdges[i][j]);
+            }
+        } else {
             res.push(polyEdges[i]);
         }
     }
@@ -180,6 +205,10 @@ Canvas.prototype.setStartPoint = function(x, y) {
     if (this._type == null) {
         return false;
     }
+    
+    x = this._mouseSnapped.mX;
+    y = this._mouseSnapped.mY;
+    
     
     var hintPoints = [];
     var minDis = Number.MAX_VALUE;
@@ -290,6 +319,9 @@ Canvas.prototype.setEndPoint = function(x, y) {
         return false;
     }
     
+    x = this._mouseSnapped.mX;
+    y = this._mouseSnapped.mY;
+    
     var hintPoints = [];
     var minDis = Number.MAX_VALUE;
     var index = -1;
@@ -327,6 +359,7 @@ Canvas.prototype.setEndPoint = function(x, y) {
         y = minPoint.mY;
     }
     
+    
     if (this._currentStatus ==  STATUS.NOT_STARTED || this._currentStatus ==  STATUS.LINE_START) {
         return false;
     }
@@ -342,16 +375,26 @@ Canvas.prototype.setEndPoint = function(x, y) {
         
         var intersects = [];
         for (var i = 0; i < this._mFloor.mCurves.length; i++) {
-            var curve = this._mFloor.mCurves[i];
-            curve.isIntersectWithGeometry(edge, intersects);
+            if (this._mFloor.mCurves[i].containsPoint(this._linePoint)) {
+                intersects.push(this._linePoint.clone());
+            }
         }
         
+        for (var i = 0; i < this._mFloor.mCurves.length; i++) {
+            var curve = this._mFloor.mCurves[i];
+            curve.isIntersectWithGeometry(edge, intersects);
+            
+        }
+        //console.log(intersects.length);
         for (var i = 0; i < this._lineEdges.length; i++) {
             for (var j = 0; j < this._lineEdges[i].length; j++) {
                 SegmentController.intersectSub(edge, this._lineEdges[i][j], intersects);
             }
             
         }
+        
+        //console.log(intersects.length);
+        
         var minDis = Number.MAX_VALUE;
         var idx = 0;
         if (intersects.length > 0) {
@@ -442,7 +485,13 @@ Canvas.prototype.resetType = function() {
         this._currentStatus = STATUS.NOT_STARTED;
         this.setType(null);// = null;
         var lines = [];
+        console.log(this._lineIntersect);
+        console.log(this._lineEdges);
         for (var i = 0; i < this._lineEdges.length; i++) {
+            console.log(this._lineIntersect.isStartEndSame[i]);   // t   f
+            //console.log(this._lineIntersect.isStartIntersect[i]); // t   t
+            console.log(this._lineIntersect.isEndIntersect[i]);   // f   t
+            //console.log(this._lineIntersect.isSelfIntersect[i]);  // f   f
             if (this._lineIntersect.isStartEndSame[i]){
                 for (var j = 0; j < this._lineEdges[i].length; j++) {
                     lines.push(this._lineEdges[i][j]);
@@ -599,11 +648,17 @@ Canvas.prototype.updateElement = function(x, y){
     if (this._updateElment) {
         console.log("controller been called: " + x + " " + y);
         var overlapped = this._mFloor.updatePosition(this._updateElment.controller, new Vec2(x, y), this._lastFocos);
+        
         this.render(x, y);
+        
         if (overlapped) {
+            if (this._updateElment.controller instanceof MyCorner) {
+                this._renderer.drawCorner(this._lastFocos, 8, '#f57208');
+                this._renderer.drawCorner(new Vec2(x, y), 10, 'red');
+            }
             return;
         }
-        this._mFloor.clearPickedArea();
+        //this._mFloor.clearPickedArea();
         this._lastFocos.set(x, y);
     }
 }
@@ -664,7 +719,7 @@ Canvas.prototype._renderFocusObject = function(x, y) {
     }
     
     if (this._focus != null) {
-        this._renderer.drawCorner(this._focus.geom, 10, 'blue');
+        this._renderer.drawCorner(this._focus.geom, 8, '#f57208');
         document.body.style.cursor = "move";
         return;
     } else {
@@ -980,51 +1035,32 @@ Canvas.prototype._renderMouseLines = function(x, y) {
         if (Angle.isVertical(angle2)) {
             snapX.push(edge2);
         }
-        
     }
     
     var edgeX = [];
     var edgeY = [];
     var snappedX = false;
     var snappedY = false;
-    var min = Number.MAX_VALUE;
+    var min = 3;
     for (var i = 0; i < snapY.length; i++) {
         var dis = Math.abs(snapY[i].mStart.mY - y);
         if (dis <= min) {
-            
-            if (dis < min) {
-                edgeY = [];
-            }
             min = dis;
-            edgeY.push(snapY[i]);
-            
+            y = snapY[i].mStart.mY;
+            snappedY = true;
         }
     }
-    if (min < 3) {
-        y = edgeY[0].mStart.mY;
-        snappedY = true;
-    }
     
-    min = Number.MAX_VALUE;
+    min = 3;
     for (var i = 0; i < snapX.length; i++) {
         var dis = Math.abs(snapX[i].mStart.mX - x);
-        //console.log(i + " " + dis + " " + min);
         if (dis <= min) {
-            
-            if (dis < min) {
-                edgeX = [];
-            }
-            edgeX.push(snapX[i]);
             min = dis;
-
+            x = snapX[i].mStart.mX;
+            snappedX = true;
         }
     }
-    
-    if (min < 3) {
-        x = edgeX[0].mStart.mX;
-        snappedX = true;
-    }
-    
+    this._mouseSnapped.set(x, y);
     for (var j = 0; j < this._mFloor.mCurves.length; j++) {
         if (!this._mFloor.mCurves[j].isBoundry) {
             continue;
@@ -1033,64 +1069,12 @@ Canvas.prototype._renderMouseLines = function(x, y) {
         var angle2 = edge2.getAngle();
         
         if (Angle.isHorizontal(angle2) && MyEdge.isPointWithinHorizontal(x, edge2)) {
-            this._renderer.drawDimensions({x: x,y: y}, {x: x,y: edge2.mStart.mY});
+            this._renderer.drawDimensions({x: x,y: y}, {x: x,y: edge2.mStart.mY}, snappedX ? "blue" : null);
         }
         if (Angle.isVertical(angle2) && MyEdge.isPointWithinVertical(y, edge2)) {
-            this._renderer.drawDimensions({x: x,y: y}, {x: edge2.mStart.mX,y: y});
+            this._renderer.drawDimensions({x: x,y: y}, {x: edge2.mStart.mX,y: y}, snappedY ? "blue" : null);
         }
     }
-    
-    if (edgeX.length > 0 && snappedX ) {
-        
-        var yDis = Number.MAX_VALUE;
-        var ySnap = null;
-        for (var i = 0; i < edgeX.length;i++) {
-            if (!edgeX[i].pointInEdgeOrOnEdge(new Vec2(x, y))) {
-                var dis1 = Math.abs(y - edgeX[i].mStart.mY);
-                var dis2 = Math.abs(y - edgeX[i].mEnd.mY);
-                if (dis1 < yDis) {
-                    yDis = dis1;
-                    ySnap = edgeX[i].mStart.mY;
-                }
-                if (dis2 < yDis) {
-                    yDis = dis2;
-                    ySnap = edgeX[i].mEnd.mY;
-                }
-            }
-        }
-        
-        if (ySnap) {
-            this._renderer.drawLine(new MyEdge(new Vec2(x, y), new Vec2(x, ySnap)), false, 'blue');
-        }
-    }
-    
-    if (edgeY.length > 0 && snappedY) {
-        
-        var xDis = Number.MAX_VALUE;
-        var xSnap = null;
-        
-        for (var i = 0; i < edgeY.length; i++) {
-            if (!edgeY[i].pointInEdgeOrOnEdge(new Vec2(x, y))) {
-                var dis1 = Math.abs(x - edgeY[i].mStart.mX);
-                var dis2 = Math.abs(x - edgeY[i].mEnd.mX);
-                
-                if (dis1 < xDis) {
-                    xDis = dis1;
-                    xSnap = edgeY[i].mStart.mX;
-                }
-                if (dis2 < xDis) {
-                    xDis = dis2;
-                    xSnap = edgeY[i].mEnd.mX;
-                }
-            }
-        }
-        
-        if (xSnap) {
-            this._renderer.drawLine(new MyEdge(new Vec2(x, y), new Vec2(xSnap, y)), false, 'blue');
-        }
-    }
-    
-    
 }
 
 Canvas.prototype._renderHintPoints = function() {
@@ -1098,6 +1082,14 @@ Canvas.prototype._renderHintPoints = function() {
         this._renderer.drawIntersectCorner(this._hintPoints[i], 6);
     }
     this._hintPoints = [];
+}
+
+Canvas.prototype._renderKeyPoints = function(x, y) {
+    for (var i = 0; i < this._mFloor.mKeyPoints.length; i++) {
+        if (this._mFloor.mKeyPoints[i].isClose(new Vec2(x, y), 3)) {
+            this._renderer.drawCorner(this._mFloor.mKeyPoints[i], 8, '#f57208');
+        }
+    }
 }
 
 Canvas.prototype.setZoneSize = function(enabled) {
@@ -1140,6 +1132,11 @@ Canvas.prototype.render = function(x, y) {
     this._renderFocusObject(x, y);
     
     this._renderHintPoints();
+    
+    //渲染那些几何中点，边界点，中心位置
+    this._renderKeyPoints(x, y);
+    
+    this._renderer.drawCornerDimentions(this._updateElment);
 }
 
 Canvas.prototype.clear = function() {

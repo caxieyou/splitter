@@ -80,7 +80,7 @@ $(function() {
                     $('#props_wrap').find('.props.line').data('type', 'straight');
                     $('#props_wrap').find('.props.line').find('.pup').html('转为曲线<i></i>');
                 }
-                if (!canvas.isMoved(event.offsetX, event.offsetY)) {
+                if (!canvas.isMoved(event.offsetX, event.offsetY) && event.button == 0) {
                     $('#props_wrap').show();
                     canvas.setOperationCurve();
                 } else {
