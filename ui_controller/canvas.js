@@ -393,5 +393,6 @@ Canvas.prototype.clear = function() {
     this._operationCurve      = null; 
     this._hintPoints          = [];
     this.mSnap                = new Snap(this._mFloor);
+    this._renderer.init(this._canvas);
     this._initialize();
 }
