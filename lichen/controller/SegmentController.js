@@ -62,7 +62,7 @@ SegmentController.intersectSub = function(param1, param2, param3, param4, param5
     {
         if(param3 != null)
         {
-            _loc6_ = LineRelationHelper.isInterSectAndGetPoint(_loc5_,param1);
+            _loc6_ = LineRelationHelper.isInterSectAndGetPoint(_loc5_, param1);
             if(_loc6_ != null)
             {
                 param3.push(_loc6_);
@@ -245,7 +245,7 @@ SegmentController.isIntersectWith = function(param1, param2, param3, param4, par
     {
         _loc6_ = param2;
         _loc5_ = _loc6_.getTheStartEndEdge();
-        return SegmentController.intersectSub(param1, _loc5_,param3,param4,param5);
+        return SegmentController.intersectSub(param1, _loc5_, param3, param4, param5);
     }
     if(param2 instanceof CurveController)
     {
