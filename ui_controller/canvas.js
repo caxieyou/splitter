@@ -233,8 +233,8 @@ Canvas.prototype.updateElement = function(x, y){
             this.mSnap.mFocus.geom =  this._updateElment.getCurveFromController();
         } else {
             this.mSnap.mFocus.geom = this._updateElment.mPosition.clone();
-            this.mSnap.mFocus.keypoint = null;
         }
+        this.mSnap.mFocus.keypoint = null;
         
         this.render();
         

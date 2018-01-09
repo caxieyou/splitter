@@ -499,7 +499,7 @@ SegmentController.prototype.updatePosition = function(x, y) {
         if (coners[0].mCurves[i].mId !== this.mId) {
             coners[0].mCurves[i].getAngle();
             var diff = Math.abs(angle - coners[0].mCurves[i].getAngle());
-            while(diff > Math.PI) {
+            while(diff >= Math.PI) {
                 diff = diff - Math.PI;
             }
             if (diff > minS) {
@@ -512,7 +512,7 @@ SegmentController.prototype.updatePosition = function(x, y) {
         if (coners[1].mCurves[i].mId !== this.mId) {
             coners[1].mCurves[i].getAngle();
             var diff = Math.abs(angle - coners[1].mCurves[i].getAngle());
-            while(diff > Math.PI) {
+            while(diff >= Math.PI) {
                 diff = diff - Math.PI;
             }
             if (diff > minE) {
