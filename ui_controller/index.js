@@ -190,20 +190,6 @@ $(function() {
     });
     
     
-    
-    // 显示菜单栏折叠与展开事件
-    $('#main_container').on('click', '#setting_display_menu', function() {
-        $('#setting_display').stop().slideToggle();
-        $(this).toggleClass('on');
-        return false;
-    });
-    // 鼠标离开时隐藏
-    document.getElementById('setting_display').onmouseleave = function() {
-        if($('#setting_display_menu').hasClass('on')) {
-            $('#setting_display').stop().slideToggle();
-            $('#setting_display_menu').toggleClass('on');
-        }
-    }
     // 撤销
     $('#main_container').on('click', '#setting_goback', function() {
         alert('setting_goback');

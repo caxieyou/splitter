@@ -75,40 +75,44 @@
             <div id="main_container">
                 <div class="settings">
                     <div class="setting" id="setting_display_menu">
-                        <img class="setting-browse" src="common/images/browse.png">
-                        <span>显示</span>
-                        <img class="setting-unfold" src="common/images/more_unfold.png">
+                        <div class="setting-title">
+                            <div class="setting-browse"></div>
+                            <span>显示</span>
+                            <div class="setting-unfold"></div>
+                        </div>
+                        <div class="setting-display" id="setting_display">
+                            <div class="setting-display-container">
+                                <div class="checkbox-row">
+                                    <input type="checkbox" class="setting-display-check" id="relative_distance">
+                                    <label for="relative_distance">相对距离</label>
+                                </div>
+                                <div class="checkbox-row">
+                                    <input type="checkbox" class="setting-display-check" id="absolute_margin">
+                                    <label for="absolute_margin">绝对边距</label>
+                                </div>
+                                <div class="checkbox-row">
+                                    <input type="checkbox" class="setting-display-check" id="zone_size">
+                                    <label for="zone_size">区域尺寸</label>
+                                </div>
+                                <div class="checkbox-row">
+                                    <input type="checkbox" class="setting-display-check" id="crown_height">
+                                    <label for="crown_height">圆弧高度</label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="setting" id="setting_goback">
-                        <img class="setting-goback" src="common/images/go_back.png">
+                        <div class="setting-goback"></div>
                         <span>撤销</span>
                     </div>
-                    <div class="setting" id="setting_goforward">
-                        <img class="setting-goforward" src="common/images/go_forward.png">
+                    <div class="setting disable" id="setting_goforward">
+                        <div class="setting-goforward"></div>
                         <span>恢复</span>
                         <div class="cover"></div>
                     </div>
                     <div class="setting" id="setting_empty">
-                        <img class="setting-empty" src="common/images/empty.png">
+                        <div class="setting-empty"></div>
                         <span>清空</span>
-                    </div>
-                    <div class="setting-display" id="setting_display">
-                        <div class="checkbox-row">
-                            <input type="checkbox" class="setting-display-check" id="relative_distance">
-                            <label for="relative_distance">相对距离</label>
-                        </div>
-                        <div class="checkbox-row">
-                            <input type="checkbox" class="setting-display-check" id="absolute_margin">
-                            <label for="absolute_margin">绝对边距</label>
-                        </div>
-                        <div class="checkbox-row">
-                            <input type="checkbox" class="setting-display-check" id="zone_size">
-                            <label for="zone_size">区域尺寸</label>
-                        </div>
-                        <div class="checkbox-row">
-                            <input type="checkbox" class="setting-display-check" id="crown_height">
-                            <label for="crown_height">圆弧高度</label>
-                        </div>
                     </div>
                 </div>
                 <div class="bottom-props" id="bottom_props">

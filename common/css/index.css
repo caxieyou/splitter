@@ -282,21 +282,68 @@ body {
     display: flex;
     align-items: center;
     z-index: 100;
+    background-color: #fff;
 }
 
 #main_container .settings .setting {
     display: flex;
-    height: 30px;
+    height: 100%;
     align-items: center;
     justify-content: center;
     position: relative;
     cursor: pointer;
 }
 
+#main_container .settings .setting:hover > span{
+    color: #58A3F3
+}
+
+#main_container .settings .setting.disable:hover > span{
+    color: #000
+}
+
 #main_container .settings .setting:nth-of-type(1) {
     flex: 0 0 106px;
     border-right: 1px solid #d9d9d9;
 }
+
+#main_container .settings #setting_display_menu .setting-title {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+#main_container .settings #setting_display_menu:hover > .setting-title{
+    color: #58A3F3;
+}
+
+#main_container .settings #setting_display_menu:hover > .setting-display{
+    display: block;
+}
+
+#main_container .settings #setting_display_menu:hover > .setting-title > .setting-browse {
+    background-image: url('../images/browse_hover.png')
+}
+
+
+#main_container .settings #setting_display_menu:hover > .setting-title > .setting-unfold {
+    background-image:url('../images/more_unfold_hover.png');
+    transform: rotate(180deg);
+}
+
+#main_container .settings #setting_goback:hover > .setting-goback {
+    background-image:url('../images/go_back_hover.png');
+}
+
+#main_container .settings #setting_goforward.abel:hover > .setting-goforward {
+    background-image:url('../images/go_forward_hover.png');
+}
+
+#main_container .settings #setting_empty:hover > .setting-empty {
+    background-image:url('../images/empty_hover.png');
+}
+
 
 #main_container .settings .setting span {
     margin: 0 6px;
@@ -327,38 +374,77 @@ body {
 
 #main_container .settings .setting .setting-browse {
     width: 20px;
-    height: 15px;
+    height: 20px;
+    background-size: 20px 20px;
+    background-image: url('../images/browse.png')
 }
+
 
 #main_container .settings .setting .setting-unfold {
     width: 15px;
-    height: 12px;
-    margin-top: 1px;
+    height: 15px;
+    background-image: url('../images/more_unfold.png');
+    background-size: 15px 15px;
 }
 
 #main_container .settings .setting .setting-goback {
     width: 20px;
     height: 15px;
+    background-size: 20px 15px;
+    background-image: url('../images/go_back.png');
 }
 
 #main_container .settings .setting .setting-goforward {
     width: 20px;
     height: 20px;
+    background-size: 20px 20px;
+    background-image: url('../images/go_forward.png');
 }
 
 #main_container .settings .setting .setting-empty {
     width: 20px;
     height: 20px;
+    background-size: 20px 20px;
+    background-image: url('../images/empty.png');
 }
 
 #main_container .settings .setting-display {
     position: absolute;
-    top: 42px;
-    width: 132px;
-    border: 1px solid #d9d9d9;
+    top: 37px;
+    left: -3px;
+    width: 115px;
     display: none;
+    padding-top: 10px;
+}
+
+#main_container .settings .setting-display-container {
+    border: 1px solid #d9d9d9;
+    background-color: #fff;
     padding: 10px 0;
-    background-color: #f6f6f6;
+}
+
+.setting-display-container:before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border: 8px solid transparent;
+    border-bottom: 8px solid #d9d9d9;
+    transform: translate(-50%, 0);
+}
+
+.setting-display-container:after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border: 8px solid transparent;
+    border-bottom: 8px solid #fff;
+    transform: translate(-50%, 0);
 }
 
 #main_container .settings .setting-display .checkbox-row {
@@ -394,15 +480,6 @@ body {
     font-size: 14px;
     display: block;
     line-height: 2;
-}
-
-#setting_display_menu .setting-unfold{
-    transition: all 0.5s;
-}
-
-#setting_display_menu.on .setting-unfold {
-    transition: all 0.5s;
-    transform: rotate(180deg);
 }
 
 .icheckbox_minimal {
