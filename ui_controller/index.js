@@ -33,17 +33,16 @@ $(function() {
         $('#props_wrap').hide();
         if(btnNum == 0) {
             //左键
-            canvas.setStartPoint(event.offsetX, event.offsetY);
+            canvas.setStartPoint();
         } else if(btnNum == 2) {
             //右键
             canvas.resetType();
         }
-        canvas.recordMouseDown(event.offsetX, event.offsetY);
     });
 
     $(document).on('mouseup', '#canvas', function(event) {
         event = event || window.event;
-
+        
         if(canvas.getDrawType() == null) {
             var elementType = canvas.getFocusElement();
             console.log(elementType);
@@ -89,28 +88,27 @@ $(function() {
             }
         } else if(canvas.checkStatus()) {
             canvas.createElement();
-            canvas.render(event.offsetX, event.offsetY);
+            canvas.render();
         }
         canvas.recordMouseUp(event.offsetX, event.offsetY);
     });
 
     $(document).on('mousemove', '#canvas', function(event) {
         event = event || window.event;
-        //console.log(event.offsetX + " " + event.offsetY);
         if(event.which == 1) {
             //按住拖动
+            //canvas.snapMouse(event.offsetX, event.offsetY, false);
             canvas.updateElement(event.offsetX, event.offsetY);
-
         } else if(event.which == 0) {
             //没按住拖动
-            canvas.setEndPoint(event.offsetX, event.offsetY);
-            canvas.render(event.offsetX, event.offsetY);
+            canvas.snapMouse(event.offsetX, event.offsetY, true);
+            canvas.setEndPoint();
+            canvas.render();
         }
     });
     // 选中线段事件
     $('#props_wrap').on('click', '.props', function() {
         var type = $(this).data('type');
-        //console.log(type);
         if(type === 'division') {
             canvas.onSplitCurve();
         }
@@ -202,7 +200,6 @@ $(function() {
     });
     // 清空
     $('#main_container').on('click', '#setting_empty', function() {
-        //alert('setting_empty');
         canvas.clear();
         return false;
     });
@@ -284,6 +281,7 @@ $(function() {
     
     canvas.scale = 1;
     function onmousedown(e) {
+        /*
         if(e.target.localName == "input") return;
         if (!canvas.getFocusElement()) {
             container.addEventListener("mousemove", onmousemove);
@@ -291,9 +289,11 @@ $(function() {
             mousePos = {x:e.clientX ,y:e.clientY};
 
         }
+        */
     }
 
     function onmousemove(e) {
+        /*
         if (!canvas.getFocusElement()) {
             var offset = $canvas.position();
             $canvas.css({left:offset.left + e.clientX  - mousePos.x,top:offset.top + e.clientY - mousePos.y});
@@ -301,17 +301,21 @@ $(function() {
             canvas._renderer.updateTextInputs(e.clientX  - mousePos.x, e.clientY - mousePos.y);
             mousePos = {x:e.clientX ,y:e.clientY};
         }
+        */
     }
 
     function onmouseup(e) {
+        /*
         if (!canvas.getFocusElement()) {
             container.removeEventListener("mousemove", onmousemove);
             container.removeEventListener("mouseup", onmouseup);
             document.body.style.cursor = "default";
         }
+        */
     }
     
     function onmousewheel(e){
+        /*
         canvas.scale += e.wheelDelta * 0.0001;
         if(canvas.scale < 0.2) canvas.scale = 0.2;
         else if(canvas.scale > 2) canvas.scale = 2;
@@ -322,8 +326,7 @@ $(function() {
         $canvas.css({left:pos.left + offsetX,top:pos.top + offsetY});
         canvas._canvas.width = canvas.sWidth * canvas.scale;
         canvas._canvas.height = canvas.sHeight * canvas.scale;
-
-
+        */
     }
     
     window.onresize = function(e){

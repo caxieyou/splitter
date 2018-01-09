@@ -548,3 +548,13 @@ MyEdge.prototype.getAngle = function()
 {
     return Math.atan2(this.mEnd.mY - this.mStart.mY, this.mEnd.mX - this.mStart.mX);
 }
+
+MyEdge.prototype.toRectEdges = function()
+{
+    var edges = [];
+    edges.push(new MyEdge(new Vec2(this.mStart.mX, this.mStart.mY), new Vec2(this.mEnd.mX,   this.mStart.mY)));
+    edges.push(new MyEdge(new Vec2(this.mEnd.mX,   this.mStart.mY), new Vec2(this.mEnd.mX,   this.mEnd.mY)));
+    edges.push(new MyEdge(new Vec2(this.mEnd.mX,   this.mEnd.mY),   new Vec2(this.mStart.mX, this.mEnd.mY)));
+    edges.push(new MyEdge(new Vec2(this.mStart.mX, this.mEnd.mY),   new Vec2(this.mStart.mX, this.mStart.mY)));
+    return edges;
+}
