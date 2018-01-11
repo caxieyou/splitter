@@ -382,6 +382,7 @@ Canvas.prototype.render = function() {
 }
 
 Canvas.prototype.clear = function() {
+    this._renderer.removeAllTextInputs();
     this._mFloor              = new MyFloor();
     this._mWallCurveOperation = new WallCurveOperation(this._mFloor);
     this._renderer            = new Renderer();
