@@ -877,6 +877,12 @@ Renderer = function () {
 			}
 		}
 	}
+	
+	this.removeAllTextInputs = function(){
+		for(var i = 0 ;i < this.textInputs.length;i++){
+			$(this.textInputs[i]).remove();
+		}
+	}
     
     this.drawOutput = function(output, height) {
         if (!output) {
