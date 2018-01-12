@@ -487,6 +487,8 @@ SegmentController.prototype.getAngle = function()
 SegmentController.prototype.updatePosition = function(x, y) {
     //1 找到2个corner
     var coners = this.toCorners();
+    var angle = this.getAngle();
+    /*
     //2 找到所有线段
     var startCurves;
     var endCurves;
@@ -505,7 +507,7 @@ SegmentController.prototype.updatePosition = function(x, y) {
             if (diff > Math.PI / 2) {
                 diff = Math.PI - diff;
             }
-            if (diff > minS) {
+            if (diff >= minS) {
                 minS = diff;
                 startCurves = coners[0].mCurves[i];
             }
@@ -521,7 +523,7 @@ SegmentController.prototype.updatePosition = function(x, y) {
             if (diff > Math.PI / 2) {
                 diff = Math.PI - diff;
             }
-            if (diff > minE) {
+            if (diff >= minE) {
                 minE = diff;
                 endCurves = coners[1].mCurves[i];
             }
@@ -538,6 +540,24 @@ SegmentController.prototype.updatePosition = function(x, y) {
     
     var s = MyEdge.getIntersection(newEdge, startCurves.getTheStartEndEdge());
     var e = MyEdge.getIntersection(newEdge, endCurves.getTheStartEndEdge());
+    */
+    //if (!s || !e) {
+    var dis = this.getTheStartEndEdge().getDistance(new Vec2(x, y));
+    
+    var pos0 = coners[0].mPosition.clone();
+    var pos1 = coners[1].mPosition.clone();
+    
+    var s = new Vec2(pos0.mX + dis * Math.cos(angle + Math.PI / 2), pos0.mY + dis * Math.sin(angle + Math.PI / 2));
+    var e = new Vec2(pos1.mX + dis * Math.cos(angle + Math.PI / 2), pos1.mY + dis * Math.sin(angle + Math.PI / 2));
+    
+    
+    var tmp = new MyEdge(s, e);
+    
+    if (tmp.getDistance(new Vec2(x, y)) > 1.0E-6) {
+        s = new Vec2(pos0.mX - dis * Math.cos(angle + Math.PI / 2), pos0.mY - dis * Math.sin(angle + Math.PI / 2));
+        e = new Vec2(pos1.mX - dis * Math.cos(angle + Math.PI / 2), pos1.mY - dis * Math.sin(angle + Math.PI / 2));
+    }
+    
     
     
     var c = [];

@@ -107,25 +107,31 @@ WallCurveOperation.prototype.onDelete = function(param1) {
     var _loc0_ = param1.toCorners();
     
     for (var i = 0; i < _loc0_.length; i++) {
+        
+        var top = _loc0_[i];
+        
         var _loc2_ = null;
         var _loc3_ = null;
         var _loc4_ = null;
         var _loc5_ = null;
         var _loc1_ = _loc0_[i].mCurves;
-        if(_loc1_.length == 2)
-        {
-           _loc2_ = _loc1_[0];
-           _loc3_ = _loc1_[1];
-           if(_loc2_ instanceof SegmentController && _loc3_ instanceof SegmentController)
-           {
-              _loc4_ = _loc2_;
-              _loc5_ = _loc3_;
-              if(_loc4_.isValidAngleDiff(_loc5_))
-              {
-                 _loc4_.setCornerStartAndEndButHasToBeSame(param1,_loc5_.getStartOrEndOrNull(param1));
-                 _loc5_.dispose();
-              }
-           }
+        
+        for (var j = 0; j < _loc1_.length; j++) {
+            if(_loc1_.length == 2)
+            {
+               _loc2_ = _loc1_[0];
+               _loc3_ = _loc1_[1];
+               if(_loc2_ instanceof SegmentController && _loc3_ instanceof SegmentController)
+               {
+                  _loc4_ = _loc2_;
+                  _loc5_ = _loc3_;
+                  if(_loc4_.isValidAngleDiff(_loc5_))
+                  {
+                     _loc4_.setCornerStartAndEndButHasToBeSame(top,_loc5_.getStartOrEndOrNull(top));
+                     _loc5_.dispose();
+                  }
+               }
+            }
         }
     }
     

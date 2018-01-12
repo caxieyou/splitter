@@ -193,8 +193,7 @@ Snap.prototype.snap = function(x, y, type, isSnap) {
                 this.mouseSnapped.copy(point);
             }
         }
-        console.log(this.mFocus.controller);
-        
+        //console.log(this.mFocus.controller);
     }
     
     if (this.mFocus.controller != null) {

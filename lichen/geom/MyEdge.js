@@ -317,13 +317,13 @@ MyEdge.prototype.decideSide = function(param1)
     var _loc2_ = Vec2.crossByPoint(this.mStart,this.mEnd,param1);
     if(_loc2_ > 0)
     {
-    return Line2DPointSide.ON_LEFT;
+    return 1; //Line2DPointSide.ON_LEFT;
     }
     if(_loc2_ < 0)
     {
-    return Line2DPointSide.ON_RIGHT;
+    return -1; //Line2DPointSide.ON_RIGHT;
     }
-    return Line2DPointSide.ON_LINE;
+    return 0; //Line2DPointSide.ON_LINE;
 }
 
 MyEdge.prototype.project = function(param1, param2)

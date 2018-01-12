@@ -224,7 +224,7 @@ Canvas.prototype.updateElement = function(x, y){
     }
     
     if (this._updateElment) {
-        console.log("controller been called: " + x + " " + y);
+        //console.log("controller been called: " + x + " " + y);
         var overlapped = this._mFloor.updatePosition(this._updateElment, new Vec2(x, y), this._lastFocos);
         
         if (this._updateElment instanceof SegmentController) {
