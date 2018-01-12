@@ -398,11 +398,31 @@ Renderer = function () {
                     }
 
                     if (hedge.constructor == MyEdge) {
-                        if (j == 0) ctx.moveTo(hedge.mStart.mX, hedge.mStart.mY);
+     /*                   if (j == 0) ctx.moveTo(hedge.mStart.mX, hedge.mStart.mY);
                         else ctx.lineTo(hedge.mStart.mX, hedge.mStart.mY);
                         ctx.lineTo(hedge.mEnd.mX, hedge.mEnd.mY);
-                        prevPos = hedge.mEnd;
+                        prevPos = hedge.mEnd;*/
                         //if (j == hole.edges.length - 1) ctx.lineTo(hedge.mEnd.mX, hedge.mEnd.mY);
+		                if (prevPos) {
+		                    if (this._isClose(hedge.mStart, prevPos))
+		                        p = hedge.mEnd;
+		                    else
+		                        p = hedge.mStart;
+		                } else {
+		                    if (this._isClose(hedge.mStart, nextSP) || this._isClose(hedge.mStart, nextEP))
+		                        p = hedge.mStart;
+		                    else if (this._isClose(hedge.mEnd, nextEP) || this._isClose(hedge.mEnd, nextSP))
+		                        p = hedge.mEnd;
+		                }
+		
+		                if (p) {
+		                    prevPos = p;
+		                    if (j == 0)
+		                        ctx.moveTo(p.mX, p.mY);
+		                    else
+		                        ctx.lineTo(p.mX, p.mY);
+		                }                        
+                        
                     } else if (hedge.constructor == MyCurve) {
                         var sp = this._rotatePoint({
                                 x: hedge.mCenter.mX + hedge.mRadius,
