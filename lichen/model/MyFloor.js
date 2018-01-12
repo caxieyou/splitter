@@ -182,6 +182,19 @@ MyFloor.prototype.checkOverlap = function()  {
         for (var j = i+1; j < this.mCurves.length; j++) {
             var curve0 = this.mCurves[i];
             var curve1 = this.mCurves[j];
+            
+            if (curve0 instanceof SegmentController && curve1 instanceof SegmentController) {
+                if ((curve0.mStart.mPosition.equals(curve1.mStart.mPosition) && 
+                     curve0.mEnd.mPosition.equals(curve1.mEnd.mPosition)) ||
+                    (curve0.mStart.mPosition.equals(curve1.mEnd.mPosition) && 
+                     curve0.mEnd.mPosition.equals(curve1.mStart.mPosition))) {
+                        
+                    overlapped = true;
+                    break;
+                }
+            }
+            
+            
             if (curve0.isIntersectWith(curve1)) {
                 overlapped = true;
                 break;
@@ -274,14 +287,12 @@ MyFloor.prototype.updatePosition = function(sub, newPos, oldPos)
     } else {
         sub.updatePosition(newPos.mX, newPos.mY);
     }
-    
 
     this.Analysis();
 
     var overlapped = this.checkOverlap();
     
     if (overlapped) {
-        
         if (sub instanceof Array) {
             for (var i = 0; i < sub.length; i++) {
                 sub[i].updatePosition(oldPos[i].mX, oldPos[i].mY);
@@ -293,7 +304,6 @@ MyFloor.prototype.updatePosition = function(sub, newPos, oldPos)
     } 
     
     if (this.mPickedArea) {
-
         var segment = this.mPickedAreaControllers[0];
         
         var edge = segment.getTheStartEndEdge();

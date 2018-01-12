@@ -502,6 +502,9 @@ SegmentController.prototype.updatePosition = function(x, y) {
             while(diff >= Math.PI) {
                 diff = diff - Math.PI;
             }
+            if (diff > Math.PI / 2) {
+                diff = Math.PI - diff;
+            }
             if (diff > minS) {
                 minS = diff;
                 startCurves = coners[0].mCurves[i];
@@ -515,12 +518,16 @@ SegmentController.prototype.updatePosition = function(x, y) {
             while(diff >= Math.PI) {
                 diff = diff - Math.PI;
             }
+            if (diff > Math.PI / 2) {
+                diff = Math.PI - diff;
+            }
             if (diff > minE) {
                 minE = diff;
                 endCurves = coners[1].mCurves[i];
             }
         }
     }
+    
     
     var newEdge;
     if (MyNumber.isEqual(angle, Math.PI / 2)) {
@@ -532,6 +539,28 @@ SegmentController.prototype.updatePosition = function(x, y) {
     var s = MyEdge.getIntersection(newEdge, startCurves.getTheStartEndEdge());
     var e = MyEdge.getIntersection(newEdge, endCurves.getTheStartEndEdge());
     
+    
+    var c = [];
+    for (var i = 0; i < coners[0].mCurves.length; i++) {
+        c = c.concat(coners[0].mCurves[i].toCorners());
+    }
+    
+    for (var i = 0; i < coners[1].mCurves.length; i++) {
+        c = c.concat(coners[1].mCurves[i].toCorners());
+    }
+    var illegal = false;
+    for (var i = 0; i < c.length; i++) {
+        if (c[i].mId == coners[0].mId || c[i].mId == coners[1].mId) {
+            continue;
+        }
+        if (c[i].mPosition.equals(s) || c[i].mPosition.equals(e)) {
+            illegal = true;
+            break;
+        }
+    }
+    if (illegal) {
+        return;
+    }
     MyCorner.updatePosition(coners[0], s.mX, s.mY);
     MyCorner.updatePosition(coners[1], e.mX, e.mY);
     

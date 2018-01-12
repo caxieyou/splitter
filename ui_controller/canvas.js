@@ -235,9 +235,7 @@ Canvas.prototype.updateElement = function(x, y){
             this.mSnap.mFocus.geom = this._updateElment.mPosition.clone();
         }
         this.mSnap.mFocus.keypoint = null;
-        
         this.render();
-        
         if (overlapped) {
             if (this._updateElment instanceof MyCorner) {
                 this._renderer.drawLine(new MyEdge(this._lastFocos.clone(), new Vec2(x, y)), true, 'red')
@@ -247,7 +245,6 @@ Canvas.prototype.updateElement = function(x, y){
             }
             return;
         }
-        //this._mFloor.clearPickedArea();
         this._lastFocos.set(x, y);
     }
 }
