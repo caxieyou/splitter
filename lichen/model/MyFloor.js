@@ -1,3 +1,8 @@
+function AreaHeightRecord() {
+    this.corners = [];//二维数组
+    this.height = []; //一维数组
+}
+
 function MyFloor() {
     this.mAreas;
     this.mCurves;
@@ -11,6 +16,9 @@ function MyFloor() {
     this.mPickedArea;
     this.mPickedAreaControllers;
     this.mPickedDirection;
+    
+    this._lastRecord = null;
+    this.mAreaHeightRecord = new AreaHeightRecord();
     
     this.mKeyPoints;
     this.initialize();
@@ -224,12 +232,17 @@ MyFloor.prototype._updateGeoStructure = function() {
     
     var polyTree = null;
     for (var i = 0; i < areas.length; i++) {
+        //output structure
         var res = MyArea.outputStructures(areas[i], holesList[i]);
+        //inner geom structure
         var res2 = MyArea.outputStructures2(areas[i], holesList[i]);
+        //inner controllers' info
         var res3 = MyArea.outputStructures3(areas[i], holesList[i]);
+        
         this.mOutput.push(res);
         this.mAreasPolytree.push(res2);
         this.mAreasControllers.push(res3);
+        
     }
     this.mKeyPoints = [];
     for (var i = 0; i < this.mAreasPolytree.length; i++) {
@@ -244,7 +257,6 @@ MyFloor.prototype._updateGeoStructure = function() {
             this.mKeyPoints.push(this.mCurves[i].getCenter());
         }
     }
-    console.log("GEOM INFO:");
 }
 
 MyFloor.prototype.Analysis = function() {
@@ -486,9 +498,8 @@ MyFloor.prototype._renderRelativeDistance = function(segments, validIndex, canva
                         distance = Math.abs(distance);
                         center = markLine.mStart.clone();
                             
-                        if (validIndex.indexOf(i) > -1 || validIndex.indexOf(j) > -1) {
+                        if (validIndex.indexOf(i) > -1) {
                             var arcValid_i = true;
-                            var arcValid_j = true;
                             
                             var corners = segments[i].toCorners();
                             for (var n = 0; n < corners.length; n++) {
@@ -501,23 +512,9 @@ MyFloor.prototype._renderRelativeDistance = function(segments, validIndex, canva
                                 }
                             }
                             
-                            var corners = segments[j].toCorners();
-                            for (var n = 0; n < corners.length; n++) {
-                                var corner = corners[n];
-                                for (var p = 0; p < corner.mCurves.length; p++) {
-                                    if (corner.mCurves[p] instanceof CurveController) {
-                                        arcValid_j = false;
-                                        break;
-                                    }
-                                }
-                            }
-                            
-                            var seg0 = arcValid_i ? segments[i] : null;
-                            var seg1 = arcValid_j ? segments[j] : null;
-                            
-                            if (seg0 || seg1) {
+                            if (arcValid_i) {
                                 renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - direction * sign * distance,y: center.mY  - (1 -  direction) * sign * distance}, null, true,
-                                Utility.DrawDimensionCallback, canvas, seg0, seg1, sign * distance, direction);
+                                Utility.DrawDimensionCallback, canvas, segments[i], null, sign * distance, direction);
                             }
                         }
                     }

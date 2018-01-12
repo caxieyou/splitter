@@ -298,11 +298,12 @@ ElementOperation.prototype.reset = function() {
                 this.mLine._lineEdges[this.mLine._lineEdges.length - 1].push(new MyEdge(lastPoint, intersects[idx]));
                 //证明有问题，不封闭的
                 
+            } else if (lastPointArray.length == 2){
+                 return this.reset();
             } else {
                 this.mLine._lineEdges[this.mLine._lineEdges.length - 1].push(new MyEdge(lastPoint, firstPoint));
                 //证明没有问题，封闭的
                 this.mLine._lineIntersect.isStartEndSame[this.mLine._lineIntersect.isStartEndSame.length - 1] = true;
-                
             }
         }
         
@@ -368,7 +369,6 @@ ElementOperation.prototype.reset = function() {
         return true;
     } else {
         this.mStatus = STATUS.NOT_STARTED;
-        //
         return true;
     }
 }

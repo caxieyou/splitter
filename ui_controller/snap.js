@@ -78,6 +78,7 @@ Snap.prototype.snap = function(x, y, type, isSnap) {
                     var edge = curve.getCurveFromController();
                     if (edge.isInsideCurveAndNotOnCurve(this.mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
                         var point = edge.getIntersectionPointByPoint(this.mouseSnapped, true);
+                        this.mouseSnapped.copy(point);
                         this.mFocus.hintpoint = point.clone();
                         break;
                     }
