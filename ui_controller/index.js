@@ -45,7 +45,6 @@ $(function() {
         
         if(canvas.getDrawType() == null) {
             var elementType = canvas.getFocusElement();
-            console.log(elementType);
             if(elementType == null) {
                 $('#props_wrap').hide();
                 var btnNum = event.button;

@@ -240,8 +240,10 @@ Canvas.prototype.updateElement = function(x, y){
         
         if (overlapped) {
             if (this._updateElment instanceof MyCorner) {
+                this._renderer.drawLine(new MyEdge(this._lastFocos.clone(), new Vec2(x, y)), true, 'red')
                 this._renderer.drawCorner(this._lastFocos, 8, '#f57208');
                 this._renderer.drawCorner(new Vec2(x, y), 10, 'red');
+                
             }
             return;
         }
