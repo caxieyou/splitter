@@ -12,6 +12,7 @@ function Canvas(name) {
     this._operationCurve      = null; 
     this._hintPoints          = [];
     this.mSnap                = new Snap(this._mFloor);
+    this.toggleHeightUI       = null;
     
     this._flags = {
        isRelativeDistanceEnabled : false,
@@ -96,6 +97,7 @@ Canvas.prototype.setType = function(type) {
         document.body.style.cursor = "crosshair";
     }
     this._mFloor.clearPickedArea();
+    this.toggleHeightUI("", 0, false);
     this.render();
 }
 
@@ -165,9 +167,19 @@ Canvas.prototype.checkStatus = function() {
     return this.mElmentOperation.checkStatus();
 }
 
+Canvas.prototype.setAreaHeight = function(sign, val) {
+    this._mFloor.setAreaHeight(sign, val);
+    this.render();
+}
+
+Canvas.prototype.setAreaName = function(name){
+    this._mFloor.setAreaName(name);
+}
+
 Canvas.prototype.renderAreaPicked = function(x, y) {
     if (this._mFloor.getPickedArea(x, y)) {
         this.render();
+        this.toggleHeightUI(this._mFloor.getAreaName(), this._mFloor.getAreaHeight(), true);
     }
 }
 

@@ -65,6 +65,19 @@ MyCorner.prototype.updatePosition = function(x, y)
     }
 }
 
+
+MyCorner.prototype.isBoundryCorner = function() {
+    var ret = false;
+    
+    for (var i = 0; i < this.mCurves.length; i++) {
+        if (this.mCurves[i].isBoundry) {
+            return true;
+        }
+    }
+    return ret;
+}
+
+
 MyCorner.updatePosition = function(corner, x, y)
 {
     var arc = [];
@@ -83,4 +96,3 @@ MyCorner.updatePosition = function(corner, x, y)
         }
     }
 }
-

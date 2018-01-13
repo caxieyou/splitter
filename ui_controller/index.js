@@ -222,6 +222,8 @@ $(function() {
         }
         $('#bottom_props .bottom-props-depth-input').val(Math.abs(value));
     };
+    canvas.toggleHeightUI = refreshAreaData;
+    
     /**
      * 设置提示框的信息
      * message: String 不合法的数值
@@ -248,22 +250,27 @@ $(function() {
         }
         if($this.val().length > 4) $this.val(Number(String($this.val()).substr(0, 4)));
     });
+    
     // 区域深度输入框回车事件  
     $('.bottom-props-depth-input.number').on('keyup', function(e) {
         if(e.keyCode === 13) {
+            var sign = 0;
             if($('#bulge_backoff_selects').val() === '1') {
                 console.log('凹进');
+                sign = -1;
             } else {
                 console.log('凸出');
+                sign = 1;
             }
-            alert($(this).val());
+            canvas.setAreaHeight(sign, $(this).val());
+            //alert($(this).val());
             $(this).blur();
         }
     });
     // 区域名称输入框回车事件  
     $('.bottom-props-name-input').on('keyup', function(e) {
         if(e.keyCode === 13) {
-            alert($(this).val());
+            canvas.setAreaName($(this).val());
             $(this).blur();
         }
     });

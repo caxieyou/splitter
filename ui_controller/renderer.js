@@ -455,7 +455,7 @@ Renderer = function () {
             ctx.globalCompositeOperation = "source-over";
            
         }
-         ctx.restore();
+        ctx.restore();
     }
     
     this.drawAreaDots = function(output) {
