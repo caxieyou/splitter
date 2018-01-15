@@ -282,14 +282,6 @@ Renderer = function () {
     
      this.drawArea = function(output, shadow) {
         var ctx = this.ctx;
-        //console.log(output);
-
-		if(shadow){
-	        ctx.shadowOffsetX = 5; // 阴影Y轴偏移
-			ctx.shadowOffsetY = 5; // 阴影X轴偏移
-			ctx.shadowBlur = 5; // 模糊尺寸
-			ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'; // 颜色
-		}
         ctx.beginPath();
         var prevPoint;
         var counterclockwise;
@@ -369,7 +361,7 @@ Renderer = function () {
                 }
             }
         }
-        ctx.fillStyle = 'rgba(153, 255, 255,0.2)';
+        ctx.fillStyle = 'rgba(153, 255, 255, 0.2)';
         ctx.fill();
         ctx.closePath();
 
@@ -450,7 +442,6 @@ Renderer = function () {
             ctx.globalCompositeOperation = "source-over";
            
         }
-         ctx.restore();
     }
     
     this.drawAreaDots = function(output) {
