@@ -146,7 +146,7 @@ Snap.prototype.snap = function(x, y, type, isSnap) {
     } else {
         //1 和角点比
         for (var i = 0; i < this.mFloor.mCorners.length; i++) {
-            if (this.mFloor.mCorners[i].mPosition.isClose(this.mouseSnapped, Globals.DISTANCE_THRESHOLD) && this.mFloor.mCorners[i].isBoundryCorner()) {
+            if (this.mFloor.mCorners[i].mPosition.isClose(this.mouseSnapped, Globals.DISTANCE_THRESHOLD) && !this.mFloor.mCorners[i].isBoundryCorner()) {
                 this.mouseSnapped.copy(this.mFloor.mCorners[i].mPosition);
                 this.mFocus.controller = this.mFloor.mCorners[i];
                 this.mFocus.geom = this.mFloor.mCorners[i].mPosition.clone();

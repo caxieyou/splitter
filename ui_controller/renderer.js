@@ -890,16 +890,16 @@ Renderer = function () {
 		}
 	}
     
-    this.drawOutput = function(output, height) {
+    this.drawOutput = function(output, isFocus) {
         if (!output) {
             return;
         }
         for (var j = 0; j < output.mOutline.edges.length; j++) {
             var edge = output.mOutline.edges[j];
             if (edge instanceof MyEdge) {
-                this.drawLine(edge, null, height ? 'blue': null);
+                this.drawLine(edge, null, isFocus ? 'blue': null);
             }else if (edge instanceof MyCurve) {
-                this.drawArc(edge, height);
+                this.drawArc(edge, isFocus);
             }
         }
         
@@ -907,9 +907,9 @@ Renderer = function () {
             for (var k = 0; k < output.mHoles[j].edges.length; k++) {
                 var edge = output.mHoles[j].edges[k];
                 if (edge instanceof MyEdge) {
-                    this.drawLine(edge, null, height ? 'blue': null);
+                    this.drawLine(edge, null, isFocus ? 'blue': null);
                 } else if (edge instanceof MyCurve) {
-                    this.drawArc(edge, height);
+                    this.drawArc(edge, isFocus);
                 }
             }
         }
