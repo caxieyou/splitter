@@ -579,7 +579,7 @@ SegmentController.prototype.updatePosition = function(x, y) {
         }
     }
     if (illegal) {
-        return;
+        return true;
     }
     MyCorner.updatePosition(coners[0], s.mX, s.mY);
     MyCorner.updatePosition(coners[1], e.mX, e.mY);

@@ -55,6 +55,15 @@ MyCorner.prototype.updatePosition = function(x, y)
         }
     }
     
+    if (this.mWall) {
+        var corners = this.mWall.mCorners;
+        for (var i = 0; i < corners.length; i++) {
+            if (corners[i].mId != this.mId && Vec2.isEqual(corners[i].mPosition, this.mPosition)) {
+                return;
+            }
+        }
+    }
+    
     this.mPosition.set(x, y);
     var idx = 0;
     for (var i = 0; i < this.mCurves.length; i++) {

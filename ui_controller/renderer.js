@@ -890,6 +890,19 @@ Renderer = function () {
 		}
 	}
     
+    
+    this.enterShadow = function (height) {
+        var ctx = this.ctx;
+        ctx.save();
+        ctx.shadowOffsetX = 0; // 阴影Y轴偏移
+        ctx.shadowOffsetY = 0; // 阴影X轴偏移
+		ctx.shadowBlur = height; // 模糊尺寸
+		ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'; // 颜色
+    }
+    this.exitShadow = function () {
+        this.ctx.restore();
+    }
+    
     this.drawOutput = function(output, isFocus) {
         if (!output) {
             return;

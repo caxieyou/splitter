@@ -97,6 +97,7 @@ Canvas.prototype.setType = function(type) {
         document.body.style.cursor = "crosshair";
     }
     this._mFloor.clearPickedArea();
+    this._operationCurve = null;
     this.toggleHeightUI("", 0, false);
     this.render();
 }
@@ -143,7 +144,7 @@ Canvas.prototype.resetType = function() {
         this.setType(null);
     }
     this.mSnap.clearFocus();
-    //this._focus = null;
+    this._operationCurve = null;
     this.render();
 }
 
@@ -227,6 +228,8 @@ Canvas.prototype.onDelete = function() {
 
 Canvas.prototype.setOperationCurve = function() {
     this._operationCurve = this.mSnap.mFocus.controller;
+    this._mFloor.clearPickedArea();
+    this.render();
 }
 
 Canvas.prototype.updateElement = function(x, y){
@@ -290,6 +293,16 @@ Canvas.prototype._renderFocusObject = function() {
         
     } else if(this.mSnap.mFocus.geom instanceof Vec2) {
         this._renderer.drawCorner(this.mSnap.mFocus.geom, 8, '#f57208');
+    }
+    
+    if (this._operationCurve) {
+        if (this._operationCurve instanceof SegmentController) {
+            this._renderer.drawLine(this._operationCurve.getTheStartEndEdge(), null, null, true);
+            
+        } else if(this._operationCurve instanceof CurveController) {
+            this._renderer.drawArc(this._operationCurve.getCurveFromController(), true);
+            
+        }
     }
 }
 

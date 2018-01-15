@@ -204,18 +204,6 @@ MyFloor.prototype.checkOverlap = function()  {
             var curve0 = this.mCurves[i];
             var curve1 = this.mCurves[j];
             
-            if (curve0 instanceof SegmentController && curve1 instanceof SegmentController) {
-                if ((curve0.mStart.mPosition.equals(curve1.mStart.mPosition) && 
-                     curve0.mEnd.mPosition.equals(curve1.mEnd.mPosition)) ||
-                    (curve0.mStart.mPosition.equals(curve1.mEnd.mPosition) && 
-                     curve0.mEnd.mPosition.equals(curve1.mStart.mPosition))) {
-                        
-                    overlapped = true;
-                    break;
-                }
-            }
-            
-            
             if (curve0.isIntersectWith(curve1)) {
                 overlapped = true;
                 break;
@@ -402,17 +390,18 @@ MyFloor.prototype.Analysis = function() {
 
 MyFloor.prototype.updatePosition = function(sub, newPos, oldPos)
 {
+    var illegal = false;
     if (sub instanceof Array) {
         for (var i = 0; i < sub.length; i++) {
             sub[i].updatePosition(newPos[i].mX, newPos[i].mY);
         }
     } else {
-        sub.updatePosition(newPos.mX, newPos.mY);
+        illegal = sub.updatePosition(newPos.mX, newPos.mY);
     }
 
     this.Analysis();
 
-    var overlapped = this.checkOverlap();
+    var overlapped = illegal || this.checkOverlap();
     
     if (overlapped) {
         if (sub instanceof Array) {
@@ -513,14 +502,9 @@ MyFloor.prototype.renderPickedArea = function(renderer) {
     if (this.mPickedIndex == -1/*!this.mPickedArea*/) {
         return;
     }
-    var height = this.mAreaHeightRecord[this.mPickedIndex].height;
-    if (height == 0) {
-        height = undefined;
-    } else {
-        height = Math.max(Math.min(1, height), 10);
-    }
     
-    renderer.drawArea(this.mOutput[this.mPickedIndex], height);
+    
+    renderer.drawArea(this.mOutput[this.mPickedIndex]);
     this.renderOutput(renderer);
     renderer.drawAreaDots(this.mOutput[this.mPickedIndex]);
 }
@@ -533,7 +517,19 @@ MyFloor.prototype.renderOutput = function(renderer) {
     for (var i = 0; i < res.length; i++) {
         renderer.drawOutput(res[i]);
     }
-    renderer.drawOutput(this.mOutput[this.mPickedIndex], true);
+    if (this.mPickedIndex != -1) {
+        var height = this.mAreaHeightRecord[this.mPickedIndex].height;
+        if (height == 0) {
+            height = undefined;
+            renderer.drawOutput(this.mOutput[this.mPickedIndex], true);
+        } else {
+            height = Math.max(Math.min(1, height), 10);
+            renderer.enterShadow(height);
+            renderer.drawOutput(this.mOutput[this.mPickedIndex], true);
+            renderer.exitShadow();
+        }
+    }
+    
 }
 
 //画内部标注线
