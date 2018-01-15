@@ -280,7 +280,7 @@ Renderer = function () {
         this.textBlank =[];
     }
     
-    this.drawArea = function(output, shadow) {
+     this.drawArea = function(output, shadow) {
         var ctx = this.ctx;
         //console.log(output);
 
@@ -377,7 +377,7 @@ Renderer = function () {
 
             ctx.globalCompositeOperation = "destination-out";
             for (var i = 0; i < output.mHoles.length; i++) {
-                var prevPos=undefined, next, nextSP, nextEP;
+                var prevPos = undefined, next, nextSP, nextEP;
                 var hole = output.mHoles[i];
                 ctx.beginPath();
                 for (var j = 0; j < hole.edges.length; j++) {
@@ -398,11 +398,6 @@ Renderer = function () {
                     }
 
                     if (hedge.constructor == MyEdge) {
-     /*                   if (j == 0) ctx.moveTo(hedge.mStart.mX, hedge.mStart.mY);
-                        else ctx.lineTo(hedge.mStart.mX, hedge.mStart.mY);
-                        ctx.lineTo(hedge.mEnd.mX, hedge.mEnd.mY);
-                        prevPos = hedge.mEnd;*/
-                        //if (j == hole.edges.length - 1) ctx.lineTo(hedge.mEnd.mX, hedge.mEnd.mY);
 		                if (prevPos) {
 		                    if (this._isClose(hedge.mStart, prevPos))
 		                        p = hedge.mEnd;
@@ -436,7 +431,7 @@ Renderer = function () {
                             continue;
                         var endAngle = hedge.mArcAngle + hedge.mStartAngle;
 
-                        if ((prevPos != undefined && !this._isClose(prevPos, sp)) ){//|| (prevPos == undefined && !_isClose(ep, nextSP) && !_isClose(ep, nextEP))
+                        if ((prevPos != undefined && !this._isClose(prevPos, sp)) || (!this._isClose(ep, nextEP) &&  !this._isClose(ep, nextSP) )){
                             ctx.arc(hedge.mCenter.mX, hedge.mCenter.mY, hedge.mRadius, endAngle, hedge.mStartAngle, endAngle > hedge.mStartAngle ? true : false);
                             prevPos = sp;
                         }
@@ -455,7 +450,7 @@ Renderer = function () {
             ctx.globalCompositeOperation = "source-over";
            
         }
-        ctx.restore();
+         ctx.restore();
     }
     
     this.drawAreaDots = function(output) {
