@@ -393,7 +393,10 @@ MyFloor.prototype.updatePosition = function(sub, newPos, oldPos)
     var illegal = false;
     if (sub instanceof Array) {
         for (var i = 0; i < sub.length; i++) {
-            sub[i].updatePosition(newPos[i].mX, newPos[i].mY);
+            illegal = sub[i].updatePosition(newPos[i].mX, newPos[i].mY);
+            if (illegal) {
+                break;
+            }
         }
     } else {
         illegal = sub.updatePosition(newPos.mX, newPos.mY);
