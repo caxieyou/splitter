@@ -888,6 +888,7 @@ Renderer = function () {
 		for(var i = 0 ;i < this.textInputs.length;i++){
 			$(this.textInputs[i]).remove();
 		}
+		this.textInputs = [];
 	}
     
     this.drawOutput = function(output, isFocus) {
