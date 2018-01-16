@@ -92,6 +92,16 @@ MyCurve.prototype.clone = function()
     return new MyCurve(this.mCenter.clone(),this.mRadius,this.mStartAngle,this.mArcAngle);
 }
 
+MyCurve.prototype.scale = function(s)
+{
+    var ret = this.clone();
+    ret.mCenter = ret.mCenter.mul(s);
+    ret.mRadius = ret.mRadius * s;
+    
+    return ret;
+}
+
+
 MyCurve.prototype.removePointsNotInsideCurve = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {

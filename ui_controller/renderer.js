@@ -134,6 +134,41 @@ Quaternion = function(x, y, z, w) {
 
 };
 
+var ScalePoint = function(p) {
+    p.x = p.x * Globals.Scale;
+    p.y = p.y * Globals.Scale;
+}
+
+var ScaleNumber = function(n) {
+    return n * Globals.Scale;
+}
+
+var ScaleOutput = function(output) {
+    var res = {
+        mOutline : {},
+        mHoles : []
+    };
+    
+    res.mOutline.edges = [];
+    
+    for (var i = 0, length = output.mOutline.edges.length; i < length; i++) {
+        var edge = output.mOutline.edges[i];
+        res.mOutline.edges.push(edge.scale(Globals.Scale));
+    }
+    
+    for (var i = 0; i < output.mHoles.length; i++) {
+        var hole = output.mHoles[i];
+        var newHole = {
+            edges : []
+        };
+        
+        for (var j = 0; j < hole.edges.length; j++) {
+            newHole.edges.push(hole.edges[j].scale(Globals.Scale));
+        }
+        res.mHoles.push(newHole);
+    }
+    return res;
+}
 Renderer = function () {
     this.textBlank = [];
     this.init = function (canvas) {
@@ -159,7 +194,8 @@ Renderer = function () {
     this.drawLine = function (edge, isDash, color, isFocus) {
         var p0 = {x: edge.mStart.mX, y: edge.mStart.mY};
         var p1 = {x: edge.mEnd.mX, y: edge.mEnd.mY};
-        
+        ScalePoint(p0);
+        ScalePoint(p1);
         this.ctx.beginPath();
         if (isDash) {
             this._drawDash(p0, p1);
@@ -187,20 +223,14 @@ Renderer = function () {
         var rightBottom = {x : edge.mEnd.mX,
                            y : edge.mEnd.mY
                            };
-        
+        ScalePoint(leftUp);
+        ScalePoint(rightBottom);
         this.ctx.beginPath();
-        //if (isDash) {
-        //    this._drawDash(leftUp, {x: rightBottom.x, y: leftUp.y});
-        //    this._drawDash({x: rightBottom.x, y: leftUp.y}, rightBottom);
-        //    this._drawDash(rightBottom, {x: leftUp.x, y: rightBottom.y});
-        //    this._drawDash({x: leftUp.x, y: rightBottom.y}, leftUp);
-        //} else {
-            this.ctx.moveTo(leftUp.x, leftUp.y);
-            this.ctx.lineTo(rightBottom.x, leftUp.y);
-            this.ctx.lineTo(rightBottom.x, rightBottom.y);
-            this.ctx.lineTo(leftUp.x, rightBottom.y);
-            this.ctx.lineTo(leftUp.x, leftUp.y);
-        //}
+        this.ctx.moveTo(leftUp.x, leftUp.y);
+        this.ctx.lineTo(rightBottom.x, leftUp.y);
+        this.ctx.lineTo(rightBottom.x, rightBottom.y);
+        this.ctx.lineTo(leftUp.x, rightBottom.y);
+        this.ctx.lineTo(leftUp.x, leftUp.y);
         this.ctx.strokeStyle = "#888";
         this.ctx.stroke();
         this.ctx.closePath();
@@ -210,7 +240,10 @@ Renderer = function () {
         var center = {x : edge.mStart.mX,
                       y : edge.mStart.mY};
                       
-        var radius = edge.getLength()
+        var radius = edge.getLength();
+        ScalePoint(center);
+        
+        radius = ScaleNumber(radius);
         
         this.ctx.beginPath();
         this.ctx.strokeStyle = '#888';
@@ -223,6 +256,10 @@ Renderer = function () {
         var center = {x : edge.mCenter.mX,
                       y : edge.mCenter.mY}
         var radius = edge.mRadius;
+        
+        ScalePoint(center);
+        radius = ScaleNumber(radius);
+        
         var start  = edge.mStartAngle;
         var end    = edge.mStartAngle + edge.mArcAngle;
         
@@ -252,8 +289,9 @@ Renderer = function () {
         this.ctx.stroke();
         this.ctx.closePath();
     }
-
-    this.drawDashLine = function (p0, p1) {
+    
+    /*
+    this._drawDashLine = function (p0, p1) {
         var dashLen = 5,
             xpos = p1.x - p0.x,
             ypos = p1.y - p0.y,
@@ -271,6 +309,7 @@ Renderer = function () {
         this.ctx.stroke();
         this.ctx.closePath();
     }
+    */
     
     this.clear = function() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -280,9 +319,10 @@ Renderer = function () {
         this.textBlank =[];
     }
     
-     this.drawArea = function(output, shadow) {
+    this.drawArea = function(outputOrigin, shadow) {
         var ctx = this.ctx;
         ctx.beginPath();
+        var output = ScaleOutput(outputOrigin);
         var prevPoint;
         var counterclockwise;
         for (var i = 0, length = output.mOutline.edges.length; i < length; i++) {
@@ -304,9 +344,7 @@ Renderer = function () {
             }
 
             if (edge.constructor == MyEdge) {
-    //			if(!_isClose(edge.mStart,nextSP) && !_isClose(edge.mEnd,nextSP) && !_isClose(edge.mStart,nextEP) && !_isClose(edge.mEnd,nextEP))
-    //              continue;
-
+                
                 if (prevPoint) {
                     if (this._isClose(edge.mStart, prevPoint))
                         p = edge.mEnd;
@@ -506,7 +544,12 @@ Renderer = function () {
 
         this.ctx.strokeStyle = color;
         this.ctx.beginPath();
-        this.ctx.arc(point.mX || point.x, point.mY || point.y, radius, 0, Math.PI * 2, true);
+        
+        var p = {x : point.mX || point.x, y : point.mY || point.y};
+        
+        ScalePoint(p);
+        
+        this.ctx.arc(p.x, p.y, radius, 0, Math.PI * 2, true);
 
         if(!isHollow) {
             this.ctx.closePath();
@@ -523,8 +566,6 @@ Renderer = function () {
     }
     
     this._getIntersectionForBorder = function(sp, ep, borderPoints) {
-
-
 		for(var i = 0, length = borderPoints.length; i < length; i++) {
 			var next = borderPoints[(i + 1) % length];
 			var p = this._segmentsIntr(borderPoints[i], next, sp, ep);
@@ -703,12 +744,12 @@ Renderer = function () {
 		return tt;
 	}
     
-    
-    /**
-	 * 绘制制定点的十字线并标记与区域的边界的距离
-	 * @param {Object} point
-	 * @param {Array} borderPoints 边界点集合
-	 */
+    /*
+    //
+	// 绘制制定点的十字线并标记与区域的边界的距离
+	// @param {Object} point
+	// @param {Array} borderPoints 边界点集合
+	//
     this.drawCrosshairs = function(point, borderPoints) {
         if(!this._isInPolygon(point, borderPoints))
             return;
@@ -758,7 +799,7 @@ Renderer = function () {
         this.ctx.fillText(bl, point.x, point.y + bl / 2);
 
     }
-
+    */
 	/**
 	 * 绘制距离标记线
 	 * @param {Object} p0 起始点
@@ -767,8 +808,15 @@ Renderer = function () {
 	 * @param {Object} editable 是否可编辑，默认为不可编辑
 	 * @param {Object} callbackFun 编辑回调函数
 	 */
-    this.drawDimensions = function(p0, p1,color, editable, callbackFun, canvas, edge, edge2, distance, direction) {
+    this.drawDimensions = function(point0, point1,color, editable, callbackFun, canvas, edge, edge2, distance, direction) {
         color = color || '#a2a2a2';
+        
+        var p0 = {x: point0.x, y : point0.y};
+        var p1 = {x: point1.x, y : point1.y};
+        
+        ScalePoint(p0);
+        ScalePoint(p1);
+        
         var lines = [
             [p0, p1]
         ];
@@ -813,7 +861,7 @@ Renderer = function () {
                 x: (p0.x + p1.x) / 2,
                 y: (p0.y + p1.y) / 2
             },
-            length = Math.round(this._getPointsDistance(p0, p1));
+            length = Math.round(this._getPointsDistance(point0, point1));
         if(!editable) {
             var ctx = this.ctx;
 
@@ -835,16 +883,16 @@ Renderer = function () {
             return tt;
         }
     }
-
-	/***
-	 * 绘制带端点的线段
-	 * @param {Object} p0 起始点
-	 * @param {Object} p1 结束点
-	 * @param {Object} callbackFun 编辑回调函数
-	 */
+    /*
+	///
+	// 绘制带端点的线段
+	// @param {Object} p0 起始点
+	// @param {Object} p1 结束点
+	// @param {Object} callbackFun 编辑回调函数
+	///
     this.drawSegment = function(p0, p1, callbackFun) {
 
-        this.drawDashLine(p0, p1);
+        this._drawDashLine(p0, p1);
         this.drawCorner(p0, 3, "#a2a2a2");
         this.drawCorner(p1, 3, "#a2a2a2", true);
         var center = new Vector3((p0.x+p1.x)/2, (p0.y+p1.y)/2, 0);
@@ -853,6 +901,7 @@ Renderer = function () {
         //this.textBlank.push(tt);
         return tt;
     }
+    */
     
 	/***
 	 * 绘制文本
@@ -891,7 +940,6 @@ Renderer = function () {
 		this.textInputs = [];
 	}
     
-    
     this.enterShadow = function (height) {
         var ctx = this.ctx;
         ctx.save();
@@ -900,6 +948,7 @@ Renderer = function () {
 		ctx.shadowBlur = height; // 模糊尺寸
 		ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'; // 颜色
     }
+    
     this.exitShadow = function () {
         this.ctx.restore();
     }

@@ -279,13 +279,16 @@ $(function() {
     var container = $('.canvas-container')[0],
         $canvas = $("#canvas"),
         mousePos = {};
-        
-    canvas.sWidth = $canvas.width();
-    canvas.sHeight = $canvas.height();
+    
+    Globals.Width = $canvas.width();
+    Globals.Height = $canvas.height();
+
+    //canvas.sWidth = $canvas.width();
+    //canvas.sHeight = $canvas.height();
     container.addEventListener("mousedown", onmousedown);
     container.addEventListener("mousewheel", onmousewheel);
     
-    canvas.scale = 1;
+    //canvas.scale = 1;
     function onmousedown(e) {
         /*
         if(e.target.localName == "input") return;
@@ -321,22 +324,27 @@ $(function() {
     }
     
     function onmousewheel(e){
-        /*
-        canvas.scale += e.wheelDelta * 0.0001;
-        if(canvas.scale < 0.2) canvas.scale = 0.2;
-        else if(canvas.scale > 2) canvas.scale = 2;
+        Globals.Scale += e.wheelDelta * 0.0001;
         
-        var pos = $canvas.position(),    
-            offsetX = ( canvas.sWidth * canvas.scale - $canvas.width() ) / 2 * -1,
-            offsetY = ( canvas.sHeight * canvas.scale - $canvas.height() ) / 2 * -1;
-        $canvas.css({left:pos.left + offsetX,top:pos.top + offsetY});
-        canvas._canvas.width = canvas.sWidth * canvas.scale;
-        canvas._canvas.height = canvas.sHeight * canvas.scale;
-        */
+        Globals.Scale = Math.min(Math.max(Globals.Scale, 0.2), 2);
+        //var pos = $canvas.position(),    
+        //    offsetX = ( Globals.Width * Globals.Scale - $canvas.width() ) / 2 * -1,
+        //    offsetY = ( Globals.Height * Globals.Scale - $canvas.height() ) / 2 * -1;
+            
+        //$canvas.css({left:pos.left + offsetX,top:pos.top + offsetY});
+        //canvas._canvas.width = Math.floor(Globals.Width * Globals.Scale);
+        //canvas._canvas.height = Math.floor(Globals.Height * Globals.Scale);
+        //Globals.Width = canvas._canvas.width
+        //Globals.Height = canvas._canvas.height;
+        canvas.render();
     }
     
     window.onresize = function(e){
-        canvas._canvas.width = $('.canvas-container').width();
-        canvas._canvas.height = $('.canvas-container').height();
+        //console.log($('.canvas-container').width());
+        //canvas._canvas.width = $('.canvas-container').width();
+        //canvas._canvas.height = $('.canvas-container').height();
+        //Globals.Width = canvas._canvas.width;
+        //Globals.Height = canvas._canvas.height;
+        //canvas.render();
     }
 });

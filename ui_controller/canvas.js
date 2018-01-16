@@ -1,3 +1,7 @@
+var ScaleMouse = function(n) {
+    return n / Globals.Scale;
+}
+
 function Canvas(name) {
     this._canvas              = document.getElementById(name);
     this._mFloor              = new MyFloor();
@@ -36,6 +40,8 @@ Canvas.prototype._initialize = function() {
     this.render();
 }
 Canvas.prototype.snapMouse = function(x, y, isSnap){
+    x = ScaleMouse(x);
+    y = ScaleMouse(y);
     this.mSnap.snap(x, y, this._type, isSnap);
 }
 
@@ -178,6 +184,8 @@ Canvas.prototype.setAreaName = function(name){
 }
 
 Canvas.prototype.renderAreaPicked = function(x, y) {
+    x = ScaleMouse(x);
+    y = ScaleMouse(y);
     if (this._mFloor.getPickedArea(x, y)) {
         this.render();
         this.toggleHeightUI(this._mFloor.getAreaName(), this._mFloor.getAreaHeight(), true);
@@ -185,6 +193,8 @@ Canvas.prototype.renderAreaPicked = function(x, y) {
 }
 
 Canvas.prototype.isMoved = function(x, y) {
+    x = ScaleMouse(x);
+    y = ScaleMouse(y);
     var p = new Vec2(x, y);
     if (p.distance(this.mSnap.mouseSnapped) > Globals.DISTANCE_THRESHOLD ) {
         return true;
@@ -194,6 +204,8 @@ Canvas.prototype.isMoved = function(x, y) {
 }
 
 Canvas.prototype.recordMouseUp = function(x, y) {
+    x = ScaleMouse(x);
+    y = ScaleMouse(y);
     var p = new Vec2(x, y);
     if (p.distance(this.mSnap.mouseSnapped) > Globals.DISTANCE_THRESHOLD ) {
         //this._focus = null;
@@ -233,6 +245,8 @@ Canvas.prototype.setOperationCurve = function() {
 }
 
 Canvas.prototype.updateElement = function(x, y){
+    x = ScaleMouse(x);
+    y = ScaleMouse(y);
     if (!this._updateElment && this.mSnap.mFocus.controller) {
         this._updateElment = this.mSnap.mFocus.controller;
         this._lastFocos = new Vec2(x, y);
