@@ -135,8 +135,8 @@ Quaternion = function(x, y, z, w) {
 };
 
 var ScalePoint = function(p) {
-    p.x = p.x * Globals.Scale;
-    p.y = p.y * Globals.Scale;
+    p.x = p.x * Globals.Scale + Globals.OffsetX;
+    p.y = p.y * Globals.Scale + Globals.OffsetY;
 }
 
 var ScaleNumber = function(n) {
@@ -153,7 +153,7 @@ var ScaleOutput = function(output) {
     
     for (var i = 0, length = output.mOutline.edges.length; i < length; i++) {
         var edge = output.mOutline.edges[i];
-        res.mOutline.edges.push(edge.scale(Globals.Scale));
+        res.mOutline.edges.push(edge.scale(Globals.Scale, Globals.OffsetX , Globals.OffsetY));
     }
     
     for (var i = 0; i < output.mHoles.length; i++) {
@@ -163,7 +163,7 @@ var ScaleOutput = function(output) {
         };
         
         for (var j = 0; j < hole.edges.length; j++) {
-            newHole.edges.push(hole.edges[j].scale(Globals.Scale));
+            newHole.edges.push(hole.edges[j].scale(Globals.Scale, Globals.OffsetX , Globals.OffsetY));
         }
         res.mHoles.push(newHole);
     }

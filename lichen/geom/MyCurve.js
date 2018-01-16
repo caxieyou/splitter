@@ -92,10 +92,10 @@ MyCurve.prototype.clone = function()
     return new MyCurve(this.mCenter.clone(),this.mRadius,this.mStartAngle,this.mArcAngle);
 }
 
-MyCurve.prototype.scale = function(s)
+MyCurve.prototype.scale = function(s, oX, oY)
 {
     var ret = this.clone();
-    ret.mCenter = ret.mCenter.mul(s);
+    ret.mCenter = ret.mCenter.mul(s).add(new Vec2(oX, oY));
     ret.mRadius = ret.mRadius * s;
     
     return ret;

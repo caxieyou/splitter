@@ -10,3 +10,6 @@ Globals.DISTANCE_THRESHOLD = 3;
 Globals.Scale = 1;
 Globals.Width = 0;
 Globals.Height = 0;
+Globals.OffsetX = 0;
+Globals.OffsetY = 0;
+Globals.IsMovable = false;

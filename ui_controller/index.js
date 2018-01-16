@@ -42,7 +42,6 @@ $(function() {
 
     $(document).on('mouseup', '#canvas', function(event) {
         event = event || window.event;
-        
         if(canvas.getDrawType() == null) {
             var elementType = canvas.getFocusElement();
             if(elementType == null) {
@@ -105,6 +104,7 @@ $(function() {
             canvas.render();
         }
     });
+    
     // 选中线段事件
     $('#props_wrap').on('click', '.props', function() {
         var type = $(this).data('type');
@@ -283,59 +283,54 @@ $(function() {
     Globals.Width = $canvas.width();
     Globals.Height = $canvas.height();
 
-    //canvas.sWidth = $canvas.width();
-    //canvas.sHeight = $canvas.height();
     container.addEventListener("mousedown", onmousedown);
     container.addEventListener("mousewheel", onmousewheel);
+    container.addEventListener("mousemove", onmousemove);
+    container.addEventListener("mouseup", onmouseup);
     
     //canvas.scale = 1;
+    var moveStart = {x : 0, y : 0};
+    var moveEnd = {x : 0, y : 0};
+    var savedOffset = {x : 0, y : 0};
+    
+    Globals.IsMovable = false;
     function onmousedown(e) {
-        /*
         if(e.target.localName == "input") return;
-        if (!canvas.getFocusElement()) {
-            container.addEventListener("mousemove", onmousemove);
-            container.addEventListener("mouseup", onmouseup);
-            mousePos = {x:e.clientX ,y:e.clientY};
-
+        
+        if (canvas.isMovable()) {
+            moveStart.x = e.offsetX;
+            moveStart.y = e.offsetY;
+            Globals.IsMovable = true;
         }
-        */
     }
 
     function onmousemove(e) {
-        /*
-        if (!canvas.getFocusElement()) {
-            var offset = $canvas.position();
-            $canvas.css({left:offset.left + e.clientX  - mousePos.x,top:offset.top + e.clientY - mousePos.y});
+        if (e.which == 1 && Globals.IsMovable) {
+            moveEnd.x = e.offsetX;
+            moveEnd.y = e.offsetY;
             document.body.style.cursor = "move";
-            canvas._renderer.updateTextInputs(e.clientX  - mousePos.x, e.clientY - mousePos.y);
-            mousePos = {x:e.clientX ,y:e.clientY};
+            Globals.OffsetX = moveEnd.x - moveStart.x + savedOffset.x;
+            Globals.OffsetY = moveEnd.y - moveStart.y + savedOffset.y;
+            canvas.render();
         }
-        */
     }
 
     function onmouseup(e) {
-        /*
-        if (!canvas.getFocusElement()) {
-            container.removeEventListener("mousemove", onmousemove);
-            container.removeEventListener("mouseup", onmouseup);
+        moveStart.x = 0;
+        moveStart.y = 0;
+        moveEnd.x = 0;
+        moveEnd.Y = 0;
+        if (Globals.IsMovable) {
+            savedOffset.x = Globals.OffsetX;
+            savedOffset.y = Globals.OffsetY;
+            Globals.IsMovable = false;
             document.body.style.cursor = "default";
         }
-        */
     }
     
     function onmousewheel(e){
         Globals.Scale += e.wheelDelta * 0.0001;
-        
         Globals.Scale = Math.min(Math.max(Globals.Scale, 0.2), 2);
-        //var pos = $canvas.position(),    
-        //    offsetX = ( Globals.Width * Globals.Scale - $canvas.width() ) / 2 * -1,
-        //    offsetY = ( Globals.Height * Globals.Scale - $canvas.height() ) / 2 * -1;
-            
-        //$canvas.css({left:pos.left + offsetX,top:pos.top + offsetY});
-        //canvas._canvas.width = Math.floor(Globals.Width * Globals.Scale);
-        //canvas._canvas.height = Math.floor(Globals.Height * Globals.Scale);
-        //Globals.Width = canvas._canvas.width
-        //Globals.Height = canvas._canvas.height;
         canvas.render();
     }
     

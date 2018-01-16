@@ -519,9 +519,9 @@ MyEdge.prototype.getBoundingBox = function()
     return ret;
 }
 
-MyEdge.prototype.scale = function(s)
+MyEdge.prototype.scale = function(s, oX, oY)
 {
-    return new MyEdge(this.mStart.clone().mul(s), this.mEnd.clone().mul(s));
+    return new MyEdge(this.mStart.clone().mul(s).add(new Vec2(oX, oY)), this.mEnd.clone().mul(s).add(new Vec2(oX, oY)));
 }
 
 MyEdge.prototype.getExpanded = function(param1, param2)

@@ -1,5 +1,5 @@
-var ScaleMouse = function(n) {
-    return n / Globals.Scale;
+var ScaleMouse = function(x, y) {
+    return [(x - Globals.OffsetX) / Globals.Scale, (y - Globals.OffsetY) / Globals.Scale];
 }
 
 function Canvas(name) {
@@ -40,8 +40,7 @@ Canvas.prototype._initialize = function() {
     this.render();
 }
 Canvas.prototype.snapMouse = function(x, y, isSnap){
-    x = ScaleMouse(x);
-    y = ScaleMouse(y);
+    [x, y] = ScaleMouse(x, y);
     this.mSnap.snap(x, y, this._type, isSnap);
 }
 
@@ -87,6 +86,14 @@ Canvas.prototype.createRect = function(pnt0, pnt1) {
 
 Canvas.prototype.createCircle = function() {
     this.mElmentOperation.createCircle(this._mEdge);
+}
+
+Canvas.prototype.isMovable = function() {
+    if (this._type != null || this.mSnap.controller != null) {
+        return false;
+    }
+    
+    return true;
 }
 
 Canvas.prototype.setType = function(type) {
@@ -159,7 +166,7 @@ Canvas.prototype.getDrawType = function() {
 }
 
 Canvas.prototype.getFocusElement = function() {
-    console.log(this.mSnap.mFocus.geom);
+    //console.log(this.mSnap.mFocus.geom);
     if (this.mSnap.mFocus.geom) {
         return this.mSnap.mFocus.geom;
     } else {
@@ -184,8 +191,10 @@ Canvas.prototype.setAreaName = function(name){
 }
 
 Canvas.prototype.renderAreaPicked = function(x, y) {
-    x = ScaleMouse(x);
-    y = ScaleMouse(y);
+    if (Globals.IsMovable) {
+        return;
+    }
+    [x, y] = ScaleMouse(x, y);
     if (this._mFloor.getPickedArea(x, y)) {
         this.render();
         this.toggleHeightUI(this._mFloor.getAreaName(), this._mFloor.getAreaHeight(), true);
@@ -193,8 +202,7 @@ Canvas.prototype.renderAreaPicked = function(x, y) {
 }
 
 Canvas.prototype.isMoved = function(x, y) {
-    x = ScaleMouse(x);
-    y = ScaleMouse(y);
+    [x, y] = ScaleMouse(x, y);
     var p = new Vec2(x, y);
     if (p.distance(this.mSnap.mouseSnapped) > Globals.DISTANCE_THRESHOLD ) {
         return true;
@@ -204,8 +212,7 @@ Canvas.prototype.isMoved = function(x, y) {
 }
 
 Canvas.prototype.recordMouseUp = function(x, y) {
-    x = ScaleMouse(x);
-    y = ScaleMouse(y);
+    [x, y] = ScaleMouse(x, y);
     var p = new Vec2(x, y);
     if (p.distance(this.mSnap.mouseSnapped) > Globals.DISTANCE_THRESHOLD ) {
         //this._focus = null;
@@ -245,8 +252,7 @@ Canvas.prototype.setOperationCurve = function() {
 }
 
 Canvas.prototype.updateElement = function(x, y){
-    x = ScaleMouse(x);
-    y = ScaleMouse(y);
+    [x, y] = ScaleMouse(x, y);
     if (!this._updateElment && this.mSnap.mFocus.controller) {
         this._updateElment = this.mSnap.mFocus.controller;
         this._lastFocos = new Vec2(x, y);
