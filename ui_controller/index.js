@@ -292,6 +292,8 @@ $(function() {
     var moveStart = {x : 0, y : 0};
     var moveEnd = {x : 0, y : 0};
     var savedOffset = {x : 0, y : 0};
+    // 鼠标滚轮滚动次数
+    var mouseWheelIndex = 0;
     
     Globals.IsMovable = false;
     function onmousedown(e) {
@@ -329,6 +331,11 @@ $(function() {
     }
     
     function onmousewheel(e){
+        if(e.wheelDelta > 0) 
+            mouseWheelIndex++;
+        else
+            mouseWheelIndex--;
+        console.log(mouseWheelIndex);
         Globals.Scale += e.wheelDelta * 0.0001;
         Globals.Scale = Math.min(Math.max(Globals.Scale, 0.2), 2);
         canvas.render();
