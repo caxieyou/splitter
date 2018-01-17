@@ -89,7 +89,7 @@ Canvas.prototype.createCircle = function() {
 }
 
 Canvas.prototype.isMovable = function() {
-    if (this._type != null || this.mSnap.controller != null) {
+    if (this._type != null || this.mSnap.mFocus.controller != null) {
         return false;
     }
     
@@ -331,7 +331,7 @@ Canvas.prototype._renderMarkerLines = function() {
 }
 
 Canvas.prototype._renderMouseLines = function() {
-    if (this._type == null) {
+    if (this._type == null || !this.mSnap.mIsInside) {
         return;
     }
     

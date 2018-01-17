@@ -760,6 +760,33 @@ MyFloor.prototype._renderAbosoluteDistance = function(segments, validIndex, boun
     }
 }
 
+
+MyFloor.prototype._renderBoundryLines = function(segments, renderer) {
+    for (var i = 0; i < segments.length; i++) {
+        var segment = segments[i];
+        var edge = segment.getTheStartEndEdge();
+        var start = edge.mStart.clone();
+        var end = edge.mEnd.clone();
+        var center = edge.getCenter();
+        var area = segment.mAreas[segment.mAreas.length - 1];
+        var angle = edge.getAngle();
+        angle = angle + Math.PI / 2;
+        var offset = 15;
+        var offvec = new Vec2(offset * Math.cos(angle), offset * Math.sin(angle));
+        center.addBy(offvec);
+        
+        if (area.containsPoint(center)) {
+            start.sub(offvec);
+            end.sub(offvec);
+            
+        } else {
+            start.addBy(offvec);
+            end.addBy(offvec);
+        }
+        renderer.drawDimensions({x: start.mX,y: start.mY}, {x: end.mX,y: end.mY});
+    }
+}
+
 MyFloor.prototype.renderMarkerLines = function(flags, renderer, canvas)  {
     //1. seperate the lines
     var curves, segments, boundries, validSegmentIndex, validCurveIndex;
@@ -782,7 +809,9 @@ MyFloor.prototype.renderMarkerLines = function(flags, renderer, canvas)  {
         this._renderAbosoluteDistance(segments, validSegmentIndex, boundries, canvas, renderer);
     }
     
+    this._renderBoundryLines(boundries, renderer);
 }
+
 
 MyFloor.prototype.getIntersectPoints = function(edges) {
     var intersects = [];

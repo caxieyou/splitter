@@ -15,6 +15,7 @@ $("#canvas")[0].height = $('#main_container').height();
 var canvas = new Canvas("canvas");    
 
 $(function() {
+    
     $('#left_wrap').on('click', '.shape-obj', function() {
         var type = $(this).data('type');
         if(type == "rectangle") {
@@ -27,13 +28,26 @@ $(function() {
     });
     $('#props_wrap').hide();
 
+    var moveStart = {x : 0, y : 0};
+    var moveEnd = {x : 0, y : 0};
+    var savedOffset = {x : 0, y : 0};
+
+    
+    Globals.IsMovable = false;
+    
     $(document).on('mousedown', '#canvas', function(event) {
         event = event || window.event;
         var btnNum = event.button;
         $('#props_wrap').hide();
         if(btnNum == 0) {
             //左键
-            canvas.setStartPoint();
+            if (canvas.isMovable()) {
+                moveStart.x = event.offsetX;
+                moveStart.y = event.offsetY;
+                Globals.IsMovable = true;
+            } else {
+                canvas.setStartPoint();
+            }
         } else if(btnNum == 2) {
             //右键
             canvas.resetType();
@@ -42,6 +56,26 @@ $(function() {
 
     $(document).on('mouseup', '#canvas', function(event) {
         event = event || window.event;
+        
+        if (Globals.IsMovable) {
+            var isMoved = true;
+            if (Math.abs(event.offsetX - moveStart.x) + Math.abs(event.offsetY - moveStart.y) < 4) {
+                isMoved = false;
+            }
+            
+            moveStart.x = 0;
+            moveStart.y = 0;
+            moveEnd.x = 0;
+            moveEnd.Y = 0;
+            savedOffset.x = Globals.OffsetX;
+            savedOffset.y = Globals.OffsetY;
+            Globals.IsMovable = false;
+            document.body.style.cursor = "default";
+            if (isMoved) {
+                return;
+            }
+        } 
+        
         if(canvas.getDrawType() == null) {
             var elementType = canvas.getFocusElement();
             if(elementType == null) {
@@ -89,6 +123,7 @@ $(function() {
             canvas.render();
         }
         canvas.recordMouseUp(event.offsetX, event.offsetY);
+        
     });
 
     $(document).on('mousemove', '#canvas', function(event) {
@@ -96,7 +131,16 @@ $(function() {
         if(event.which == 1) {
             //按住拖动
             //canvas.snapMouse(event.offsetX, event.offsetY, false);
-            canvas.updateElement(event.offsetX, event.offsetY);
+            if (Globals.IsMovable) {
+                moveEnd.x = event.offsetX;
+                moveEnd.y = event.offsetY;
+                document.body.style.cursor = "move";
+                Globals.OffsetX = moveEnd.x - moveStart.x + savedOffset.x;
+                Globals.OffsetY = moveEnd.y - moveStart.y + savedOffset.y;
+                canvas.render();
+            } else {
+                canvas.updateElement(event.offsetX, event.offsetY);
+            }
         } else if(event.which == 0) {
             //没按住拖动
             canvas.snapMouse(event.offsetX, event.offsetY, true);
@@ -110,11 +154,18 @@ $(function() {
     $(document).on('mousewheel', '#canvas', function(event) {
         event = event || window.event;
         var e = event.originalEvent;
-        if(e.wheelDelta > 0) 
-            mouseWheelIndex++;
-        else
-            mouseWheelIndex--;
-        console.log(mouseWheelIndex);
+        var c = new Vec2(Globals.OffsetX + Globals.Width * Globals.Scale / 2, Globals.OffsetY + Globals.Height * Globals.Scale / 2);
+        
+        Globals.Scale += e.wheelDelta * 0.0001;
+        Globals.Scale = Math.min(Math.max(Globals.Scale, 0.2), 2);
+        
+        c.mX -= Globals.Width * Globals.Scale / 2;
+        c.mY -= Globals.Height * Globals.Scale / 2;
+        Globals.OffsetX = c.mX;
+        Globals.OffsetY = c.mY;
+        savedOffset.x = Globals.OffsetX;
+        savedOffset.y = Globals.OffsetY;
+        canvas.render();
     });
     
     // 选中线段事件
@@ -297,63 +348,12 @@ $(function() {
         canvas.setAreaHeight(sign, $('.bottom-props-depth-input').val());
     });
     var container = $('.canvas-container')[0],
-        $canvas = $("#canvas"),
-        mousePos = {};
+        $canvas = $("#canvas");
     
     Globals.Width = $canvas.width();
     Globals.Height = $canvas.height();
 
-    // container.addEventListener("mousedown", onmousedown);
-    // container.addEventListener("mousewheel", onmousewheel);
-    // container.addEventListener("mousemove", onmousemove);
-    // container.addEventListener("mouseup", onmouseup);
     
-    //canvas.scale = 1;
-    var moveStart = {x : 0, y : 0};
-    var moveEnd = {x : 0, y : 0};
-    var savedOffset = {x : 0, y : 0};
-
-    
-    Globals.IsMovable = false;
-    function onmousedown(e) {
-        if(e.target.localName == "input") return;
-        
-        if (canvas.isMovable()) {
-            moveStart.x = e.offsetX;
-            moveStart.y = e.offsetY;
-            Globals.IsMovable = true;
-        }
-    }
-
-    function onmousemove(e) {
-        if (e.which == 1 && Globals.IsMovable) {
-            moveEnd.x = e.offsetX;
-            moveEnd.y = e.offsetY;
-            document.body.style.cursor = "move";
-            Globals.OffsetX = moveEnd.x - moveStart.x + savedOffset.x;
-            Globals.OffsetY = moveEnd.y - moveStart.y + savedOffset.y;
-            canvas.render();
-        }
-    }
-
-    function onmouseup(e) {
-        moveStart.x = 0;
-        moveStart.y = 0;
-        moveEnd.x = 0;
-        moveEnd.Y = 0;
-        if (Globals.IsMovable) {
-            savedOffset.x = Globals.OffsetX;
-            savedOffset.y = Globals.OffsetY;
-            Globals.IsMovable = false;
-            document.body.style.cursor = "default";
-        }
-    }
-    
-    function onmousewheel(e){
-        Globals.Scale += e.wheelDelta * 0.0001;
-        Globals.Scale = Math.min(Math.max(Globals.Scale, 0.2), 2);
-        canvas.render();
-    }
     
     window.onresize = function(e){
         //console.log($('.canvas-container').width());

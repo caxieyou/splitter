@@ -2,7 +2,7 @@ function Snap(floor) {
     this.mFloor       = floor;
     this.mousePos     = new Vec2();
     this.mouseSnapped = new Vec2();
-    
+    this.mIsInside    = true;
     this.mFocus = {
         //鼠标移动的点、边
         controller : null,
@@ -194,6 +194,12 @@ Snap.prototype.snap = function(x, y, type, isSnap) {
                 this.mouseSnapped.copy(point);
             }
         }
+    }
+    
+    if (!this.mFloor.mProfile.mOutLines.contains(this.mouseSnapped)) {
+        this.mIsInside = false;
+    } else {
+        this.mIsInside = true;
     }
     //console.log(this.mFocus.controller);
     if (this.mFocus.controller != null) {

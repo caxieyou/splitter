@@ -335,7 +335,7 @@ SegmentController.prototype.dispose = function()
         _loc3_.removeSection(this);
     }
          
-    if(this.mWall != null && !this.isBoundry)
+    if(this.mWall != null)
     {
         this.mWall.removeSection(this);
     }
