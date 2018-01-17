@@ -227,7 +227,8 @@ $(function() {
         }
         $('#bottom_props').css('display', 'flex');
         $('#bottom_props .bottom-props-name-input').val(name);
-        if(value < 0) {
+        // 小于0 或者 等于-0时为凹进，否则为凸出
+        if(value < 0 || (value === 0 && 1 / value < 0)) {
             $('#bottom_props #bulge_backoff_selects').val(1).trigger('change.select2');
         } else {
             $('#bottom_props #bulge_backoff_selects').val(0).trigger('change.select2');
