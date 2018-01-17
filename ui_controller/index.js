@@ -12,7 +12,7 @@ var TYPE = {
 $("#canvas")[0].width = $('#main_container').width();
 $("#canvas")[0].height = $('#main_container').height();
 // 初始化canvas
-var canvas = new Canvas("canvas");
+var canvas = new Canvas("canvas");    
 
 $(function() {
     $('#left_wrap').on('click', '.shape-obj', function() {
@@ -103,6 +103,18 @@ $(function() {
             canvas.setEndPoint();
             canvas.render();
         }
+    });
+    // mousewheel 监听鼠标滚轮滚动次数
+    // 鼠标滚轮滚动次数
+    var mouseWheelIndex = 0;
+    $(document).on('mousewheel', '#canvas', function(event) {
+        event = event || window.event;
+        var e = event.originalEvent;
+        if(e.wheelDelta > 0) 
+            mouseWheelIndex++;
+        else
+            mouseWheelIndex--;
+        console.log(mouseWheelIndex);
     });
     
     // 选中线段事件
@@ -283,17 +295,16 @@ $(function() {
     Globals.Width = $canvas.width();
     Globals.Height = $canvas.height();
 
-    container.addEventListener("mousedown", onmousedown);
-    container.addEventListener("mousewheel", onmousewheel);
-    container.addEventListener("mousemove", onmousemove);
-    container.addEventListener("mouseup", onmouseup);
+    // container.addEventListener("mousedown", onmousedown);
+    // container.addEventListener("mousewheel", onmousewheel);
+    // container.addEventListener("mousemove", onmousemove);
+    // container.addEventListener("mouseup", onmouseup);
     
     //canvas.scale = 1;
     var moveStart = {x : 0, y : 0};
     var moveEnd = {x : 0, y : 0};
     var savedOffset = {x : 0, y : 0};
-    // 鼠标滚轮滚动次数
-    var mouseWheelIndex = 0;
+
     
     Globals.IsMovable = false;
     function onmousedown(e) {
@@ -331,11 +342,6 @@ $(function() {
     }
     
     function onmousewheel(e){
-        if(e.wheelDelta > 0) 
-            mouseWheelIndex++;
-        else
-            mouseWheelIndex--;
-        console.log(mouseWheelIndex);
         Globals.Scale += e.wheelDelta * 0.0001;
         Globals.Scale = Math.min(Math.max(Globals.Scale, 0.2), 2);
         canvas.render();
