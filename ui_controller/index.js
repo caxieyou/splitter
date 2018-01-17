@@ -288,6 +288,13 @@ $(function() {
     });
     // selects 初始化
     $('#bulge_backoff_selects').select2({minimumResultsForSearch: Infinity, fireSelected: true});
+    // 凹进、凸出select的change事件
+    $('#bulge_backoff_selects').on('change',function() {
+        var sign = 1;
+        var val = $(this).val();
+        if(val === '1') sign = -1;
+        canvas.setAreaHeight(sign, $('.bottom-props-depth-input').val());
+    });
     var container = $('.canvas-container')[0],
         $canvas = $("#canvas"),
         mousePos = {};
