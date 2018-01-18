@@ -28,11 +28,10 @@ $(function() {
     });
     $('#props_wrap').hide();
 
-    var moveStart = {x : 0, y : 0};
-    var moveEnd = {x : 0, y : 0};
-    var savedOffset = {x : 0, y : 0};
-
-    
+    var moveStart = new Vec2(0, 0);
+    var moveEnd = new Vec2(0, 0);
+    var savedOffset = new Vec2(0, 0);
+    savedOffset.copy(Globals.Offset);
     Globals.IsMovable = false;
     
     $(document).on('mousedown', '#canvas', function(event) {
@@ -42,8 +41,7 @@ $(function() {
         if(btnNum == 0) {
             //左键
             if (canvas.isMovable()) {
-                moveStart.x = event.offsetX;
-                moveStart.y = event.offsetY;
+                moveStart.set(event.offsetX, event.offsetY);
                 Globals.IsMovable = true;
             } else {
                 canvas.setStartPoint();
@@ -59,16 +57,14 @@ $(function() {
         
         if (Globals.IsMovable) {
             var isMoved = true;
-            if (Math.abs(event.offsetX - moveStart.x) + Math.abs(event.offsetY - moveStart.y) < 4) {
+            console.log(Vec2.distance(moveStart, new Vec2(event.offsetX, event.offsetY)));
+            if (Vec2.distance(moveStart, new Vec2(event.offsetX, event.offsetY)) < 4) {
                 isMoved = false;
             }
             
-            moveStart.x = 0;
-            moveStart.y = 0;
-            moveEnd.x = 0;
-            moveEnd.Y = 0;
-            savedOffset.x = Globals.OffsetX;
-            savedOffset.y = Globals.OffsetY;
+            moveStart.set(0, 0);
+            moveEnd.set(0, 0);
+            savedOffset.copy(Globals.Offset);
             Globals.IsMovable = false;
             document.body.style.cursor = "default";
             if (isMoved) {
@@ -130,13 +126,13 @@ $(function() {
         event = event || window.event;
         if(event.which == 1) {
             //按住拖动
-            //canvas.snapMouse(event.offsetX, event.offsetY, false);
             if (Globals.IsMovable) {
-                moveEnd.x = event.offsetX;
-                moveEnd.y = event.offsetY;
+                moveEnd.set(event.offsetX, event.offsetY);
+                
+                Globals.Offset.copy(moveEnd);
+                Globals.Offset.addBy(savedOffset).sub(moveStart);
+                
                 document.body.style.cursor = "move";
-                Globals.OffsetX = moveEnd.x - moveStart.x + savedOffset.x;
-                Globals.OffsetY = moveEnd.y - moveStart.y + savedOffset.y;
                 canvas.render();
             } else {
                 canvas.updateElement(event.offsetX, event.offsetY);
@@ -154,17 +150,12 @@ $(function() {
     $(document).on('mousewheel', '#canvas', function(event) {
         event = event || window.event;
         var e = event.originalEvent;
-        var c = new Vec2(Globals.OffsetX + Globals.Width * Globals.Scale / 2, Globals.OffsetY + Globals.Height * Globals.Scale / 2);
+        var newScale = Globals.Scale + e.wheelDelta * 0.0001;
+        newScale = Math.min(Math.max(newScale, 0.2), 2);
         
-        Globals.Scale += e.wheelDelta * 0.0001;
-        Globals.Scale = Math.min(Math.max(Globals.Scale, 0.2), 2);
-        
-        c.mX -= Globals.Width * Globals.Scale / 2;
-        c.mY -= Globals.Height * Globals.Scale / 2;
-        Globals.OffsetX = c.mX;
-        Globals.OffsetY = c.mY;
-        savedOffset.x = Globals.OffsetX;
-        savedOffset.y = Globals.OffsetY;
+        Globals.Offset.addBy(Globals.Size.mul((Globals.Scale - newScale) / 2));
+        savedOffset.copy(Globals.Offset);
+        Globals.Scale = newScale;
         canvas.render();
     });
     
@@ -347,14 +338,12 @@ $(function() {
         if(val === '1') sign = -1;
         canvas.setAreaHeight(sign, $('.bottom-props-depth-input').val());
     });
-    var container = $('.canvas-container')[0],
-        $canvas = $("#canvas");
+    //var container = $('.canvas-container')[0],
+    //    $canvas = $("#canvas");
     
-    Globals.Width = $canvas.width();
-    Globals.Height = $canvas.height();
+    //Globals.Width = $canvas.width();
+    //Globals.Height = $canvas.height();
 
-    
-    
     window.onresize = function(e){
         //console.log($('.canvas-container').width());
         //canvas._canvas.width = $('.canvas-container').width();

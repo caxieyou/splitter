@@ -8,8 +8,6 @@ function Globals() {
 Globals.SNAPPING_THRESHOLD = 3;
 Globals.DISTANCE_THRESHOLD = 3;
 Globals.Scale = 1;
-Globals.Width = 0;
-Globals.Height = 0;
-Globals.OffsetX = 0;
-Globals.OffsetY = 0;
+Globals.Size = new Vec2(400, 400);
+Globals.Offset = new Vec2(0, 0);
 Globals.IsMovable = false;

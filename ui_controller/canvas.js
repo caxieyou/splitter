@@ -1,5 +1,5 @@
 var ScaleMouse = function(x, y) {
-    return [(x - Globals.OffsetX) / Globals.Scale, (y - Globals.OffsetY) / Globals.Scale];
+    return [(x - Globals.Offset.mX) / Globals.Scale, (y - Globals.Offset.mY) / Globals.Scale];
 }
 
 function Canvas(name) {
@@ -25,15 +25,29 @@ function Canvas(name) {
        isCrownHeightEnabled : false
     };
     this._renderer.init(this._canvas);
+    var width = this._canvas.width;
+    var height    = this._canvas.height;
+    
+    if (width > Globals.Size.mX) {
+        Globals.Offset.mX = (width - Globals.Size.mX) / 2;
+    } else {
+        Globals.Offset.mX = 20;
+    }
+    
+    if (height > Globals.Size.mY) {
+        Globals.Offset.mY = (height - Globals.Size.mY) / 2;
+    } else {
+        Globals.Offset.mY = 20;
+    }
     this._initialize();
 }
 
 Canvas.prototype._initialize = function() {
     //创建最外边框
-    this.mElmentOperation.creatRect(new Vec2(0, 0), new Vec2(this._canvas.width, this._canvas.height));
+    this.mElmentOperation.creatRect(new Vec2(0, 0), Globals.Size);
     
     //赋值最外轮廓线
-    var rect = new MyRect(new Vec2(0, 0), new Vec2(this._canvas.width, this._canvas.height));
+    var rect = new MyRect(new Vec2(0, 0), Globals.Size);
     rect = rect.toMyPolygon();
     this._mFloor.setProfile(rect);
     this._mFloor.Analysis();

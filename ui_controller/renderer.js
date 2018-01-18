@@ -129,14 +129,13 @@ Quaternion = function(x, y, z, w) {
 		this.z = axis.z * s;
 		this.w = Math.cos(halfAngle);
 		return this;
-
 	}
 
 };
 
 var ScalePoint = function(p) {
-    p.x = p.x * Globals.Scale + Globals.OffsetX;
-    p.y = p.y * Globals.Scale + Globals.OffsetY;
+    p.x = p.x * Globals.Scale + Globals.Offset.mX;
+    p.y = p.y * Globals.Scale + Globals.Offset.mY;
 }
 
 var ScaleNumber = function(n) {
@@ -153,7 +152,7 @@ var ScaleOutput = function(output) {
     
     for (var i = 0, length = output.mOutline.edges.length; i < length; i++) {
         var edge = output.mOutline.edges[i];
-        res.mOutline.edges.push(edge.scale(Globals.Scale, Globals.OffsetX , Globals.OffsetY));
+        res.mOutline.edges.push(edge.scale(Globals.Scale, Globals.Offset.mX , Globals.Offset.mY));
     }
     
     for (var i = 0; i < output.mHoles.length; i++) {
@@ -163,7 +162,7 @@ var ScaleOutput = function(output) {
         };
         
         for (var j = 0; j < hole.edges.length; j++) {
-            newHole.edges.push(hole.edges[j].scale(Globals.Scale, Globals.OffsetX , Globals.OffsetY));
+            newHole.edges.push(hole.edges[j].scale(Globals.Scale, Globals.Offset.mX , Globals.Offset.mY));
         }
         res.mHoles.push(newHole);
     }
