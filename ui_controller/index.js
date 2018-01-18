@@ -57,7 +57,6 @@ $(function() {
         
         if (Globals.IsMovable) {
             var isMoved = true;
-            console.log(Vec2.distance(moveStart, new Vec2(event.offsetX, event.offsetY)));
             if (Vec2.distance(moveStart, new Vec2(event.offsetX, event.offsetY)) < 4) {
                 isMoved = false;
             }
