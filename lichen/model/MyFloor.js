@@ -546,7 +546,7 @@ MyFloor.prototype._renderZoneSize = function(segments, validIndex, renderer) {
         var area = segment.mAreas[segment.mAreas.length - 1];
         var angle = edge.getAngle();
         angle = angle + Math.PI / 2;
-        var offset = 10;
+        var offset = 10 / Globals.Scale;
         var offvec = new Vec2(offset * Math.cos(angle), offset * Math.sin(angle));
         center.addBy(offvec);
         
@@ -771,7 +771,7 @@ MyFloor.prototype._renderBoundryLines = function(segments, renderer) {
         var area = segment.mAreas[segment.mAreas.length - 1];
         var angle = edge.getAngle();
         angle = angle + Math.PI / 2;
-        var offset = 15;
+        var offset = 15 / Globals.Scale;
         var offvec = new Vec2(offset * Math.cos(angle), offset * Math.sin(angle));
         center.addBy(offvec);
         

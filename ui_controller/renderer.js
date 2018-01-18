@@ -990,8 +990,8 @@ Renderer = function () {
                     //var area = areas[0];
                     var angle = edge.getAngle();
                     angle = angle + Math.PI / 2;
-                    //console.log(angle);
-                    var offset = 10;
+                    
+                    var offset = 10 / Globals.Scale;
                     center.mY += offset * Math.sin(angle);
                     center.mX += offset * Math.cos(angle);
                     
