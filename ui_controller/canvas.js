@@ -437,9 +437,9 @@ Canvas.prototype.render = function() {
     
     this._renderMouseLines();
     
-    this._renderMarkerLines();
-    
     this._mFloor.renderPickedArea(this._renderer);
+    
+    this._renderMarkerLines();
     
     //绘制鼠标移动中经过的图元
     this._renderFocusObject();
