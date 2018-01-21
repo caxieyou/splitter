@@ -337,18 +337,12 @@ $(function() {
         if(val === '1') sign = -1;
         canvas.setAreaHeight(sign, $('.bottom-props-depth-input').val());
     });
-    //var container = $('.canvas-container')[0],
-    //    $canvas = $("#canvas");
-    
-    //Globals.Width = $canvas.width();
-    //Globals.Height = $canvas.height();
+    var container = $('.canvas-container')[0],
+        $canvas = $("#canvas");
 
     window.onresize = function(e){
-        //console.log($('.canvas-container').width());
-        //canvas._canvas.width = $('.canvas-container').width();
-        //canvas._canvas.height = $('.canvas-container').height();
-        //Globals.Width = canvas._canvas.width;
-        //Globals.Height = canvas._canvas.height;
-        //canvas.render();
+        canvas.resize($('.canvas-container').width(), $('.canvas-container').height());
+        savedOffset.copy(Globals.Offset);
+        canvas.render();
     }
 });

@@ -25,20 +25,8 @@ function Canvas(name) {
        isCrownHeightEnabled : false
     };
     this._renderer.init(this._canvas);
-    var width = this._canvas.width;
-    var height    = this._canvas.height;
+    this.resize(this._canvas.width, this._canvas.height);
     
-    if (width > Globals.Size.mX) {
-        Globals.Offset.mX = (width - Globals.Size.mX) / 2;
-    } else {
-        Globals.Offset.mX = 20;
-    }
-    
-    if (height > Globals.Size.mY) {
-        Globals.Offset.mY = (height - Globals.Size.mY) / 2;
-    } else {
-        Globals.Offset.mY = 20;
-    }
     this._initialize();
 }
 
@@ -89,6 +77,30 @@ Canvas.prototype._renderCurrentObject = function() {
         }
         break;
     }
+}
+
+Canvas.prototype.resize = function(width, height) {
+    this._canvas.width = width;
+    this._canvas.height = height;
+    
+    var cX = this._canvas.width / 2 ;
+    var cY = this._canvas.height / 2;
+    
+    var width = this._canvas.width - 100;
+    var height = this._canvas.height - 100;
+    
+    var sX = Globals.Size.mX / width;
+    var sY = Globals.Size.mY / height;
+    
+    var s = Math.max(sY, sX);
+    
+    var nW = Globals.Size.mX / s;
+    var nH = Globals.Size.mY / s;
+    
+    Globals.Scale = 1 / s;
+    
+    Globals.Offset.mX = cX - nW / 2;
+    Globals.Offset.mY = cY - nH / 2;
 }
 
 Canvas.prototype.createRect = function(pnt0, pnt1) {
@@ -211,6 +223,7 @@ Canvas.prototype.renderAreaPicked = function(x, y) {
     [x, y] = ScaleMouse(x, y);
     if (this._mFloor.getPickedArea(x, y)) {
         this.render();
+        this._operationCurve = null;
         this.toggleHeightUI(this._mFloor.getAreaName(), this._mFloor.getAreaHeight(), true);
     }
 }
@@ -273,7 +286,7 @@ Canvas.prototype.updateElement = function(x, y){
     }
     
     if (this._updateElment) {
-        //console.log("controller been called: " + x + " " + y);
+        this.toggleHeightUI("", 0, false);
         var overlapped = this._mFloor.updatePosition(this._updateElment, new Vec2(x, y), this._lastFocos);
         
         if (this._updateElment instanceof SegmentController) {
@@ -290,7 +303,6 @@ Canvas.prototype.updateElement = function(x, y){
                 this._renderer.drawLine(new MyEdge(this._lastFocos.clone(), new Vec2(x, y)), true, 'red')
                 this._renderer.drawCorner(this._lastFocos, 8, '#f57208');
                 this._renderer.drawCorner(new Vec2(x, y), 10, 'red');
-                
             }
             return;
         }

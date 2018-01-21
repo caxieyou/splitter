@@ -544,7 +544,12 @@ Renderer = function () {
         this.ctx.strokeStyle = color;
         this.ctx.beginPath();
         
-        var p = {x : point.mX || point.x, y : point.mY || point.y};
+        var p;
+        if (point instanceof Vec2) {
+            p = {x : point.mX, y : point.mY};
+        } else {
+            p = point;
+        }
         
         ScalePoint(p);
         

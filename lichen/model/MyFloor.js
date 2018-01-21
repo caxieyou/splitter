@@ -451,30 +451,8 @@ MyFloor.prototype.updatePosition = function(sub, newPos, oldPos)
         }
         this.Analysis();
     } 
-    
-    if (this.mPickedIndex != -1) {
-        var segment = this.mAreasControllers[this.mPickedIndex][0];
-        
-        var edge = segment.getTheStartEndEdge();
-        var start = edge.mStart.clone();
-        var end = edge.mEnd.clone();
-        var center = edge.getCenter();
-        var area = segment.mAreas[segment.mAreas.length - 1];
-        var angle = edge.getAngle();
-        angle = angle + Math.PI / 2;
-        var offset = 0.01;
-        var offvec = new Vec2(offset * Math.cos(angle), offset * Math.sin(angle));
-        if (this.mPickedDirection) {
-            center.addBy(offvec);
-        } else {
-            center.sub(offvec);
-        }
-        
-        this.getPickedArea(center.mX, center.mY);
-    }
-    //else {
-    //    this.clearPickedArea();
-    //}
+
+    this.clearPickedArea();
     
     return overlapped;
 }
