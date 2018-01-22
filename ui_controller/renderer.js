@@ -327,8 +327,11 @@ Renderer = function () {
         for (var i = 0, length = output.mOutline.edges.length; i < length; i++) {
             var edge = output.mOutline.edges[i],
                 next = output.mOutline.edges[(i + 1) % length],
+                prev = output.mOutline.edges[i - 1 < 0 ? length - 1 : i- 1 ],
                 nextSP = next.mStart,
                 nextEP = next.mEnd,
+                prevSP = prev.mStart,
+                prevEP = prev.mEnd,                
                 p = undefined;
 
             if (next.constructor == MyCurve) {
@@ -342,7 +345,23 @@ Renderer = function () {
                 }, next.mCenter, next.mStartAngle + next.mArcAngle);
             }
 
+            if (prev.constructor == MyCurve) {
+                prevSP = this._rotatePoint({
+                    x: prev.mCenter.mX + prev.mRadius,
+                    y: prev.mCenter.mY
+                }, prev.mCenter, prev.mStartAngle);
+                prevEP = this._rotatePoint({
+                    x: prev.mCenter.mX + prev.mRadius,
+                    y: prev.mCenter.mY
+                }, prev.mCenter, prev.mStartAngle + prev.mArcAngle);
+            }
+            
+            //过滤不相连的线段
             if (edge.constructor == MyEdge) {
+//				if((!this._isClose(edge.mStart,nextSP) && !this._isClose(edge.mEnd,nextSP) && !this._isClose(edge.mStart,nextEP) && !this._isClose(edge.mEnd,nextEP)) && (!this._isClose(edge.mStart,prevSP) && !this._isClose(edge.mEnd,prevSP) && !this._isClose(edge.mStart,prevEP) && !this._isClose(edge.mEnd,prevEP)))
+//           		continue;              	
+				if((!this._isClose(edge.mStart,nextSP) && !this._isClose(edge.mStart,nextEP) && !this._isClose(edge.mStart,prevSP) && !this._isClose(edge.mStart,prevEP)) || (!this._isClose(edge.mEnd,nextSP) && !this._isClose(edge.mEnd,nextEP) && !this._isClose(edge.mEnd,prevSP) && !this._isClose(edge.mEnd,prevEP)))
+             		continue;
                 
                 if (prevPoint) {
                     if (this._isClose(edge.mStart, prevPoint))
@@ -355,6 +374,8 @@ Renderer = function () {
                     else if (this._isClose(edge.mEnd, nextEP) || this._isClose(edge.mEnd, nextSP))
                         p = edge.mEnd;
                 }
+                
+
 
                 if (p) {
                     prevPoint = p;
@@ -375,8 +396,12 @@ Renderer = function () {
                         y: edge.mCenter.mY
                     }, edge.mCenter, edge.mStartAngle + edge.mArcAngle);
                     
-                if(!this._isClose(sp,nextSP) && !this._isClose(ep,nextSP) && !this._isClose(sp,nextEP) && !this._isClose(ep,nextEP))
-                    continue;
+				//过滤不相连的线段
+//				if((!this._isClose(sp,nextSP) && !this._isClose(ep,nextSP) && !this._isClose(sp,nextEP) && !this._isClose(ep,nextEP)) && (!this._isClose(sp,prevSP) && !this._isClose(ep,prevSP) && !this._isClose(sp,prevEP) && !this._isClose(ep,prevEP)))
+//           		continue;   
+             		if((!this._isClose(sp,nextSP) && !this._isClose(sp,nextEP) && !this._isClose(sp,prevSP) && !this._isClose(sp,prevEP))|| (!this._isClose(ep,nextSP) && !this._isClose(ep,nextEP) && !this._isClose(ep,prevSP) && !this._isClose(ep,prevEP)))            
+             		continue;
+             		
                 var endAngle = edge.mArcAngle + edge.mStartAngle;
                 if (prevPoint) {
                     if (this._isClose(prevPoint, sp)) {
@@ -410,10 +435,13 @@ Renderer = function () {
                 var hole = output.mHoles[i];
                 ctx.beginPath();
                 for (var j = 0; j < hole.edges.length; j++) {
-                    var hedge = hole.edges[j];
-                    next = hole.edges[(j + 1) % hole.edges.length];
-                    nextSP = next.mStart;
-                    nextEP = next.mEnd;
+                    var hedge = hole.edges[j],
+	                    next = hole.edges[(j + 1) % hole.edges.length],
+	                    prev = hole.edges[j - 1 < 0 ? hole.edges.length - 1 : j - 1 ],
+	                    nextSP = next.mStart,
+	                    nextEP = next.mEnd,
+	                    prevSP = prev.mStart,
+	                    prevEP = prev.mEnd;
 
                     if (next.constructor == MyCurve) {
                         nextSP = this._rotatePoint({
@@ -425,8 +453,26 @@ Renderer = function () {
                             y: next.mCenter.mY
                         }, next.mCenter, next.mStartAngle + next.mArcAngle);
                     }
+                    
+                    if (prev.constructor == MyCurve) {
+                        prevSP = this._rotatePoint({
+                            x: prev.mCenter.mX + prev.mRadius,
+                            y: prev.mCenter.mY
+                        }, prev.mCenter, prev.mStartAngle);
+                        prevEP = this._rotatePoint({
+                            x: prev.mCenter.mX + prev.mRadius,
+                            y: prev.mCenter.mY
+                        }, prev.mCenter, prev.mStartAngle + prev.mArcAngle);
+                    }
 
                     if (hedge.constructor == MyEdge) {
+                    	//过滤不相连的线段
+//						if((!this._isClose(hedge.mStart,nextSP) && !this._isClose(hedge.mEnd,nextSP) && !this._isClose(hedge.mStart,nextEP) && !this._isClose(hedge.mEnd,nextEP)) && (!this._isClose(hedge.mStart,prevSP) && !this._isClose(hedge.mEnd,prevSP) && !this._isClose(hedge.mStart,prevEP) && !this._isClose(hedge.mEnd,prevEP)))
+//                   		continue;
+
+						if((!this._isClose(hedge.mStart,nextSP) && !this._isClose(hedge.mStart,nextEP) && !this._isClose(hedge.mStart,prevSP) && !this._isClose(hedge.mStart,prevEP)) || (!this._isClose(hedge.mEnd,nextSP) && !this._isClose(hedge.mEnd,nextEP) && !this._isClose(hedge.mEnd,prevSP) && !this._isClose(hedge.mEnd,prevEP)))
+                     		continue;
+
 		                if (prevPos) {
 		                    if (this._isClose(hedge.mStart, prevPos))
 		                        p = hedge.mEnd;
@@ -456,8 +502,13 @@ Renderer = function () {
                                 x: hedge.mCenter.mX + hedge.mRadius,
                                 y: hedge.mCenter.mY
                             }, hedge.mCenter, hedge.mStartAngle + hedge.mArcAngle);
-                        if(!this._isClose(sp,nextSP) && !this._isClose(ep,nextSP) && !this._isClose(sp,nextEP) && !this._isClose(ep,nextEP))
-                            continue;
+                            
+						//过滤不相连的线段
+//						if((!this._isClose(sp,nextSP) && !this._isClose(ep,nextSP) && !this._isClose(sp,nextEP) && !this._isClose(ep,nextEP)) && (!this._isClose(sp,prevSP) && !this._isClose(ep,prevSP) && !this._isClose(sp,prevEP) && !this._isClose(ep,prevEP)))
+//                   		continue;             
+                     		if((!this._isClose(sp,nextSP) && !this._isClose(sp,nextEP) && !this._isClose(sp,prevSP) && !this._isClose(sp,prevEP))|| (!this._isClose(ep,nextSP) && !this._isClose(ep,nextEP) && !this._isClose(ep,prevSP) && !this._isClose(ep,prevEP)))            
+                     		continue;
+                     		
                         var endAngle = hedge.mArcAngle + hedge.mStartAngle;
 
                         if ((prevPos != undefined && !this._isClose(prevPos, sp)) || (!this._isClose(ep, nextEP) &&  !this._isClose(ep, nextSP) )){
@@ -544,7 +595,12 @@ Renderer = function () {
         this.ctx.strokeStyle = color;
         this.ctx.beginPath();
         
-        var p = {x : point.mX || point.x, y : point.mY || point.y};
+        var p;
+        if (point instanceof Vec2) {
+            p = {x : point.mX, y : point.mY};
+        } else {
+            p = point;
+        }
         
         ScalePoint(p);
         
