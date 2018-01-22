@@ -66,7 +66,7 @@ Snap.prototype.snap = function(x, y, type, isSnap) {
                 var edge;
                 var focusEdge = null;
                 var focusCurve = null;
-                if (curve instanceof SegmentController && !curve.isBoundry) {
+                if (curve instanceof SegmentController) {
                     var edge = curve.getTheStartEndEdge();
                     if (edge.pointInEdgeOrOnEdge(this.mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
                         var point = edge.getIntersectionPointByPoint(this.mouseSnapped, true);
@@ -201,7 +201,7 @@ Snap.prototype.snap = function(x, y, type, isSnap) {
     } else {
         this.mIsInside = true;
     }
-    //console.log(this.mFocus.controller);
+    console.log(this.mFocus.controller);
     if (this.mFocus.controller != null) {
         if (this.mFocus.controller instanceof SegmentController) {
             var angle = this.mFocus.geom.getAngle();

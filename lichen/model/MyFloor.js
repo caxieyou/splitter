@@ -451,30 +451,8 @@ MyFloor.prototype.updatePosition = function(sub, newPos, oldPos)
         }
         this.Analysis();
     } 
-    
-    if (this.mPickedIndex != -1) {
-        var segment = this.mAreasControllers[this.mPickedIndex][0];
-        
-        var edge = segment.getTheStartEndEdge();
-        var start = edge.mStart.clone();
-        var end = edge.mEnd.clone();
-        var center = edge.getCenter();
-        var area = segment.mAreas[segment.mAreas.length - 1];
-        var angle = edge.getAngle();
-        angle = angle + Math.PI / 2;
-        var offset = 0.01;
-        var offvec = new Vec2(offset * Math.cos(angle), offset * Math.sin(angle));
-        if (this.mPickedDirection) {
-            center.addBy(offvec);
-        } else {
-            center.sub(offvec);
-        }
-        
-        this.getPickedArea(center.mX, center.mY);
-    }
-    //else {
-    //    this.clearPickedArea();
-    //}
+
+    this.clearPickedArea();
     
     return overlapped;
 }
@@ -613,7 +591,9 @@ MyFloor.prototype._renderCurveHeight = function(curves, validCurveIndex, canvas,
 }
 
 MyFloor.prototype._renderRelativeDistance = function(segments, validIndex, canvas, renderer) {
-    for (var i = 0; i < segments.length; i++) {
+    
+    for (var k = 0; k < validIndex.length; k++) {
+        var i = validIndex[k];
         var segmentObj = segments[i];
         var edgeObj = segmentObj.getTheStartEndEdge();
         var angleObj = edgeObj.getAngle();
@@ -621,8 +601,13 @@ MyFloor.prototype._renderRelativeDistance = function(segments, validIndex, canva
         var isHorizontalObj = Angle.isHorizontal(angleObj);
         var isVerticalObj = Angle.isVertical(angleObj);
         
-        for (var j = i+1; j < segments.length; j++) {
+        for (var j = 0; j < segments.length; j++) {
+            
             var segmentSbj = segments[j];
+            if (segmentSbj.mId == segmentObj.mId) {
+                continue;
+            }
+            
             var edgeSbj = segmentSbj.getTheStartEndEdge();
             var angleSbj = edgeSbj.getAngle();
             
@@ -671,7 +656,7 @@ MyFloor.prototype._renderRelativeDistance = function(segments, validIndex, canva
                         distance = Math.abs(distance);
                         center = markLine.mStart.clone();
                             
-                        if (validIndex.indexOf(i) > -1) {
+                        if (validIndex.indexOf(i) > -1 && validIndex.indexOf(j) == -1) {
                             var arcValid_i = true;
                             
                             var corners = segments[i].toCorners();
@@ -690,6 +675,27 @@ MyFloor.prototype._renderRelativeDistance = function(segments, validIndex, canva
                                 Utility.DrawDimensionCallback, canvas, segments[i], null, sign * distance, direction);
                             }
                         }
+                        /*
+                        if (validIndex.indexOf(j) > -1) {
+                            var arcValid_j = true;
+                            
+                            var corners = segments[j].toCorners();
+                            for (var n = 0; n < corners.length; n++) {
+                                var corner = corners[n];
+                                for (var p = 0; p < corner.mCurves.length; p++) {
+                                    if (corner.mCurves[p] instanceof CurveController) {
+                                        arcValid_j = false;
+                                        break;
+                                    }
+                                }
+                            }
+                            
+                            if (arcValid_j) {
+                                renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - direction * sign * distance,y: center.mY  - (1 -  direction) * sign * distance}, null, true,
+                                Utility.DrawDimensionCallback, canvas, segments[i], null, sign * distance, direction);
+                            }
+                        }
+                        */
                     }
                 }
             }

@@ -86,6 +86,17 @@ MyCorner.prototype.isBoundryCorner = function() {
     return ret;
 }
 
+MyCorner.prototype.getBoundrySegments = function() {
+    var ret = [];
+    
+    for (var i = 0; i < this.mCurves.length; i++) {
+        if (this.mCurves[i].isBoundry) {
+            ret.push(this.mCurves[i].getTheStartEndEdge());
+        }
+    }
+    return ret;
+}
+
 
 MyCorner.updatePosition = function(corner, x, y)
 {

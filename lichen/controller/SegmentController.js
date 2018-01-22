@@ -487,79 +487,62 @@ SegmentController.prototype.getAngle = function()
 SegmentController.prototype.updatePosition = function(x, y) {
     //1 找到2个corner
     var coners = this.toCorners();
-    var angle = this.getAngle();
-    /*
-    //2 找到所有线段
-    var startCurves;
-    var endCurves;
-    var angle = this.getAngle();
     
-    // 得到差别最大的两个线段
-    var minS = 0;
-    var minE = 0;
-    for (var i = 0; i < coners[0].mCurves.length; i++) {
-        if (coners[0].mCurves[i].mId !== this.mId) {
-            coners[0].mCurves[i].getAngle();
-            var diff = Math.abs(angle - coners[0].mCurves[i].getAngle());
-            while(diff >= Math.PI) {
-                diff = diff - Math.PI;
-            }
-            if (diff > Math.PI / 2) {
-                diff = Math.PI - diff;
-            }
-            if (diff >= minS) {
-                minS = diff;
-                startCurves = coners[0].mCurves[i];
-            }
+    var bC0 = coners[0].getBoundrySegments();
+    if (bC0.length > 0) {
+        if (!MyEdge.isValidAngleDiff(bC0[0], bC0[1])) {
+            return true;
         }
     }
-    for (var i = 0; i < coners[1].mCurves.length; i++) {
-        if (coners[1].mCurves[i].mId !== this.mId) {
-            coners[1].mCurves[i].getAngle();
-            var diff = Math.abs(angle - coners[1].mCurves[i].getAngle());
-            while(diff >= Math.PI) {
-                diff = diff - Math.PI;
-            }
-            if (diff > Math.PI / 2) {
-                diff = Math.PI - diff;
-            }
-            if (diff >= minE) {
-                minE = diff;
-                endCurves = coners[1].mCurves[i];
-            }
+    var bC1 = coners[1].getBoundrySegments();
+    if (bC1.length > 0) {
+        if (!MyEdge.isValidAngleDiff(bC1[0], bC1[1])) {
+            return true;
         }
     }
     
+    var angle = this.getAngle();
     
-    var newEdge;
-    if (MyNumber.isEqual(angle, Math.PI / 2)) {
-        newEdge = new MyEdge(new Vec2(x, y), new Vec2(x, y + 1));
-    } else {
-        newEdge = new MyEdge(new Vec2(x, y), new Vec2(x + 1, y + Math.tan(angle)));
-    }
-    
-    var s = MyEdge.getIntersection(newEdge, startCurves.getTheStartEndEdge());
-    var e = MyEdge.getIntersection(newEdge, endCurves.getTheStartEndEdge());
-    */
-    //if (!s || !e) {
     var dis = this.getTheStartEndEdge().getDistance(new Vec2(x, y));
     
     var pos0 = coners[0].mPosition.clone();
     var pos1 = coners[1].mPosition.clone();
     
-    var s = new Vec2(pos0.mX + dis * Math.cos(angle + Math.PI / 2), pos0.mY + dis * Math.sin(angle + Math.PI / 2));
-    var e = new Vec2(pos1.mX + dis * Math.cos(angle + Math.PI / 2), pos1.mY + dis * Math.sin(angle + Math.PI / 2));
+    var s, e;
+    s = new Vec2(pos0.mX + dis * Math.cos(angle + Math.PI / 2), pos0.mY + dis * Math.sin(angle + Math.PI / 2));
+    e = new Vec2(pos1.mX + dis * Math.cos(angle + Math.PI / 2), pos1.mY + dis * Math.sin(angle + Math.PI / 2));
     
+    
+    if (bC0.length > 0) {
+        var newEdge = new MyEdge(s, e);
+        s = MyEdge.getIntersection(newEdge, bC0[0]);
+        
+    } 
+    
+    if (bC1.length > 0) {
+        var newEdge = new MyEdge(s, e);
+        e = MyEdge.getIntersection(newEdge, bC1[0]);
+    } 
     
     var tmp = new MyEdge(s, e);
     
     if (tmp.getDistance(new Vec2(x, y)) > 1.0E-6) {
         s = new Vec2(pos0.mX - dis * Math.cos(angle + Math.PI / 2), pos0.mY - dis * Math.sin(angle + Math.PI / 2));
         e = new Vec2(pos1.mX - dis * Math.cos(angle + Math.PI / 2), pos1.mY - dis * Math.sin(angle + Math.PI / 2));
+        if (bC0.length > 0) {
+            var newEdge = new MyEdge(s, e);
+            s = MyEdge.getIntersection(newEdge, bC0[0]);
+        } 
+        
+        if (bC1.length > 0) {
+            var newEdge = new MyEdge(s, e);
+            e = MyEdge.getIntersection(newEdge, bC1[0]);
+        } 
     }
     
-    
-    
+    if (s.equals(e)) {
+        return true;
+    }
     var c = [];
     for (var i = 0; i < coners[0].mCurves.length; i++) {
         c = c.concat(coners[0].mCurves[i].toCorners());
