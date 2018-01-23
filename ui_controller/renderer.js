@@ -204,11 +204,11 @@ Renderer = function () {
         }
         
         if (isFocus) {
-            this.ctx.strokeStyle = "blue";
+            this.ctx.strokeStyle = Style.FocusLine.color;
         } else if(color){
             this.ctx.strokeStyle = color;
         } else {
-            this.ctx.strokeStyle = "#888";
+            this.ctx.strokeStyle = Style.DefaultLine.color;
         }
         //this.ctx.strokeStyle = isFocus != undefined ? "blue" : color;
         this.ctx.stroke();
@@ -230,7 +230,7 @@ Renderer = function () {
         this.ctx.lineTo(rightBottom.x, rightBottom.y);
         this.ctx.lineTo(leftUp.x, rightBottom.y);
         this.ctx.lineTo(leftUp.x, leftUp.y);
-        this.ctx.strokeStyle = "#888";
+        this.ctx.strokeStyle = Style.DefaultLine.color;
         this.ctx.stroke();
         this.ctx.closePath();
     }
@@ -245,7 +245,7 @@ Renderer = function () {
         radius = ScaleNumber(radius);
         
         this.ctx.beginPath();
-        this.ctx.strokeStyle = '#888';
+        this.ctx.strokeStyle = Style.DefaultLine.color;
         this.ctx.arc(center.x, center.y, radius, 0, Math.PI * 2, true);
         this.ctx.stroke();
         this.ctx.closePath();
@@ -283,7 +283,7 @@ Renderer = function () {
         }
         
         this.ctx.beginPath();
-        this.ctx.strokeStyle = !!isFocus ? "blue" : '#888';
+        this.ctx.strokeStyle = !!isFocus ? Style.FocusLine.color : Style.DefaultLine.color;
         this.ctx.arc(center.x, center.y, radius, start, end, clock < 0 ? true : false);
         this.ctx.stroke();
         this.ctx.closePath();
@@ -427,7 +427,7 @@ Renderer = function () {
                 }
             }
         }
-        ctx.fillStyle = 'rgba(153, 255, 255, 0.2)';
+        ctx.fillStyle = Style.Fill.color;
         ctx.fill();
         ctx.closePath();
 
@@ -541,43 +541,15 @@ Renderer = function () {
     }
     
     this.drawAreaDots = function(output) {
-        for (var i = 0, length = output.mOutline.edges.length; i < length; i++) {
-            var edge = output.mOutline.edges[i];
-            if (edge.constructor == MyCurve) {
-                var _start = edge.getSplitPosByRatio(0);
-                var _end = edge.getSplitPosByRatio(1);
-                this.drawCorner(_start, 3, '#2693FF');
-                this.drawCorner(_end, 3, '#2693FF');
+        for (var i = 0; i < output.length; i++) {
+            var corners = output[i].toCorners();
+
+            if (!corners[0].isBoundryCorner()) {
+                this.drawCorner(corners[0].mPosition, Style.PickeDot.radius, Style.PickeDot.color);
             }
 
-            if (edge.constructor == MyEdge) {
-                var _start = edge.mStart;
-                var _end = edge.mEnd;
-                this.drawCorner(_start, 3, '#2693FF');
-                this.drawCorner(_end, 3, '#2693FF');
-            }
-        }
-        
-        if (output.mHoles.length > 0) {
-            for (var i = 0; i < output.mHoles.length; i++) {
-                var hole = output.mHoles[i];
-                for (var j = 0; j < hole.edges.length; j++) {
-                    var edge = hole.edges[j];
-                    //var edge = output.mOutline.edges[i];
-                    if (edge.constructor == MyCurve) {
-                        var _start = edge.getSplitPosByRatio(0);
-                        var _end = edge.getSplitPosByRatio(1);
-                        this.drawCorner(_start, 3, '#2693FF');
-                        this.drawCorner(_end, 3, '#2693FF');
-                    }
-
-                    if (edge.constructor == MyEdge) {
-                        var _start = edge.mStart;
-                        var _end = edge.mEnd;
-                        this.drawCorner(_start, 3, '#2693FF');
-                        this.drawCorner(_end, 3, '#2693FF');
-                    }
-                }
+            if (!corners[1].isBoundryCorner()) {
+                this.drawCorner(corners[1].mPosition, Style.PickeDot.radius, Style.PickeDot.color);
             }
         }
     }
@@ -623,8 +595,8 @@ Renderer = function () {
     
     this.drawIntersectCorner = function(point, radius) {
         radius = radius || 6;
-        this.drawCorner(point, radius, "#1371d1", true);
-        this.drawCorner(point, radius - 1, "#699acc");
+        this.drawCorner(point, radius, Style.IntersectCorner.outColor, true);
+        this.drawCorner(point, radius - 1, Style.IntersectCorner.innerColor);
     }
     
     this._getIntersectionForBorder = function(sp, ep, borderPoints) {
@@ -1008,7 +980,7 @@ Renderer = function () {
         ctx.shadowOffsetX = 0; // 阴影Y轴偏移
         ctx.shadowOffsetY = 0; // 阴影X轴偏移
 		ctx.shadowBlur = height; // 模糊尺寸
-		ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'; // 颜色
+		ctx.shadowColor = Style.Shadow.color; // 颜色
     }
     
     this.exitShadow = function () {
@@ -1022,7 +994,7 @@ Renderer = function () {
         for (var j = 0; j < output.mOutline.edges.length; j++) {
             var edge = output.mOutline.edges[j];
             if (edge instanceof MyEdge) {
-                this.drawLine(edge, null, isFocus ? 'blue': null);
+                this.drawLine(edge, null, isFocus ? Style.FocusLine.color: null);
             }else if (edge instanceof MyCurve) {
                 this.drawArc(edge, isFocus);
             }
@@ -1032,7 +1004,7 @@ Renderer = function () {
             for (var k = 0; k < output.mHoles[j].edges.length; k++) {
                 var edge = output.mHoles[j].edges[k];
                 if (edge instanceof MyEdge) {
-                    this.drawLine(edge, null, isFocus ? 'blue': null);
+                    this.drawLine(edge, null, isFocus ? Style.FocusLine.color: null);
                 } else if (edge instanceof MyCurve) {
                     this.drawArc(edge, isFocus);
                 }

@@ -201,7 +201,7 @@ Snap.prototype.snap = function(x, y, type, isSnap) {
     } else {
         this.mIsInside = true;
     }
-    console.log(this.mFocus.controller);
+    //console.log(this.mFocus.controller);
     if (this.mFocus.controller != null) {
         if (this.mFocus.controller instanceof SegmentController) {
             var angle = this.mFocus.geom.getAngle();

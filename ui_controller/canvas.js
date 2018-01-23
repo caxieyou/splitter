@@ -72,7 +72,7 @@ Canvas.prototype._renderCurrentObject = function() {
             }
             
             if (eLine) {
-                this._renderer.drawLine(eLine, true, 'red');
+                this._renderer.drawLine(eLine, Style.OverLine.isDash, Style.OverLine.color);
             }
         }
         break;
@@ -300,9 +300,9 @@ Canvas.prototype.updateElement = function(x, y){
         this.render();
         if (overlapped) {
             if (this._updateElment instanceof MyCorner) {
-                this._renderer.drawLine(new MyEdge(this._lastFocos.clone(), new Vec2(x, y)), true, 'red')
-                this._renderer.drawCorner(this._lastFocos, 8, '#f57208');
-                this._renderer.drawCorner(new Vec2(x, y), 10, 'red');
+                this._renderer.drawLine(new MyEdge(this._lastFocos.clone(), new Vec2(x, y)), Style.OverLine.isDash, Style.OverLine.color)
+                this._renderer.drawCorner(this._lastFocos, Style.UpdateCorner.radius, Style.UpdateCorner.color);
+                this._renderer.drawCorner(new Vec2(x, y), Style.ErrorCorner.radius, Style.ErrorCorner.color);
             }
             return;
         }
@@ -338,7 +338,7 @@ Canvas.prototype._renderFocusObject = function() {
         this._renderer.drawArc(this.mSnap.mFocus.geom, true);
         
     } else if(this.mSnap.mFocus.geom instanceof Vec2) {
-        this._renderer.drawCorner(this.mSnap.mFocus.geom, 8, '#f57208');
+        this._renderer.drawCorner(this.mSnap.mFocus.geom, Style.FocusCorner.radius, Style.FocusCorner.color);
     }
     
     if (this._operationCurve) {
@@ -363,12 +363,12 @@ Canvas.prototype._renderMouseLines = function() {
     
     for (var i = 0; i < this.mSnap.mFocus.snapXEdge.length; i++) {
         var edge = this.mSnap.mFocus.snapXEdge[i];
-        this._renderer.drawDimensions({x: edge.mStart.mX,y: edge.mStart.mY}, {x: edge.mEnd.mX,y: edge.mEnd.mY}, this.mSnap.mFocus.snapX ? "blue" : null);
+        this._renderer.drawDimensions({x: edge.mStart.mX,y: edge.mStart.mY}, {x: edge.mEnd.mX,y: edge.mEnd.mY}, this.mSnap.mFocus.snapX ? Style.RulerSnap.color : null);
     }
 
     for (var i = 0; i < this.mSnap.mFocus.snapYEdge.length; i++) {
         var edge = this.mSnap.mFocus.snapYEdge[i];
-        this._renderer.drawDimensions({x: edge.mStart.mX,y: edge.mStart.mY}, {x: edge.mEnd.mX,y: edge.mEnd.mY}, this.mSnap.mFocus.snapY ? "blue" : null);
+        this._renderer.drawDimensions({x: edge.mStart.mX,y: edge.mStart.mY}, {x: edge.mEnd.mX,y: edge.mEnd.mY}, this.mSnap.mFocus.snapY ? Style.RulerSnap.color : null);
     }
 }
 
@@ -392,16 +392,16 @@ Canvas.prototype._renderHintKeyPoints = function() {
             }
         }
         if (isClose) {
-            this._renderer.drawCorner(this._hintPoints[i], 6, '#f57208');
+            this._renderer.drawCorner(this._hintPoints[i], Style.OverlapCorner.radius, Style.OverlapCorner.color);
         } else {
-            this._renderer.drawIntersectCorner(this._hintPoints[i], 6);
+            this._renderer.drawIntersectCorner(this._hintPoints[i], Style.IntersectCorner.color);
         }
         
     }
     this._hintPoints = [];
     
     if (this.mSnap.mFocus.keypoint) {
-        this._renderer.drawCorner(this.mSnap.mFocus.keypoint, 8, '#f57208');
+        this._renderer.drawCorner(this.mSnap.mFocus.keypoint, Style.FocusCorner.radius, Style.FocusCorner.color);
     }
 }
 

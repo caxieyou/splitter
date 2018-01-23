@@ -522,7 +522,7 @@ MyFloor.prototype.renderPickedArea = function(renderer) {
     
     renderer.drawArea(this.mOutput[this.mPickedIndex]);
     this.renderOutput(renderer);
-    renderer.drawAreaDots(this.mOutput[this.mPickedIndex]);
+    renderer.drawAreaDots(this.mAreasControllers[this.mPickedIndex]);
 }
 
 MyFloor.prototype.renderOutput = function(renderer) {
