@@ -99,7 +99,9 @@ Style.PickeDot = {
 };
 
 
-
+Style.BoundryLine = {
+    color : 'black'
+}
 
 
 

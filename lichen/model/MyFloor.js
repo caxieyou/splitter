@@ -149,9 +149,6 @@ MyFloor.prototype.getPickedArea = function(x, y) {
     for (var i = 0; i < this.mAreasPolytree.length; i++) {
         if (this.mAreasPolytree[i].contains(new Vec2(x, y))) {
             this.mPickedIndex = i;
-            //this.mPickedArea = this.mOutput[i];
-            //this.mPickedAreaControllers = this.mAreasControllers[i];
-
             var segment = this.mAreasControllers[i][0];
             var edge = segment.getTheStartEndEdge();
             var start = edge.mStart.clone();
@@ -519,7 +516,6 @@ MyFloor.prototype.renderPickedArea = function(renderer) {
         return;
     }
     
-    
     renderer.drawArea(this.mOutput[this.mPickedIndex]);
     this.renderOutput(renderer);
     renderer.drawAreaDots(this.mAreasControllers[this.mPickedIndex]);
@@ -529,19 +525,20 @@ MyFloor.prototype.renderOutput = function(renderer) {
     if (this.mOutput == null) {
         return;
     }
-    var res = this.mOutput;
-    for (var i = 0; i < res.length; i++) {
-        renderer.drawOutput(res[i]);
+    
+    for (var i = 0; i < this.mAreasControllers.length; i++) {
+        renderer.drawOutput(this.mAreasControllers[i]);
     }
+    
     if (this.mPickedIndex != -1) {
         var height = this.mAreaHeightRecord[this.mPickedIndex].height;
         if (height == 0) {
             height = undefined;
-            renderer.drawOutput(this.mOutput[this.mPickedIndex], true);
+            renderer.drawOutput(this.mAreasControllers[this.mPickedIndex], true);
         } else {
             height = Math.max(Math.min(1, height), 10);
             renderer.enterShadow(height);
-            renderer.drawOutput(this.mOutput[this.mPickedIndex], true);
+            renderer.drawOutput(this.mAreasControllers[this.mPickedIndex], true);
             renderer.exitShadow();
         }
     }

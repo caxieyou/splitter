@@ -44,7 +44,7 @@ _RectOp.prototype.create = function(pnt0, pnt1, curves) {
     for (var i = 0; i < polyEdges.length; i++) {
         for (var j = 0; j < curves.length; j++) {
             var curve = curves[j];
-            if (curve.isBoundry || curve instanceof CurveController) {
+            if (curve instanceof CurveController) {
                 continue;
             }
             curve = curve.getTheStartEndEdge();
@@ -52,12 +52,12 @@ _RectOp.prototype.create = function(pnt0, pnt1, curves) {
             if (polyEdges[i] instanceof Array) {
                 var total = [];
                 for (var m = 0; m < polyEdges[i].length; m++) {
+                    
                     var result = MyEdge.getDiff(polyEdges[i][m], curve);
 
                     if (result == null) {
-
-                    }
-                    if (result instanceof Array) {
+                        // do nothing
+                    } else if (result instanceof Array) {
                         total.push(result[0]);
                         total.push(result[1]);
                     } else {

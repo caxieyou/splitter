@@ -991,23 +991,21 @@ Renderer = function () {
         if (!output) {
             return;
         }
-        for (var j = 0; j < output.mOutline.edges.length; j++) {
-            var edge = output.mOutline.edges[j];
-            if (edge instanceof MyEdge) {
-                this.drawLine(edge, null, isFocus ? Style.FocusLine.color: null);
-            }else if (edge instanceof MyCurve) {
-                this.drawArc(edge, isFocus);
-            }
-        }
         
-        for (var j = 0; j < output.mHoles.length; j++) {
-            for (var k = 0; k < output.mHoles[j].edges.length; k++) {
-                var edge = output.mHoles[j].edges[k];
-                if (edge instanceof MyEdge) {
+        for (var i = 0; i < output.length; i++) {
+            var seg = output[i];
+            if (seg instanceof SegmentController) {
+                var edge = seg.getTheStartEndEdge();
+                if (seg.isBoundry) {
+                    this.drawLine(edge, null, isFocus ? Style.FocusLine.color : Style.BoundryLine.color );
+                } else {
                     this.drawLine(edge, null, isFocus ? Style.FocusLine.color: null);
-                } else if (edge instanceof MyCurve) {
-                    this.drawArc(edge, isFocus);
                 }
+            }
+            
+            if (seg instanceof CurveController) {
+                var edge = seg.getCurveFromController();
+                this.drawArc(edge, isFocus);
             }
         }
     }
