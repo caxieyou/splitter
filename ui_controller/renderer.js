@@ -360,7 +360,8 @@ Renderer = function () {
             if (edge.constructor == MyEdge) {
 //				if((!this._isClose(edge.mStart,nextSP) && !this._isClose(edge.mEnd,nextSP) && !this._isClose(edge.mStart,nextEP) && !this._isClose(edge.mEnd,nextEP)) && (!this._isClose(edge.mStart,prevSP) && !this._isClose(edge.mEnd,prevSP) && !this._isClose(edge.mStart,prevEP) && !this._isClose(edge.mEnd,prevEP)))
 //           		continue;              	
-				if((!this._isClose(edge.mStart,nextSP) && !this._isClose(edge.mStart,nextEP) && !this._isClose(edge.mStart,prevSP) && !this._isClose(edge.mStart,prevEP)) || (!this._isClose(edge.mEnd,nextSP) && !this._isClose(edge.mEnd,nextEP) && !this._isClose(edge.mEnd,prevSP) && !this._isClose(edge.mEnd,prevEP)))
+//				if((!this._isClose(edge.mStart,nextSP) && !this._isClose(edge.mStart,nextEP) && !this._isClose(edge.mStart,prevSP) && !this._isClose(edge.mStart,prevEP)) || (!this._isClose(edge.mEnd,nextSP) && !this._isClose(edge.mEnd,nextEP) && !this._isClose(edge.mEnd,prevSP) && !this._isClose(edge.mEnd,prevEP)))
+				if(this._checkCorrelated(edge.mStart, edge.mEnd, nextSP, nextEP, prevSP, prevEP))
              		continue;
                 
                 if (prevPoint) {
@@ -399,8 +400,11 @@ Renderer = function () {
 				//过滤不相连的线段
 //				if((!this._isClose(sp,nextSP) && !this._isClose(ep,nextSP) && !this._isClose(sp,nextEP) && !this._isClose(ep,nextEP)) && (!this._isClose(sp,prevSP) && !this._isClose(ep,prevSP) && !this._isClose(sp,prevEP) && !this._isClose(ep,prevEP)))
 //           		continue;   
-             		if((!this._isClose(sp,nextSP) && !this._isClose(sp,nextEP) && !this._isClose(sp,prevSP) && !this._isClose(sp,prevEP))|| (!this._isClose(ep,nextSP) && !this._isClose(ep,nextEP) && !this._isClose(ep,prevSP) && !this._isClose(ep,prevEP)))            
-             		continue;
+//           		if((!this._isClose(sp,nextSP) && !this._isClose(sp,nextEP) && !this._isClose(sp,prevSP) && !this._isClose(sp,prevEP))|| (!this._isClose(ep,nextSP) && !this._isClose(ep,nextEP) && !this._isClose(ep,prevSP) && !this._isClose(ep,prevEP)))            
+//           		continue;
+             		
+				if(this._checkCorrelated(sp, ep, nextSP, nextEP, prevSP, prevEP))
+             		continue;             	
              		
                 var endAngle = edge.mArcAngle + edge.mStartAngle;
                 if (prevPoint) {
@@ -470,8 +474,10 @@ Renderer = function () {
 //						if((!this._isClose(hedge.mStart,nextSP) && !this._isClose(hedge.mEnd,nextSP) && !this._isClose(hedge.mStart,nextEP) && !this._isClose(hedge.mEnd,nextEP)) && (!this._isClose(hedge.mStart,prevSP) && !this._isClose(hedge.mEnd,prevSP) && !this._isClose(hedge.mStart,prevEP) && !this._isClose(hedge.mEnd,prevEP)))
 //                   		continue;
 
-						if((!this._isClose(hedge.mStart,nextSP) && !this._isClose(hedge.mStart,nextEP) && !this._isClose(hedge.mStart,prevSP) && !this._isClose(hedge.mStart,prevEP)) || (!this._isClose(hedge.mEnd,nextSP) && !this._isClose(hedge.mEnd,nextEP) && !this._isClose(hedge.mEnd,prevSP) && !this._isClose(hedge.mEnd,prevEP)))
-                     		continue;
+//						if((!this._isClose(hedge.mStart,nextSP) && !this._isClose(hedge.mStart,nextEP) && !this._isClose(hedge.mStart,prevSP) && !this._isClose(hedge.mStart,prevEP)) || (!this._isClose(hedge.mEnd,nextSP) && !this._isClose(hedge.mEnd,nextEP) && !this._isClose(hedge.mEnd,prevSP) && !this._isClose(hedge.mEnd,prevEP)))
+//                   		continue;
+					if(this._checkCorrelated(hedge.mStart, hedge.mEnd, nextSP, nextEP, prevSP, prevEP))
+	             		continue;
 
 		                if (prevPos) {
 		                    if (this._isClose(hedge.mStart, prevPos))
@@ -506,9 +512,11 @@ Renderer = function () {
 						//过滤不相连的线段
 //						if((!this._isClose(sp,nextSP) && !this._isClose(ep,nextSP) && !this._isClose(sp,nextEP) && !this._isClose(ep,nextEP)) && (!this._isClose(sp,prevSP) && !this._isClose(ep,prevSP) && !this._isClose(sp,prevEP) && !this._isClose(ep,prevEP)))
 //                   		continue;             
-                     		if((!this._isClose(sp,nextSP) && !this._isClose(sp,nextEP) && !this._isClose(sp,prevSP) && !this._isClose(sp,prevEP))|| (!this._isClose(ep,nextSP) && !this._isClose(ep,nextEP) && !this._isClose(ep,prevSP) && !this._isClose(ep,prevEP)))            
-                     		continue;
-                     		
+//                   		if((!this._isClose(sp,nextSP) && !this._isClose(sp,nextEP) && !this._isClose(sp,prevSP) && !this._isClose(sp,prevEP))|| (!this._isClose(ep,nextSP) && !this._isClose(ep,nextEP) && !this._isClose(ep,prevSP) && !this._isClose(ep,prevEP)))            
+//                   		continue;
+	 					if(this._checkCorrelated(sp, ep, nextSP, nextEP, prevSP, prevEP))
+		             		continue;
+	             		
                         var endAngle = hedge.mArcAngle + hedge.mStartAngle;
 
                         if ((prevPos != undefined && !this._isClose(prevPos, sp)) || (!this._isClose(ep, nextEP) &&  !this._isClose(ep, nextSP) )){
@@ -574,12 +582,11 @@ Renderer = function () {
         }
     }
     
-    this.isAllCurves = function(edges) {
-        for (var j = 0; j < edges.length; j++) {
-            if (edges[j].constructor == MyEdge)return false;
-        }
-        return true;
+    this._checkCorrelated = function(sp, ep, nextSP, nextEP, prevSP, prevEP){
+    	if((!this._isClose(sp,nextSP) && !this._isClose(sp,nextEP) && !this._isClose(sp,prevSP) && !this._isClose(sp,prevEP))|| (!this._isClose(ep,nextSP) && !this._isClose(ep,nextEP) && !this._isClose(ep,prevSP) && !this._isClose(ep,prevEP)))
+    	return true;
     }
+
     
 	/**
 	 * 绘制圆点
