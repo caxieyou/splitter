@@ -282,8 +282,84 @@ MyFloor.prototype._updateGeoStructure = function() {
         this.mOutput.push(res);
         this.mAreasPolytree.push(res2);
         this.mAreasControllers.push(res3);
-        
     }
+
+    //Check the Singular situation
+    for (var i = 0; i < this.mOutput.length; i++) {
+        var output = this.mOutput[i].mOutline.edges;
+        var validate = new Array(output.length);
+
+        for (var j = 0; j < output.length; j++) {
+            var cur = output[j];
+            var next = output[(j + 1) % output.length];
+
+            if (cur.mStart.equals(next.mStart) || cur.mStart.equals(next.mEnd) ||
+                cur.mEnd.equals(next.mStart) || cur.mEnd.equals(next.mEnd) ) {
+                validate[j] = true;
+            } else {
+                validate[j] = false;
+            }
+        }
+        var newEdges = [];
+
+        for (var j = 0; j < output.length; j++) {
+            if (validate[j] == false && validate[(j+1) % output.length] == false) {
+
+            } else {
+                newEdges.push(output[(j+1) % output.length]);
+            }
+        }
+        this.mOutput[i].mOutline.edges = newEdges;
+    }
+    
+    for (var i = 0; i < this.mOutput.length; i++) {
+        var output = this.mOutput[i].mOutline.edges;
+        var validate = new Array(output.length);
+
+        for (var j = 0; j < output.length; j++) {
+            var cur = output[j];
+            var next = output[(j + 1) % output.length];
+
+            if (cur.mStart.equals(next.mStart) || cur.mStart.equals(next.mEnd) ||
+                cur.mEnd.equals(next.mStart) || cur.mEnd.equals(next.mEnd) ) {
+                validate[j] = true;
+            } else {
+                validate[j] = false;
+            }
+        }
+        
+        var newEdges = [];
+
+        for (var j = 0; j < output.length; j++) {
+            newEdges.push(output[j]);
+            
+            if (validate[j] == false) {
+                var lastEdge = output[(j - 1 + output.length) % output.length];
+                var currentEdge = output[j];
+                
+                var pt0, pt1;
+                if (currentEdge.mStart.equals(lastEdge.mStart)  || currentEdge.mStart.equals(lastEdge.mEnd)) {
+                    pt0 = currentEdge.mEnd.clone();
+                } else {
+                    pt0 = currentEdge.mStart.clone();
+                }
+                
+                var nextEdge = output[(j+1) % output.length];
+                var nextEdge2 = output[(j+2) % output.length];
+                
+                if (nextEdge.mStart.equals(nextEdge2.mStart)  || nextEdge.mStart.equals(nextEdge2.mEnd)) {
+                    pt1 = nextEdge.mEnd.clone();
+                } else {
+                    pt1 = nextEdge.mStart.clone();
+                }
+                
+                newEdges.push(new MyEdge(pt0, pt1));
+            }
+        }
+        
+        this.mOutput[i].mOutline.edges = newEdges;
+    }
+    
     this.mKeyPoints = [];
     for (var i = 0; i < this.mAreasPolytree.length; i++) {
         var point =  this.mAreasPolytree[i].getValidGravityCenter();

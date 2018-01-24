@@ -31,13 +31,32 @@ function Canvas(name) {
 }
 
 Canvas.prototype._initialize = function() {
+    
+    /*
     //创建最外边框
     this.mElmentOperation.creatRect(new Vec2(0, 0), Globals.Size);
-    
     //赋值最外轮廓线
     var rect = new MyRect(new Vec2(0, 0), Globals.Size);
     rect = rect.toMyPolygon();
     this._mFloor.setProfile(rect);
+    */
+    
+    var points = [];
+    points.push(new Vec2(0, 0));
+    points.push(new Vec2(800, 0));
+    points.push(new Vec2(800, 400));
+    points.push(new Vec2(400, 400));
+    points.push(new Vec2(400, 800));
+    points.push(new Vec2(0, 800));
+    
+    var poly = new MyPolygon(points);
+    
+    var splitter = new Splitter(poly.getEdges(), this._mFloor, this._mFloor.generatePolyTree());
+    splitter.execute();
+    this._mFloor.Analysis();
+    
+    this._mFloor.setProfile(poly);
+    
     this._mFloor.Analysis();
     this.render();
 }
@@ -221,6 +240,10 @@ Canvas.prototype.renderAreaPicked = function(x, y) {
         return;
     }
     [x, y] = ScaleMouse(x, y);
+    if (!this._mFloor.mProfile.mOutLines.contains(this.mSnap.mouseSnapped)) {
+        console.log("START POINT OUTSIDE OF ROOM!");
+        return;
+    }
     if (this._mFloor.getPickedArea(x, y)) {
         this.render();
         this._operationCurve = null;
@@ -449,6 +472,7 @@ Canvas.prototype.render = function() {
     
     //画选中点的边界的长度
     this._renderer.drawCornerDimentions(this._updateElment);
+    
 }
 
 Canvas.prototype.clear = function() {
