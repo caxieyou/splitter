@@ -283,7 +283,7 @@ MyFloor.prototype._updateGeoStructure = function() {
         this.mAreasPolytree.push(res2);
         this.mAreasControllers.push(res3);
     }
-
+    
     //Check the Singular situation
     for (var i = 0; i < this.mOutput.length; i++) {
         var output = this.mOutput[i].mOutline.edges;
@@ -293,8 +293,13 @@ MyFloor.prototype._updateGeoStructure = function() {
             var cur = output[j];
             var next = output[(j + 1) % output.length];
 
-            if (cur.mStart.equals(next.mStart) || cur.mStart.equals(next.mEnd) ||
-                cur.mEnd.equals(next.mStart) || cur.mEnd.equals(next.mEnd) ) {
+            var curStart  = cur.mStart ? cur.mStart : cur.getSplitPosByRatio(0);
+            var curEnd    = cur.mEnd ? cur.mEnd : cur.getSplitPosByRatio(1);
+            var nextStart = next.mStart ? next.mStart : next.getSplitPosByRatio(0);
+            var nextEnd   = next.mEnd ? next.mEnd : next.getSplitPosByRatio(1);
+            
+            if (curStart.equals(nextStart) || curStart.equals(nextEnd) ||
+                curEnd.equals(nextStart) || curEnd.equals(nextEnd) ) {
                 validate[j] = true;
             } else {
                 validate[j] = false;
@@ -317,11 +322,17 @@ MyFloor.prototype._updateGeoStructure = function() {
         var validate = new Array(output.length);
 
         for (var j = 0; j < output.length; j++) {
+            
             var cur = output[j];
             var next = output[(j + 1) % output.length];
 
-            if (cur.mStart.equals(next.mStart) || cur.mStart.equals(next.mEnd) ||
-                cur.mEnd.equals(next.mStart) || cur.mEnd.equals(next.mEnd) ) {
+            var curStart  = cur.mStart ? cur.mStart : cur.getSplitPosByRatio(0);
+            var curEnd    = cur.mEnd ? cur.mEnd : cur.getSplitPosByRatio(1);
+            var nextStart = next.mStart ? next.mStart : next.getSplitPosByRatio(0);
+            var nextEnd   = next.mEnd ? next.mEnd : next.getSplitPosByRatio(1);
+            
+            if (curStart.equals(nextStart) || curStart.equals(nextEnd) ||
+                curEnd.equals(nextStart) || curEnd.equals(nextEnd) ) {
                 validate[j] = true;
             } else {
                 validate[j] = false;
@@ -337,20 +348,30 @@ MyFloor.prototype._updateGeoStructure = function() {
                 var lastEdge = output[(j - 1 + output.length) % output.length];
                 var currentEdge = output[j];
                 
+                var lastEdgeStart      = lastEdge.mStart ? lastEdge.mStart : lastEdge.getSplitPosByRatio(0);
+                var lastEdgeEnd        = lastEdge.mEnd ? lastEdge.mEnd : lastEdge.getSplitPosByRatio(1);
+                var currentEdgeStart   = currentEdge.mStart ? currentEdge.mStart : currentEdge.getSplitPosByRatio(0);
+                var currentEdgeEnd     = currentEdge.mEnd ? currentEdge.mEnd : currentEdge.getSplitPosByRatio(1);
+                
                 var pt0, pt1;
-                if (currentEdge.mStart.equals(lastEdge.mStart)  || currentEdge.mStart.equals(lastEdge.mEnd)) {
-                    pt0 = currentEdge.mEnd.clone();
+                if (currentEdgeStart.equals(lastEdgeStart)  || currentEdgeStart.equals(lastEdgeEnd)) {
+                    pt0 = currentEdgeEnd.clone();
                 } else {
-                    pt0 = currentEdge.mStart.clone();
+                    pt0 = currentEdgeStart.clone();
                 }
                 
                 var nextEdge = output[(j+1) % output.length];
                 var nextEdge2 = output[(j+2) % output.length];
                 
-                if (nextEdge.mStart.equals(nextEdge2.mStart)  || nextEdge.mStart.equals(nextEdge2.mEnd)) {
-                    pt1 = nextEdge.mEnd.clone();
+                nextEdgeStart    = nextEdge.mStart ? nextEdge.mStart : nextEdge.getSplitPosByRatio(0);
+                nextEdgeEnd      = nextEdge.mEnd ? nextEdge.mEnd : nextEdge.getSplitPosByRatio(1);
+                nextEdge2Start   = nextEdge2.mStart ? nextEdge2.mStart : nextEdge2.getSplitPosByRatio(0);
+                nextEdge2End     = nextEdge2.mEnd ? nextEdge2.mEnd : nextEdge2.getSplitPosByRatio(1);
+                
+                if (nextEdgeStart.equals(nextEdge2Start)  || nextEdgeStart.equals(nextEdge2End)) {
+                    pt1 = nextEdgeEnd.clone();
                 } else {
-                    pt1 = nextEdge.mStart.clone();
+                    pt1 = nextEdgeStart.clone();
                 }
                 
                 newEdges.push(new MyEdge(pt0, pt1));
