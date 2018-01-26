@@ -206,7 +206,6 @@ ElementOperation.prototype.lineOperationEnd = function(point, hintPoints) {
     if (this.mStatus ==  STATUS.NOT_STARTED || this.mStatus ==  STATUS.LINE_START) {
         return false;
     }
-   
     if (this.mStatus == STATUS.LINE_DRAWING) {
         this.mLine._linePoint.copy(point);
         

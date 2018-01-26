@@ -284,102 +284,37 @@ MyFloor.prototype._updateGeoStructure = function() {
         this.mAreasControllers.push(res3);
     }
     
-    //Check the Singular situation
     for (var i = 0; i < this.mOutput.length; i++) {
         var output = this.mOutput[i].mOutline.edges;
-        var validate = new Array(output.length);
-
-        for (var j = 0; j < output.length; j++) {
-            var cur = output[j];
-            var next = output[(j + 1) % output.length];
-
-            var curStart  = cur.mStart ? cur.mStart : cur.getSplitPosByRatio(0);
-            var curEnd    = cur.mEnd ? cur.mEnd : cur.getSplitPosByRatio(1);
-            var nextStart = next.mStart ? next.mStart : next.getSplitPosByRatio(0);
-            var nextEnd   = next.mEnd ? next.mEnd : next.getSplitPosByRatio(1);
-            
-            if (curStart.equals(nextStart) || curStart.equals(nextEnd) ||
-                curEnd.equals(nextStart) || curEnd.equals(nextEnd) ) {
-                validate[j] = true;
-            } else {
-                validate[j] = false;
+        
+        output = this._removeInvalid(output);
+        var valid = [];
+        for (var j =  0; j < output.length; j++) {
+            valid.push(true);
+        }
+        var summary = [];
+        
+        while(true) {
+            var r = this._reconnect(output, valid);
+            if (r == null) {
+                break;
+            }else {
+                summary.push(r);
             }
         }
-        var newEdges = [];
-
-        for (var j = 0; j < output.length; j++) {
-            if (validate[j] == false && validate[(j+1) % output.length] == false) {
-
-            } else {
-                newEdges.push(output[(j+1) % output.length]);
-            }
+        
+        
+        if (summary.length == 1) {
+            this.mOutput[i].mOutline.edges = summary[0];
         }
-        this.mOutput[i].mOutline.edges = newEdges;
+        
+        for (var m = 1; m < summary.length; m++) {
+            this.mOutput[i].mHoles.push({edges : summary[m]});
+        }
+        
+        
     }
     
-    for (var i = 0; i < this.mOutput.length; i++) {
-        var output = this.mOutput[i].mOutline.edges;
-        var validate = new Array(output.length);
-
-        for (var j = 0; j < output.length; j++) {
-            
-            var cur = output[j];
-            var next = output[(j + 1) % output.length];
-
-            var curStart  = cur.mStart ? cur.mStart : cur.getSplitPosByRatio(0);
-            var curEnd    = cur.mEnd ? cur.mEnd : cur.getSplitPosByRatio(1);
-            var nextStart = next.mStart ? next.mStart : next.getSplitPosByRatio(0);
-            var nextEnd   = next.mEnd ? next.mEnd : next.getSplitPosByRatio(1);
-            
-            if (curStart.equals(nextStart) || curStart.equals(nextEnd) ||
-                curEnd.equals(nextStart) || curEnd.equals(nextEnd) ) {
-                validate[j] = true;
-            } else {
-                validate[j] = false;
-            }
-        }
-        
-        var newEdges = [];
-
-        for (var j = 0; j < output.length; j++) {
-            newEdges.push(output[j]);
-            
-            if (validate[j] == false) {
-                var lastEdge = output[(j - 1 + output.length) % output.length];
-                var currentEdge = output[j];
-                
-                var lastEdgeStart      = lastEdge.mStart ? lastEdge.mStart : lastEdge.getSplitPosByRatio(0);
-                var lastEdgeEnd        = lastEdge.mEnd ? lastEdge.mEnd : lastEdge.getSplitPosByRatio(1);
-                var currentEdgeStart   = currentEdge.mStart ? currentEdge.mStart : currentEdge.getSplitPosByRatio(0);
-                var currentEdgeEnd     = currentEdge.mEnd ? currentEdge.mEnd : currentEdge.getSplitPosByRatio(1);
-                
-                var pt0, pt1;
-                if (currentEdgeStart.equals(lastEdgeStart)  || currentEdgeStart.equals(lastEdgeEnd)) {
-                    pt0 = currentEdgeEnd.clone();
-                } else {
-                    pt0 = currentEdgeStart.clone();
-                }
-                
-                var nextEdge = output[(j+1) % output.length];
-                var nextEdge2 = output[(j+2) % output.length];
-                
-                nextEdgeStart    = nextEdge.mStart ? nextEdge.mStart : nextEdge.getSplitPosByRatio(0);
-                nextEdgeEnd      = nextEdge.mEnd ? nextEdge.mEnd : nextEdge.getSplitPosByRatio(1);
-                nextEdge2Start   = nextEdge2.mStart ? nextEdge2.mStart : nextEdge2.getSplitPosByRatio(0);
-                nextEdge2End     = nextEdge2.mEnd ? nextEdge2.mEnd : nextEdge2.getSplitPosByRatio(1);
-                
-                if (nextEdgeStart.equals(nextEdge2Start)  || nextEdgeStart.equals(nextEdge2End)) {
-                    pt1 = nextEdgeEnd.clone();
-                } else {
-                    pt1 = nextEdgeStart.clone();
-                }
-                
-                newEdges.push(new MyEdge(pt0, pt1));
-            }
-        }
-        
-        this.mOutput[i].mOutline.edges = newEdges;
-    }
     
     this.mKeyPoints = [];
     for (var i = 0; i < this.mAreasPolytree.length; i++) {
@@ -474,7 +409,105 @@ MyFloor.prototype._updateGeoStructure = function() {
         }
     }
     this.mLastHeightRecord = this.mAreaHeightRecord;
-}
+};
+
+MyFloor.prototype._removeInvalid = function(output, pass) {
+    var sameCountStart = new Array(output.length);
+    var sameCountEnd = new Array(output.length);
+        
+    for (var j = 0; j < output.length; j++) {
+        var cur = output[j];
+        var curStart  = cur.mStart ? cur.mStart : cur.getSplitPosByRatio(0);
+        var curEnd    = cur.mEnd ? cur.mEnd : cur.getSplitPosByRatio(1);
+        sameCountStart[j] = 1;
+        sameCountEnd[j] = 1;
+        for (var m = 0; m < output.length; m++) {
+            if (j == m) {
+                continue;
+            }
+            var com = output[m];
+            var comStart  = com.mStart ? com.mStart : com.getSplitPosByRatio(0);
+            var comEnd    = com.mEnd ? com.mEnd : com.getSplitPosByRatio(1);
+        
+            if (curStart.equals(comStart) || curStart.equals(comEnd)) {
+                sameCountStart[j]++;
+            } 
+            
+            if (curEnd.equals(comStart) || curEnd.equals(comEnd)) {
+                sameCountEnd[j]++;
+            }
+        }
+    }
+    var validArray = [];
+    valid = true;
+    for (var i = 0; i < output.length; i++) {
+        if (sameCountStart[i] == 1 || sameCountEnd[i] == 1) {
+            valid = false;
+        } else if (!pass && sameCountStart[i] == 3 || sameCountEnd[i] == 3) {
+            valid = false;
+            validArray.push(output[i]);
+            for (var j = i + 2; j < output.length; j++) {
+                validArray.push(output[j]);
+            }
+            return this._removeInvalid(validArray, true); 
+        } else {
+            validArray.push(output[i]);
+        }
+    }
+    if (valid) {
+        return validArray;
+    } else {
+        return this._removeInvalid(validArray, pass);
+    }
+};
+
+MyFloor.prototype._reconnect = function(output, valid) {
+    
+    var ret  = [];
+    
+    var index = -1;
+    for (var i = 0; i < output.length; i++) {
+        if (valid[i]) {
+            index = i;
+            break;
+        }
+    }
+    if (index == -1) {
+        return null;
+    }
+    
+    var curStart  = output[index].mStart ? output[index].mStart : output[index].getSplitPosByRatio(0);
+    var curEnd    = output[index].mEnd ? output[index].mEnd : output[index].getSplitPosByRatio(1);
+    valid[index] = false;
+    ret.push(output[index]);
+    
+    index = (index + 1) % output.length;
+    while(true) {
+        var edge = output[index];
+        var edgeStart  = edge.mStart ? edge.mStart : edge.getSplitPosByRatio(0);
+        var edgeEnd    = edge.mEnd ? edge.mEnd : edge.getSplitPosByRatio(1);
+        if (curEnd.equals(edgeStart)) {
+            curEnd = edgeEnd;
+            valid[index] = false;
+            ret.push(edge);
+            if (curStart.equals(edgeEnd)) {
+                break;
+            }
+        } else if (curEnd.equals(edgeEnd)) {
+            curEnd = edgeStart;
+            valid[index] = false;
+            ret.push(edge);
+            if (curEnd.equals(edgeStart)) {
+                break;
+            }
+        }
+        index++;
+        if (index == output.length) {
+            index = 0;
+        }
+    }
+    return ret;
+};
 
 MyFloor.prototype.Analysis = function() {
     
