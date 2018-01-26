@@ -382,7 +382,12 @@ MyFloor.prototype._updateGeoStructure = function() {
                         }
                     }
                 }
-                subCompare.push(nSame / b.length);
+                var c = {
+                    ratio    : nSame / b.length,
+                    oldSize  : a.length,
+                    newSize  : b.length
+                };
+                subCompare.push(c);
             }
             compare.push(subCompare);
         }
@@ -390,12 +395,24 @@ MyFloor.prototype._updateGeoStructure = function() {
         for (var i = 0; i < compare.length; i++) {
             var copyIdx = -1;
             var ratio = 0;
+            var diff = 0;
+            
+            
             for (var j = 0; j < compare[i].length; j++) {
-                if (compare[i][j] >= 0.5) {
-                    ratio = compare[i][j];
+                if (compare[i][j].ratio > ratio) {
+                    ratio = compare[i][j].ratio;
                     copyIdx = j;
+                    diff = Math.abs(compare[i][j].oldSize - compare[i][j].newSize);
+                }
+                if (compare[i][j].ratio  == ratio) {
+                    if (diff > Math.abs(compare[i][j].newSize - compare[i][j].oldSize)) {
+                        ratio = compare[i][j].ratio;
+                        copyIdx = j;
+                        diff = Math.abs(compare[i][j].oldSize - compare[i][j].newSize);
+                    }
                 }
             }
+            
             if (copyIdx != -1) {
                 this.mAreaHeightRecord[copyIdx].name = this.mLastHeightRecord[i].name;
                 this.mAreaHeightRecord[copyIdx].sign = this.mLastHeightRecord[i].sign;
