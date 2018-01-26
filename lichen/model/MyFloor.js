@@ -303,7 +303,6 @@ MyFloor.prototype._updateGeoStructure = function() {
             }
         }
         
-        
         if (summary.length == 1) {
             this.mOutput[i].mOutline.edges = summary[0];
         }
@@ -311,10 +310,7 @@ MyFloor.prototype._updateGeoStructure = function() {
         for (var m = 1; m < summary.length; m++) {
             this.mOutput[i].mHoles.push({edges : summary[m]});
         }
-        
-        
     }
-    
     
     this.mKeyPoints = [];
     for (var i = 0; i < this.mAreasPolytree.length; i++) {
@@ -497,7 +493,7 @@ MyFloor.prototype._reconnect = function(output, valid) {
             curEnd = edgeStart;
             valid[index] = false;
             ret.push(edge);
-            if (curEnd.equals(edgeStart)) {
+            if (curStart.equals(edgeStart)) {
                 break;
             }
         }
