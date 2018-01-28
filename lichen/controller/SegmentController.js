@@ -563,8 +563,20 @@ SegmentController.prototype.updatePosition = function(x, y) {
     }
     if (illegal) {
         return true;
+    } else {
+        coners[0].updatePosition(s.mX, s.mY);
+        coners[1].updatePosition(e.mX, e.mY);
     }
-    MyCorner.updatePosition(coners[0], s.mX, s.mY);
-    MyCorner.updatePosition(coners[1], e.mX, e.mY);
-    
+}
+
+
+SegmentController.prototype.getLast = function(){
+    var coners = this.toCorners();
+    return [coners[0].mPosition.clone(), coners[1].mPosition.clone()];
+}
+
+SegmentController.prototype.revertUpdatePosition = function(last) {
+    var coners = this.toCorners();
+    coners[0].updatePosition(last[0].mX, last[0].mY);
+    coners[1].updatePosition(last[1].mX, last[1].mY);
 }

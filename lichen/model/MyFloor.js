@@ -563,10 +563,15 @@ MyFloor.prototype.Analysis = function() {
     this._updateGeoStructure();
 }
 
-MyFloor.prototype.updatePosition = function(sub, newPos, oldPos)
+MyFloor.prototype.updatePosition = function(sub, newPos)
 {
-    var illegal = false;
+    var lastRecord = null;
     if (sub instanceof Array) {
+        lastRecord = [];
+        for (var i = 0; i < sub.length; i++) {
+            lastRecord.push(sub[i].getLast());
+        }
+        
         for (var i = 0; i < sub.length; i++) {
             illegal = sub[i].updatePosition(newPos[i].mX, newPos[i].mY);
             if (illegal) {
@@ -574,6 +579,7 @@ MyFloor.prototype.updatePosition = function(sub, newPos, oldPos)
             }
         }
     } else {
+        lastRecord = sub.getLast();
         illegal = sub.updatePosition(newPos.mX, newPos.mY);
     }
 
@@ -584,13 +590,13 @@ MyFloor.prototype.updatePosition = function(sub, newPos, oldPos)
     if (overlapped) {
         if (sub instanceof Array) {
             for (var i = 0; i < sub.length; i++) {
-                sub[i].updatePosition(oldPos[i].mX, oldPos[i].mY);
+                sub[i].revertUpdatePosition(lastRecord[i]);
             }
         } else {
-            sub.updatePosition(oldPos.mX, oldPos.mY);
+            sub.revertUpdatePosition(lastRecord);
         }
         this.Analysis();
-    } 
+    }
 
     this.clearPickedArea();
     

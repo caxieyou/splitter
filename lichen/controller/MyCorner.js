@@ -7,7 +7,6 @@ function MyCorner(param1) {
     this.mCurves = [];
     this.initialize();
     this.mId = ID.assignUniqueId();
-    
 }
 
 MyCorner.prototype.initialize = function()
@@ -74,6 +73,13 @@ MyCorner.prototype.updatePosition = function(x, y)
     }
 }
 
+MyCorner.prototype.getLast = function(){
+    return this.mPosition.clone();
+}
+
+MyCorner.prototype.revertUpdatePosition = function(last) {
+    this.updatePosition(last.mX, last.mY);
+}
 
 MyCorner.prototype.isBoundryCorner = function() {
     var ret = false;
@@ -95,24 +101,4 @@ MyCorner.prototype.getBoundrySegments = function() {
         }
     }
     return ret;
-}
-
-
-MyCorner.updatePosition = function(corner, x, y)
-{
-    var arc = [];
-    for (var i = 0; i < corner.mCurves.length; i++) {
-        if (corner.mCurves[i] instanceof CurveController) {
-            arc.push(corner.mCurves[i].getCurveFromController().mArcAngle);
-        }
-    }
-    
-    corner.mPosition.set(x, y);
-    var idx = 0;
-    for (var i = 0; i < corner.mCurves.length; i++) {
-        if (corner.mCurves[i] instanceof CurveController) {
-            corner.mCurves[i].adjustCurve(arc[idx]);
-            idx++;
-        }
-    }
 }

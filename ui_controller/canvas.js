@@ -305,12 +305,12 @@ Canvas.prototype.updateElement = function(x, y){
     [x, y] = ScaleMouse(x, y);
     if (!this._updateElment && this.mSnap.mFocus.controller) {
         this._updateElment = this.mSnap.mFocus.controller;
-        this._lastFocos = new Vec2(x, y);
+        //this._lastFocos = new Vec2(x, y);
     }
     
     if (this._updateElment) {
         this.toggleHeightUI("", 0, false);
-        var overlapped = this._mFloor.updatePosition(this._updateElment, new Vec2(x, y), this._lastFocos);
+        var overlapped = this._mFloor.updatePosition(this._updateElment, new Vec2(x, y));
         
         if (this._updateElment instanceof SegmentController) {
             this.mSnap.mFocus.geom = this._updateElment.getTheStartEndEdge();
@@ -323,13 +323,14 @@ Canvas.prototype.updateElement = function(x, y){
         this.render();
         if (overlapped) {
             if (this._updateElment instanceof MyCorner) {
-                this._renderer.drawLine(new MyEdge(this._lastFocos.clone(), new Vec2(x, y)), Style.OverLine.isDash, Style.OverLine.color)
-                this._renderer.drawCorner(this._lastFocos, Style.UpdateCorner.radius, Style.UpdateCorner.color);
+                var last = this._updateElment.getLast();
+                this._renderer.drawLine(new MyEdge(last, new Vec2(x, y)), Style.OverLine.isDash, Style.OverLine.color)
+                this._renderer.drawCorner(last, Style.UpdateCorner.radius, Style.UpdateCorner.color);
                 this._renderer.drawCorner(new Vec2(x, y), Style.ErrorCorner.radius, Style.ErrorCorner.color);
             }
             return;
         }
-        this._lastFocos.set(x, y);
+        //this._lastFocos.set(x, y);
     }
 }
 

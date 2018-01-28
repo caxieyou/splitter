@@ -482,5 +482,11 @@ CurveController.prototype.updatePosition = function(x, y) {
     this.mCurvePoint.set(x, y);
 }
 
+CurveController.prototype.getLast = function(){
+    return this.mCurvePoint.clone();
+}
 
+CurveController.prototype.revertUpdatePosition = function(last) {
+    this.updatePosition(last.mX, last.mY);
+}
 
