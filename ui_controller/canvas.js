@@ -11,7 +11,6 @@ function Canvas(name) {
     
     this._type                = null;
     this._mEdge               = new MyEdge(new Vec2(), new Vec2());
-    //this._focus               = null;
     this._updateElment        = null;
     this._operationCurve      = null; 
     this._hintPoints          = [];
@@ -117,7 +116,7 @@ Canvas.prototype.resize = function(width, height) {
     var nH = Globals.Size.mY / s;
     
     Globals.Scale = 1 / s;
-    
+    Globals.Scale = Math.min(Math.max(Globals.Scale, 0.2), 2);
     Globals.Offset.mX = cX - nW / 2;
     Globals.Offset.mY = cY - nH / 2;
 }
@@ -142,6 +141,10 @@ Canvas.prototype.isMovable = function() {
 }
 
 Canvas.prototype.setType = function(type) {
+    if (this._type == type) {
+        return;
+    }
+    this.mElmentOperation.reset();
     this._type = type;
     
     if (this._type == TYPE.LINE) {
@@ -165,7 +168,9 @@ Canvas.prototype.setStartPoint = function() {
         return false;
     }
     
-    if (this.mElmentOperation.isStart() && !this._mFloor.mProfile.mOutLines.contains(this.mSnap.mouseSnapped)) {
+    console.log(this.mSnap.mouseSnapped);
+    
+    if (this.mElmentOperation.isStart() && !this._mFloor.mProfile.mOutLines.containsInclusive(this.mSnap.mouseSnapped)) {
         console.log("START POINT OUTSIDE OF ROOM!");
         return;
     }
@@ -305,6 +310,7 @@ Canvas.prototype.updateElement = function(x, y){
     [x, y] = ScaleMouse(x, y);
     if (!this._updateElment && this.mSnap.mFocus.controller) {
         this._updateElment = this.mSnap.mFocus.controller;
+        this._operationCurve = null;
     }
     
     if (this._updateElment) {

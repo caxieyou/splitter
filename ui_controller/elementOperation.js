@@ -175,6 +175,13 @@ ElementOperation.prototype.lineOperationStart = function(point) {
         }
 
     } else if (this.mStatus == STATUS.LINE_DRAWING) {
+        
+        var l = this.mLine._linePoints[this.mLine._linePoints.length-1];
+        var p = l[l.length - 1];
+        if (p.equals(point.clone())) {
+            return;
+        }
+        
         this.mLine._linePoints[this.mLine._linePoints.length-1].push(point.clone());
         this.mLine._lineEdges[this.mLine._lineEdges.length-1].push(this.mLine._curentLine0.clone());
 
@@ -207,7 +214,6 @@ ElementOperation.prototype.lineOperationStart = function(point) {
         return true;
     }
 }
-
 
 ElementOperation.prototype.lineOperationEnd = function(point, hintPoints) {
     var curves = this.mFloor.mCurves;
@@ -365,7 +371,6 @@ ElementOperation.prototype.reset = function() {
             }
         }
         this.split(lines);
-        console.log(lines);
         this.mLine._linePoints = [];
         this.mLine._lineEdges = [];
         this.mLine._lineIntersect.isStartIntersect = [];

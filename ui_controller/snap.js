@@ -91,9 +91,11 @@ Snap.prototype.snap = function(x, y, type, isSnap) {
         var snapX = [];
         var snapY = [];
         for (var j = 0; j < this.mFloor.mCurves.length; j++) {
-            if (this.mFloor.mCurves[j].isBoundry || this.mFloor.mCurves[j] instanceof CurveController) {
+            if (this.mFloor.mCurves[j].isBoundry) {
                 continue;
             }
+            
+            
             var edge2 = this.mFloor.mCurves[j].getTheStartEndEdge();
             var angle2 = edge2.getAngle();
             
@@ -133,6 +135,7 @@ Snap.prototype.snap = function(x, y, type, isSnap) {
                 continue;
             }
             var edge2 = this.mFloor.mCurves[j].getTheStartEndEdge();
+            
             var angle2 = edge2.getAngle();
             
             if (Angle.isHorizontal(angle2) && MyEdge.isPointWithinHorizontal(x, edge2)) {
