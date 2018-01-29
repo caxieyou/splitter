@@ -261,8 +261,6 @@ MyFloor.prototype._updateGeoStructure = function() {
         res3.sort(function(a, b) {return a.mId - b.mId});
         
         //remove duplicated seg
-        
-        
         var tmp = {};
         for (var j = 0; j < res3.length; j++) {
             if (!tmp[res3[j].mId]) {
@@ -303,7 +301,7 @@ MyFloor.prototype._updateGeoStructure = function() {
             }
         }
         
-        if (summary.length == 1) {
+        if (summary.length > 0) {
             this.mOutput[i].mOutline.edges = summary[0];
         }
         
