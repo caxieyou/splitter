@@ -303,6 +303,7 @@ ElementOperation.prototype.reset = function() {
                 
                 lastPointArray.push(intersects[idx]);
                 this.mLine._lineEdges[this.mLine._lineEdges.length - 1].push(new MyEdge(lastPoint, intersects[idx]));
+                this.mLine._lineIntersect.isStartEndSame[this.mLine._lineIntersect.isStartEndSame.length - 1] = true;
                 //证明有问题，不封闭的
                 
             } else if (lastPointArray.length == 2){
