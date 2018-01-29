@@ -107,6 +107,14 @@ ElementOperation.prototype.split = function (polygon) {
     this.mFloor.Analysis();
 }
 
+ElementOperation.prototype.isStart = function() {
+    if (this.mStatus == STATUS.NOT_STARTED || this.mStatus == STATUS.LINE_START) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 ElementOperation.prototype.creatRect = function(pt0, pt1) {
     var res = this.mRect.create(pt0, pt1, this.mFloor.mCurves);
     this.split(res);

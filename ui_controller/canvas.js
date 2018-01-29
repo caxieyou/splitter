@@ -165,7 +165,7 @@ Canvas.prototype.setStartPoint = function() {
         return false;
     }
     
-    if (this._type != TYPE.LINE && !this._mFloor.mProfile.mOutLines.contains(this.mSnap.mouseSnapped)) {
+    if (this.mElmentOperation.isStart() && !this._mFloor.mProfile.mOutLines.contains(this.mSnap.mouseSnapped)) {
         console.log("START POINT OUTSIDE OF ROOM!");
         return;
     }
