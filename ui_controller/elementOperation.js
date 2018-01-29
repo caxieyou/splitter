@@ -162,6 +162,7 @@ ElementOperation.prototype.lineOperationStart = function(point) {
         this.mLine._linePoint.copy(point);
         this.mStatus = STATUS.LINE_DRAWING;
         this.mLine._curentLine0 = null;
+        this.mLine._curentLine1 = null;
         this.mLine._lineIntersect.isStartIntersect.push(false);
         this.mLine._lineIntersect.isSelfIntersect.push(false);
         this.mLine._lineIntersect.isStartEndSame.push(false);

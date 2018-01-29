@@ -39,7 +39,10 @@ Canvas.prototype._initialize = function() {
     rect = rect.toMyPolygon();
     this._mFloor.setProfile(rect);
     */
-    
+    //var param1 = new MyEdge();
+    //var _loc5_ = LineRelationHelper.createEdgeCollider(param1,param2);
+    //console.log(_loc5_);
+        
     var points = [];
     points.push(new Vec2(0, 0));
     points.push(new Vec2(800, 0));

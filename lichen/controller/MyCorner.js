@@ -58,7 +58,7 @@ MyCorner.prototype.updatePosition = function(x, y)
         var corners = this.mWall.mCorners;
         for (var i = 0; i < corners.length; i++) {
             if (corners[i].mId != this.mId && Vec2.isEqual(corners[i].mPosition, this.mPosition)) {
-                return;
+                return false;
             }
         }
     }

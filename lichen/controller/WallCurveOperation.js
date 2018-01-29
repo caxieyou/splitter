@@ -155,7 +155,4 @@ WallCurveOperation.prototype.onDelete = function(param1) {
     }
     this.mFloor.Analysis();
     this.mFloor.clearPickedArea();
-    //var analysis = new Analysis(this.mFloor);
-    //analysis.execute();
-        
 }

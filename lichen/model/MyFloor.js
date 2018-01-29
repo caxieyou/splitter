@@ -584,8 +584,7 @@ MyFloor.prototype.Analysis = function() {
             }
         }
     }
-    
-    
+
     var analysis = new Analysis(this);
     analysis.execute();
     this._updateGeoStructure();
