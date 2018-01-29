@@ -168,8 +168,6 @@ Canvas.prototype.setStartPoint = function() {
         return false;
     }
     
-    console.log(this.mSnap.mouseSnapped);
-    
     if (this.mElmentOperation.isStart() && !this._mFloor.mProfile.mOutLines.containsInclusive(this.mSnap.mouseSnapped)) {
         console.log("START POINT OUTSIDE OF ROOM!");
         return;
@@ -207,6 +205,7 @@ Canvas.prototype.resetType = function() {
         this.setType(null);
     }
     this.mSnap.clearFocus();
+    this._mFloor.clearPickedArea();
     this._operationCurve = null;
     this.render();
 }

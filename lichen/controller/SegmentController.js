@@ -18,20 +18,7 @@ SegmentController.prototype.wallDleleteSame = function(param1)
 {
     return ArrayHelperClass.removeItem(this.mAreas,param1);
 }
-SegmentController.isWithinSameArea = function (param1, param2) {
-    //var res = false;
-    
-    for (var i = 0; i < param1.mAreas.length; i++) {
-        for (var j = 0; j < param2.mAreas.length; j++) {
-            if (param1.mAreas[i].mId == param2.mAreas[j].mId) {
-                return true;
-            }
-        }
-    }
-    
-    return false;
-    
-}
+
 SegmentController.createSegmentByMyEdge = function(param1)
 {
     var _loc2_ = null;

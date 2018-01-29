@@ -770,7 +770,7 @@ Renderer = function () {
 			tt.value = value;
 		if(callbackFun) {
 			tt.addEventListener("keyup", function(e) {
-				if(e.keyCode == 13 && !isNaN(tt.value) && tt.value > 1)
+				if(e.keyCode == 13 && !isNaN(tt.value) && tt.value > 0.9999999)
 					callbackFun(parseInt(tt.value), canvas, edge, edge2, distance, direction);
 			});
 		}

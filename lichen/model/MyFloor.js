@@ -244,36 +244,44 @@ MyFloor.prototype._updateGeoStructure = function() {
             }
             
             if (area.isIncludedArea(areas[j])) {
-                if (holesList[i].length == 0) {
-                    holesList[i].push(areas[j]);
-                } else {
-                    var isAdd = true;
-                    for (var k = 0; k < holesList[i].length; k++) {
-                        if (holesList[i][k].isIncludedArea(areas[j])) {
-                            isAdd = false;
-                            break;
-                        }
-                        if (areas[j].isIncludedArea(holesList[i][k])) {
-                            holesList[i][k] = areas[j];
-                            isAdd = false;
-                            break;
-                        }
-                    }
-                    if (isAdd) {
-                        holesList[i].push(areas[j]);
-                    }
-                }
+                holesList[i].push(areas[j]);
             }
         }
     }
 
+    for (var i = 0; i < holesList.length; i++) {
+        var holes = holesList[i];
+        
+        if (holes.length > 1) {
+            holes.sort(function(a, b){
+                return a.getAbsArea() - b.getAbsArea();
+            });
+            
+            var tmp = [];
+            
+            for (var m = 0; m < holes.length; m++) {
+                var skip = false;
+                for (var n = m+1; n < holes.length;n++) {
+                    if (holes[n].isIncludedArea(holes[m])) {
+                        skip = true;
+                        break;
+                    }
+                }
+                if (!skip) {
+                    tmp.push(holes[m]);
+                }
+            }
+            
+            holesList[i] = tmp;
+        }
+    }
+    
     this.mOutput = [];
     this.mAreasPolytree = [];
     this.mAreasControllers = [];
     
     var polyTree = null;
     for (var i = 0; i < areas.length; i++) {
-        //output structure
         var res = MyArea.outputStructures(areas[i], holesList[i]);
         //inner geom structure
         var res2 = MyArea.outputStructures2(areas[i], holesList[i]);
@@ -755,6 +763,25 @@ MyFloor.prototype._renderCurveHeight = function(curves, validCurveIndex, canvas,
         }
     }
 }
+MyFloor.prototype._isWithinSameArea = function(seg0, seg1) {
+    var segments = this.mAreasControllers[this.mPickedIndex];
+    var s0 = false;
+    var s1 = false;
+    for (var i = 0; i < segments.length; i++) {
+        if(seg0.mId == segments[i].mId) {
+            s0 = true;
+        }
+        if(seg1.mId == segments[i].mId) {
+            s1 = true;
+        }
+    }
+
+    if (s0 && s1) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 MyFloor.prototype._renderRelativeDistance = function(segments, validIndex, canvas, renderer) {
     
@@ -784,7 +811,7 @@ MyFloor.prototype._renderRelativeDistance = function(segments, validIndex, canva
             var sign = 0;
             var center;
             var markLine = new MyEdge(new Vec2(), new Vec2());
-            if (!SegmentController.isWithinSameArea(segmentObj,segmentSbj)) {
+            if (!this._isWithinSameArea(segmentObj,segmentSbj)) {
                 var direction = -1;
                 
                 if (isHorizontalObj && isHorizontalSbj && MyEdge.getValidHorizontalSection(edgeObj, edgeSbj, markLine)) {
@@ -841,27 +868,6 @@ MyFloor.prototype._renderRelativeDistance = function(segments, validIndex, canva
                                 Utility.DrawDimensionCallback, canvas, segments[i], null, sign * distance, direction);
                             }
                         }
-                        /*
-                        if (validIndex.indexOf(j) > -1) {
-                            var arcValid_j = true;
-                            
-                            var corners = segments[j].toCorners();
-                            for (var n = 0; n < corners.length; n++) {
-                                var corner = corners[n];
-                                for (var p = 0; p < corner.mCurves.length; p++) {
-                                    if (corner.mCurves[p] instanceof CurveController) {
-                                        arcValid_j = false;
-                                        break;
-                                    }
-                                }
-                            }
-                            
-                            if (arcValid_j) {
-                                renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - direction * sign * distance,y: center.mY  - (1 -  direction) * sign * distance}, null, true,
-                                Utility.DrawDimensionCallback, canvas, segments[i], null, sign * distance, direction);
-                            }
-                        }
-                        */
                     }
                 }
             }
@@ -870,7 +876,8 @@ MyFloor.prototype._renderRelativeDistance = function(segments, validIndex, canva
 }
 
 MyFloor.prototype._renderAbosoluteDistance = function(segments, validIndex, boundries , canvas, renderer) {
-    for (var i = 0; i < segments.length; i++) {
+    for (var q = 0; q < validIndex.length; q++) {
+        var i = validIndex[q];
         var segmentObj = segments[i];
         var edgeObj = segmentObj.getTheStartEndEdge();
         var angleObj = edgeObj.getAngle();
@@ -890,7 +897,7 @@ MyFloor.prototype._renderAbosoluteDistance = function(segments, validIndex, boun
             var sign = 0;
             var center;
             var markLine = new MyEdge(new Vec2(), new Vec2());
-            if (!SegmentController.isWithinSameArea(segmentObj,segmentSbj)) {
+            if (!this._isWithinSameArea(segmentObj,segmentSbj)) {
                 var direction = -1;
                 
                 if (isHorizontalObj && isHorizontalSbj && MyEdge.getValidHorizontalSection(edgeObj, edgeSbj, markLine)) {
@@ -914,7 +921,7 @@ MyFloor.prototype._renderAbosoluteDistance = function(segments, validIndex, boun
                         }
                         var intersects = [];
                         if (SegmentController.isIntersectWith(markLine, this.mCurves[m], intersects)) {
-                            if (intersects.length > 0 && !Vec2.isEqual(intersects[0], markLine.mEnd) && SegmentController.isWithinSameArea(segments[i],this.mCurves[m]))
+                            if (intersects.length > 0 && !Vec2.isEqual(intersects[0], markLine.mEnd) && this._isWithinSameArea(segments[i],this.mCurves[m]))
                             {
                                 valid = false;
                                 continue;
@@ -935,31 +942,9 @@ MyFloor.prototype._renderAbosoluteDistance = function(segments, validIndex, boun
                         }
                     }
                     
-                    
-                    
-                    if (maxDis > -Number.MAX_VALUE && validIndex.indexOf(i) > -1) {
-                        var arcValid = true;
-                        for (var k = 0; k < segments[i].mAreas.length; k++) {
-                            var area = segments[i].mAreas[k];
-                            for (var m = 0; m < area.mCurves.length; m++) {
-                                var curve = area.mCurves[m];
-                                var corners = curve.toCorners();
-                                for (var n = 0; n < corners.length; n++) {
-                                    var corner = corners[n];
-                                    for (var p = 0; p < corner.mCurves.length; p++) {
-                                        if (corner.mCurves[p] instanceof CurveController) {
-                                            arcValid = false;
-                                            break;
-                                        }
-                                    }
-                                }
-                                
-                            }
-                        }
-                        if (arcValid) {
-                            renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - direction * sign * maxDis, y: center.mY - (1- direction) * sign * maxDis}, null, true,
-                            Utility.DrawDimensionCallback, canvas, segments[i], null, sign * maxDis, direction);
-                        }
+                    if (maxDis > -Number.MAX_VALUE) {
+                        renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - direction * sign * maxDis, y: center.mY - (1- direction) * sign * maxDis}, null, true,
+                        Utility.DrawDimensionCallback, canvas, segments[i], null, sign * maxDis, direction);
                     }
                 }
             }
