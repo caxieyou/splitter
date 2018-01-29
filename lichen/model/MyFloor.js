@@ -205,6 +205,28 @@ MyFloor.prototype.checkOverlap = function()  {
                 overlapped = true;
                 break;
             }
+            var e = null;
+            var c = null;
+            if (curve0 instanceof SegmentController && curve1 instanceof CurveController) {
+                e = curve0.getTheStartEndEdge();
+                c = curve1.getCurveFromController();
+            }
+            
+            if (curve0 instanceof CurveController && curve1 instanceof SegmentController) {
+                e = curve1.getTheStartEndEdge();
+                c = curve0.getCurveFromController();
+            }
+            
+            if (e && c) {
+                var p0 = c.getSplitPosByRatio(0);
+                var p1 = c.getSplitPosByRatio(1);
+                
+                if (e.pointInEdgeOrOnEdge(p0) || e.pointInEdgeOrOnEdge(p1)) {
+                    overlapped = true;
+                    break;
+                }
+            }
+            
         }
     }
     return overlapped;

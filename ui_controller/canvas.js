@@ -305,7 +305,6 @@ Canvas.prototype.updateElement = function(x, y){
     [x, y] = ScaleMouse(x, y);
     if (!this._updateElment && this.mSnap.mFocus.controller) {
         this._updateElment = this.mSnap.mFocus.controller;
-        //this._lastFocos = new Vec2(x, y);
     }
     
     if (this._updateElment) {
@@ -330,7 +329,6 @@ Canvas.prototype.updateElement = function(x, y){
             }
             return;
         }
-        //this._lastFocos.set(x, y);
     }
 }
 
