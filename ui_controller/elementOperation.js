@@ -8,30 +8,183 @@ var STATUS = {
     LINE_DRAWING  :  3
 }
 
+function LineRecord() {
+    this._lineEdges = [];
+}
 
 function _LineOp() {
-    this._linePoints          = [];
-    this._lineEdges           = [];
-    this._linePoint           = new Vec2();
-    this._curentLine0         = null;
-    this._curentLine1         = null;
+    this._currentLine;
+    this._curentLineValidPart;
+    this._curentLineInvalidPart;
+    this._lineRecords;
+    this.reset();
+}
+
+_LineOp.prototype.creatRecord = function() {
+    this._lineRecords.push(new LineRecord());
+}
+
+_LineOp.prototype.addEdge = function(edge) {
+    var currentRecord = this._lineRecords[this._lineRecords.length - 1];
     
-    this._lineIntersect = {
-        isStartIntersect : [],
-        isSelfIntersect: [],
-        isStartEndSame : [],
-        isEndIntersect : []
-    };
+    if (edge) {
+        currentRecord._lineEdges.push(new MyEdge(edge.mStart.clone(), edge.mEnd.clone()));
+    } else {
+        currentRecord._lineEdges.push(new MyEdge(this._curentLineValidPart.mStart.clone(), this._curentLineValidPart.mEnd.clone()));
+    }
+    
+}
+
+_LineOp.prototype.clear = function() {
+    this._curentLineValidPart = null;
+    this._curentLineInvalidPart = null;
+}
+
+_LineOp.prototype.intersect = function(intersects) {
+    for (var i = 0; i < this._lineRecords.length; i++) {
+        var edges = this._lineRecords[i]._lineEdges;
+        for (var j = 0; j < edges.length; j++) {
+            SegmentController.intersectSub(edges[j], this._currentLine, intersects);
+        }
+    }
+    
+    for (var i = 0; i < this._lineRecords.length; i++) {
+        var edges = this._lineRecords[i]._lineEdges;
+        for (var j = 0; j < edges.length; j++) {
+            if (this._currentLine.mEnd.equals(edges[j].mStart)) {
+                intersects.push(edges[j].mStart.clone());
+                return;
+            }
+            
+            if(this._currentLine.mEnd.equals(edges[j].mEnd)) {
+                intersects.push(edges[j].mEnd.clone());
+                return;
+            }
+        }
+    }
 }
 
 _LineOp.prototype.getDrawableLines = function() {
     var edges = [];
-    for (var i = 0; i < this._lineEdges.length; i++) {
-        for (var j = 0; j < this._lineEdges[i].length; j++) {
-            edges.push(this._lineEdges[i][j]);
-        }
+    for (var i = 0; i < this._lineRecords.length; i++) {
+        edges = edges.concat(this._lineRecords[i]._lineEdges);
     }
     return edges;
+}
+
+_LineOp.prototype.getLastEdge = function() {
+    var edges = this._lineRecords[this._lineRecords.length - 1]._lineEdges;
+    if (edges.length <= 1) {
+        return null;
+    }
+    return new MyEdge(edges[edges.length-1].mEnd.clone(), edges[0].mStart.clone());
+}
+
+_LineOp.prototype.reset = function() {
+    this._currentLine             = new MyEdge(new Vec2(), new Vec2());
+    this._curentLineValidPart     = null;
+    this._curentLineInvalidPart   = null;
+    this._lineRecords = [];
+}
+
+_LineOp.prototype._removeSingle = function(lines, curves) {
+    var recordStart = new Array(lines.length);
+    var recordEnd   = new Array(lines.length);
+    
+    for (var i = 0; i < lines.length; i++) {
+        recordStart[i] = false;
+        recordEnd[i] = false;
+    }
+    
+    for (var i = 0; i < lines.length; i++) {
+        for (var j = 0; j < lines.length; j++) {
+            if (i == j) {
+                continue;
+            }
+            if (lines[j].pointInEdge(lines[i].mStart)) {
+                recordStart[i] = true;
+            }
+            if (lines[j].pointInEdge(lines[i].mEnd)) {
+                recordEnd[i] = true;
+            }
+        }
+    }
+    
+    for (var i = 0; i < lines.length; i++) {
+        if (!recordStart[i]) {
+            for (var j = 0; j < curves.length; j++) {
+                if (curves[j].containsPoint(lines[i].mStart)) {
+                    recordStart[i] = true;
+                    break;
+                }
+            }
+        }
+        
+        if (!recordEnd[i]) {
+            for (var j = 0; j < curves.length; j++) {
+                if (curves[j].containsPoint(lines[i].mEnd)) {
+                    recordEnd[i] = true;
+                    break;
+                }
+            }
+        }
+    }
+    
+    var ret = [];
+    for (var i = 0; i < lines.length; i++) {
+        if (recordStart[i] && recordEnd[i]) {
+            ret.push(lines[i]);
+        }
+    }
+    
+    if (ret.length != lines.length) {
+        return this._removeSingle(ret, curves);
+    } else {
+        return ret;
+    }
+    
+}
+
+_LineOp.prototype.extractValidLines = function(curves) {
+    var lines = this.getDrawableLines();
+    var record = [];
+    //1. find splitted edges
+    for (var i = 0; i < lines.length; i++) {
+        var tmp = [];
+        for (var j = 0; j < lines.length; j++) {
+            if (i == j) {
+                continue;
+            }
+            if (lines[i].pointInEdgeOrOnEdge(lines[j].mStart)) {
+                tmp.push(lines[j].mStart.clone());
+            }
+            if (lines[i].pointInEdgeOrOnEdge(lines[j].mEnd)) {
+                tmp.push(lines[j].mEnd.clone());
+            }
+        }
+        record.push(tmp);
+    }
+    
+    var linesSplit = [];
+    for (var i = 0; i < record.length; i++) {
+        record[i].sort(function(a, b) {
+            return Vec2.distance(a, lines[i].mStart) - Vec2.distance(b, lines[i].mStart);
+        });
+        
+        if (record[i].length == 0) {
+            linesSplit.push(lines[i]);
+        } else {
+            linesSplit.push(new MyEdge(lines[i].mStart.clone(), record[i][0].clone()));
+            for (var j = 0; j < record[i].length - 1; j++) {
+                linesSplit.push(new MyEdge(record[i][j].clone(), record[i][j+1].clone()));
+            }
+            linesSplit.push(new MyEdge(record[i][record[i].length - 1].clone(), lines[i].mEnd.clone()));
+        }
+    }
+    
+    
+    return this._removeSingle(linesSplit, curves);
+    
 }
 
 function _RectOp() {
@@ -134,15 +287,20 @@ ElementOperation.prototype.getDrawableLines = function() {
     var edges =  this.mLine.getDrawableLines();
     var errorLine = null;
     if (this.mStatus == STATUS.LINE_DRAWING) {
-        if (this.mLine._curentLine0) {
-            edges.push(this.mLine._curentLine0);
+        if (this.mLine._curentLineValidPart) {
+            edges.push(this.mLine._curentLineValidPart);
         }
-        if (this.mLine._curentLine1) {
-            errorLine = this.mLine._curentLine1;
+        if (this.mLine._curentLineInvalidPart) {
+            errorLine = this.mLine._curentLineInvalidPart;
         }
     }
     return [edges, errorLine];
 }
+
+ElementOperation.prototype.getSnapLines = function() {
+    return this.mLine.getDrawableLines();
+}
+
 ElementOperation.prototype.createCircle = function(edge) {
     var res = this.mCircle.create(edge);
     this.split(res);
@@ -155,59 +313,33 @@ ElementOperation.prototype.setStatus = function(status) {
 ElementOperation.prototype.lineOperationStart = function(point) {
     var curves = this.mFloor.mCurves;
     if (this.mStatus == STATUS.LINE_START) {
-        var list = [];
-        list.push(point.clone());
-        this.mLine._linePoints.push(list);
-        this.mLine._lineEdges.push([]);
-        this.mLine._linePoint.copy(point);
+        this.mLine._currentLine.mStart.copy(point);
+        this.mLine.creatRecord();
+        this.mLine.clear();
         this.mStatus = STATUS.LINE_DRAWING;
-        this.mLine._curentLine0 = null;
-        this.mLine._curentLine1 = null;
-        this.mLine._lineIntersect.isStartIntersect.push(false);
-        this.mLine._lineIntersect.isSelfIntersect.push(false);
-        this.mLine._lineIntersect.isStartEndSame.push(false);
-        this.mLine._lineIntersect.isEndIntersect.push(false);
         
-        for (var i = 0; i < curves.length; i++) {
-            if (curves[i].containsPoint(this.mLine._linePoint)) {
-                this.mLine._lineIntersect.isStartIntersect[this.mLine._lineIntersect.isStartIntersect.length - 1] = true;
-                break;
-            }
-        }
-
     } else if (this.mStatus == STATUS.LINE_DRAWING) {
-        
-        var l = this.mLine._linePoints[this.mLine._linePoints.length-1];
-        var p = l[l.length - 1];
-        if (p.equals(point.clone())) {
+        if (this.mLine._currentLine.mStart.equals(point.clone())) {
             return;
         }
         
-        this.mLine._linePoints[this.mLine._linePoints.length-1].push(point.clone());
-        this.mLine._lineEdges[this.mLine._lineEdges.length-1].push(this.mLine._curentLine0.clone());
-
-        if (this.mLine._curentLine1) {
-            this.mLine._linePoints[this.mLine._linePoints.length-1][this.mLine._linePoints[this.mLine._linePoints.length-1].length - 1].mX = this.mLine._curentLine0.mEnd.mX;
-            this.mLine._linePoints[this.mLine._linePoints.length-1][this.mLine._linePoints[this.mLine._linePoints.length-1].length - 1].mY = this.mLine._curentLine0.mEnd.mY;
-            this.mStatus = STATUS.LINE_START;
-            
-            var intersectWithCurve = false;
-            for (var i = 0; i < curves.length; i++) {
-                if (curves[i].containsPoint(this.mLine._curentLine0.mEnd)) {
-                    intersectWithCurve = true;
-                    break;
+        for (var i = 0; i < curves.length; i++) {
+            if (curves[i] instanceof SegmentController) {
+                var edge = curves[i].getTheStartEndEdge();
+                if (LineRelationHelper.isOverLapping(edge, this.mLine._currentLine)) {
+                    return;
                 }
             }
-            
-            if (!intersectWithCurve)
-            {
-                this.mLine._lineIntersect.isSelfIntersect[this.mLine._lineIntersect.isSelfIntersect.length - 1] = true;
-            } else {
-                this.mLine._lineIntersect.isEndIntersect[this.mLine._lineIntersect.isEndIntersect.length - 1] = true;
-            }
-            
-            this.mLine._curentLine0 = null;
-            this.mLine._curentLine1 = null;
+        }
+        
+        if (this.mLine._curentLineInvalidPart) {
+            this.mStatus = STATUS.LINE_START;
+            this.mLine.addEdge();
+            this.mLine.clear();
+        } else if (this.mLine._curentLineValidPart){
+            this.mLine.addEdge();
+            this.mLine.clear();
+            this.mLine._currentLine.mStart.copy(point);
         }
         
     } else if (this.mStatus == STATUS.NOT_STARTED) {
@@ -222,49 +354,39 @@ ElementOperation.prototype.lineOperationEnd = function(point, hintPoints) {
         return false;
     }
     if (this.mStatus == STATUS.LINE_DRAWING) {
-        this.mLine._linePoint.copy(point);
-        
-        var lastPointArray = this.mLine._linePoints[this.mLine._linePoints.length - 1];
-        var lastPoint = lastPointArray[lastPointArray.length - 1];
-        var edge = new MyEdge(lastPoint, this.mLine._linePoint);
-        
+        //1. set edge
+        this.mLine._currentLine.mEnd.copy(point);
         var intersects = [];
         for (var i = 0; i < curves.length; i++) {
-            if (curves[i].containsPoint(this.mLine._linePoint)) {
-                intersects.push(this.mLine._linePoint.clone());
+            if (curves[i].containsPoint(point)) {
+                intersects.push(point.clone());
             }
         }
         
         for (var i = 0; i < curves.length; i++) {
             var curve = curves[i];
-            curve.isIntersectWithGeometry(edge, intersects);
-            
-        }
-        for (var i = 0; i < this.mLine._lineEdges.length; i++) {
-            for (var j = 0; j < this.mLine._lineEdges[i].length; j++) {
-                SegmentController.intersectSub(edge, this.mLine._lineEdges[i][j], intersects);
-            }
+            curve.isIntersectWithGeometry(this.mLine._currentLine, intersects);
             
         }
         
+        this.mLine.intersect(intersects);
         var minDis = Number.MAX_VALUE;
         var idx = 0;
         if (intersects.length > 0) {
             for (var i = 0; i < intersects.length; i++) {
-                var dis = Vec2.distance(intersects[i], lastPoint);
+                var dis = Vec2.distance(intersects[i], this.mLine._currentLine.mStart.clone());
                 if (minDis > dis) {
                     minDis = dis;
                     idx = i;
                 }
             }
             
-            this.mLine._curentLine0 = new MyEdge(lastPoint, intersects[idx]);
+            this.mLine._curentLineValidPart = new MyEdge(this.mLine._currentLine.mStart.clone(), intersects[idx]);
             hintPoints.push(intersects[idx].clone());
-            this.mLine._curentLine1 = new MyEdge(intersects[idx], this.mLine._linePoint);
+            this.mLine._curentLineInvalidPart = new MyEdge(intersects[idx], this.mLine._currentLine.mEnd.clone());
         } else {
-            
-            this.mLine._curentLine0 = edge;
-            this.mLine._curentLine1 = null;
+            this.mLine._curentLineValidPart = this.mLine._currentLine;
+            this.mLine._curentLineInvalidPart = null;
         }
         
         return false;
@@ -277,107 +399,41 @@ ElementOperation.prototype.reset = function() {
     var curves = this.mFloor.mCurves;
     if (this.mStatus  == STATUS.LINE_DRAWING) {
         this.mStatus = STATUS.LINE_START;
-        var lastPointArray = this.mLine._linePoints[this.mLine._linePoints.length - 1];
+        var e = this.mLine.getLastEdge();
+        if (!e) {
+            return;
+        }
+        var intersects = [];
+        for (var i = 0; i < curves.length; i++) {
+            var curve = curves[i];
+            curve.isIntersectWithGeometry(e, intersects);
+        }
         
-        if (lastPointArray.length < 2 || Vec2.isEqual(lastPointArray[0], lastPointArray[lastPointArray.length - 1])) {
-            this.mLine._lineIntersect.isStartEndSame[this.mLine._lineIntersect.isStartEndSame.length - 1] = true;
+        this.mLine.intersect(intersects);
+        
+        var minDis = Number.MAX_VALUE;
+        var idx = 0;
+        if (intersects.length > 0) {
+            for (var i = 0; i < intersects.length; i++) {
+                var dis = Vec2.distance(intersects[i], e.mStart);
+                if (minDis > dis) {
+                    minDis = dis;
+                    idx = i;
+                }
+            }
+            
+            e.mEnd.copy(intersects[idx]);
+            this.mLine.addEdge(e);
         } else {
-            var firstPoint = lastPointArray[0];
-            var lastPoint = lastPointArray[lastPointArray.length - 1];
-            var edge = new MyEdge(lastPointArray[lastPointArray.length - 1], lastPointArray[0]);
-            var intersects = [];
-            for (var i = 0; i < curves.length; i++) {
-                var curve = curves[i];
-                curve.isIntersectWithGeometry(edge, intersects);
-            }
-            
-            for (var i = 0; i < this.mLine._lineEdges.length; i++) {
-                for (var j = 0; j < this.mLine._lineEdges[i].length; j++) {
-                    SegmentController.intersectSub(edge, this.mLine._lineEdges[i][j], intersects);
-                }
-            }
-            
-            var minDis = Number.MAX_VALUE;
-            var idx = 0;
-            if (intersects.length > 0) {
-                for (var i = 0; i < intersects.length; i++) {
-                    var dis = Vec2.distance(intersects[i], lastPoint);
-                    if (minDis > dis) {
-                        minDis = dis;
-                        idx = i;
-                    }
-                }
-                
-                lastPointArray.push(intersects[idx]);
-                this.mLine._lineEdges[this.mLine._lineEdges.length - 1].push(new MyEdge(lastPoint, intersects[idx]));
-                this.mLine._lineIntersect.isStartEndSame[this.mLine._lineIntersect.isStartEndSame.length - 1] = true;
-                //证明有问题，不封闭的
-                
-            } else if (lastPointArray.length == 2){
-                 return this.reset();
-            } else {
-                this.mLine._lineEdges[this.mLine._lineEdges.length - 1].push(new MyEdge(lastPoint, firstPoint));
-                //证明没有问题，封闭的
-                this.mLine._lineIntersect.isStartEndSame[this.mLine._lineIntersect.isStartEndSame.length - 1] = true;
-            }
+            this.mLine.addEdge(e);
         }
         
         console.log("right 0");
     } else if (this.mStatus  == STATUS.LINE_START) {
         this.mStatus = STATUS.NOT_STARTED;
-        
-        //this.setType(null);
-        
-        var lines = [];
-        
-        for (var i = 0; i < this.mLine._lineEdges.length; i++) {
-            if (this.mLine._lineIntersect.isStartEndSame[i]){
-                for (var j = 0; j < this.mLine._lineEdges[i].length; j++) {
-                    lines.push(this.mLine._lineEdges[i][j]);
-                }
-            } else {
-                if (this.mLine._lineIntersect.isStartIntersect[i] && this.mLine._lineIntersect.isEndIntersect[i]) {
-                    //首尾都相交
-                    //那这些边都要
-                    for (var j = 0; j < this.mLine._lineEdges[i].length; j++) {
-                        lines.push(this.mLine._lineEdges[i][j]);
-                    }
-                }
-                if (!this.mLine._lineIntersect.isSelfIntersect[i]) {
-                    //首尾不同点，且没有自交，直接过滤
-                    continue;
-                } else if (this.mLine._lineIntersect.isStartIntersect[i]) {
-                    //首尾不同点，但是自交了，并且第一个点和已存部分有交集
-                    //那这些边都要
-                    for (var j = 0; j < this.mLine._lineEdges[i].length; j++) {
-                        lines.push(this.mLine._lineEdges[i][j]);
-                    }
-                } else {
-                    //首尾不同点，但是自交了，并且第一个点和已存部分没有交集
-                    //去掉首部相交的
-                    var idx =  -1;
-                    var lastPoint = this.mLine._linePoints[i][this.mLine._linePoints[i].length - 1];
-                    for (var j = 0; j < this.mLine._lineEdges[i].length - 1; j++) {
-                        if (this.mLine._lineEdges[i][j].pointInEdgeOrOnEdge(lastPoint)) {
-                            idx = j;
-                            break;
-                        }
-                    }
-                    this.mLine._lineEdges[i].splice(0, idx);
-                    this.mLine._lineEdges[i][0].mStart.copy(lastPoint)
-                    for (var j = 0; j < this.mLine._lineEdges[i].length; j++) {
-                        lines.push(this.mLine._lineEdges[i][j]);
-                    }
-                }
-            }
-        }
+        var lines = this.mLine.extractValidLines(curves);
         this.split(lines);
-        this.mLine._linePoints = [];
-        this.mLine._lineEdges = [];
-        this.mLine._lineIntersect.isStartIntersect = [];
-        this.mLine._lineIntersect.isSelfIntersect = [];
-        this.mLine._lineIntersect.isStartEndSame = [];
-        this.mLine._lineIntersect.isEndIntersect = [];
+        this.mLine.reset();
         
         console.log("right 1");
         return true;
@@ -385,6 +441,11 @@ ElementOperation.prototype.reset = function() {
         this.mStatus = STATUS.NOT_STARTED;
         return true;
     }
+}
+
+ElementOperation.prototype.finish = function() {
+    this.reset();
+    this.reset();
 }
 
 ElementOperation.prototype.checkStatus = function() {

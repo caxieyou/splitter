@@ -185,6 +185,14 @@ LineRelationHelper.isOverLapping = function(param1, param2, param3, param4)
     var _loc5_ = LineRelationHelper.createEdgeCollider(param1,param2,param4);
     if(_loc5_.status == Line2DIntersectionStatus.OVERLAPPING)
     {
+        if (MyNumber.isEqual(_loc5_.mRatio1.mX, 1) && MyNumber.isEqual(_loc5_.mRatio1.mY, 1) 
+            && MyNumber.isEqual(_loc5_.mRatio2.mX, 0) && MyNumber.isEqual(_loc5_.mRatio2.mY, 0)) {
+                return false;
+            }
+        if (MyNumber.isEqual(_loc5_.mRatio1.mX, 0) && MyNumber.isEqual(_loc5_.mRatio1.mY, 0) 
+            && MyNumber.isEqual(_loc5_.mRatio2.mX, 1) && MyNumber.isEqual(_loc5_.mRatio2.mY, 1)) {
+                return false;
+            }
         return param3 || !MyNumber.isEqual(_loc5_.mRatio1.mX,_loc5_.mRatio1.mY,0.01) || !MyNumber.isZeroOrOrigin(_loc5_.mRatio1.mX,0.01);
     }
     return false;

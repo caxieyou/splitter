@@ -39,10 +39,7 @@ Canvas.prototype._initialize = function() {
     rect = rect.toMyPolygon();
     this._mFloor.setProfile(rect);
     */
-    //var param1 = new MyEdge();
-    //var _loc5_ = LineRelationHelper.createEdgeCollider(param1,param2);
-    //console.log(_loc5_);
-        
+    
     var points = [];
     points.push(new Vec2(0, 0));
     points.push(new Vec2(800, 0));
@@ -64,7 +61,7 @@ Canvas.prototype._initialize = function() {
 }
 Canvas.prototype.snapMouse = function(x, y, isSnap){
     [x, y] = ScaleMouse(x, y);
-    this.mSnap.snap(x, y, this._type, isSnap);
+    this.mSnap.snap(x, y, this._type, isSnap, this.mElmentOperation.getSnapLines());
 }
 
 Canvas.prototype._renderCurrentObject = function() {
@@ -147,7 +144,7 @@ Canvas.prototype.setType = function(type) {
     if (this._type == type) {
         return;
     }
-    this.mElmentOperation.reset();
+    this.mElmentOperation.finish();
     this._type = type;
     
     if (this._type == TYPE.LINE) {

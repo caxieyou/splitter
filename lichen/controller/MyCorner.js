@@ -55,12 +55,37 @@ MyCorner.prototype.updatePosition = function(x, y)
     }
     
     if (this.mWall) {
-        var corners = this.mWall.mCorners;
-        for (var i = 0; i < corners.length; i++) {
-            if (corners[i].mId != this.mId && Vec2.isEqual(corners[i].mPosition, this.mPosition)) {
-                return false;
+
+        var curves = this.mWall.mCurves;
+
+        for (var i = 0; i < curves.length; i++) {
+            var curve = curves[i];
+            var same = false;
+
+            for (var j = 0; j < this.mCurves.length; j++) {
+                if (this.mCurves[j].mId == curve.mId) {
+                    same = true;
+                    break;
+                }
+            }
+
+            if (!same) {
+                if (curve instanceof SegmentController) {
+                    var edge = curve.getTheStartEndEdge();
+                    if (edge.distanceSmallThan(new Vec2(x, y), 5)) {
+                        return true;
+                    }
+                }
+
+                if (curve instanceof CurveController) {
+                    var edge = curve.getCurveFromController(); 
+                    if (edge.getDistance(new Vec2(x, y) < 5)) {
+                        return true;
+                    }
+                }
             }
         }
+
     }
     
     this.mPosition.set(x, y);

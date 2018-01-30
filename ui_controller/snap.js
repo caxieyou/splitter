@@ -32,7 +32,7 @@ Snap.prototype.clearFocus = function () {
     this.mFocus.snapYEdge = [];
 }
 
-Snap.prototype.snap = function(x, y, type, isSnap) {
+Snap.prototype.snap = function(x, y, type, isSnap, lines) {
     //Record the original mouse position
     this.mousePos.set(x, y);
     this.mouseSnapped.set(x, y);
@@ -64,8 +64,6 @@ Snap.prototype.snap = function(x, y, type, isSnap) {
             for (var i = 0; i < this.mFloor.mCurves.length; i++) {
                 var curve = this.mFloor.mCurves[i];
                 var edge;
-                var focusEdge = null;
-                var focusCurve = null;
                 if (curve instanceof SegmentController) {
                     var edge = curve.getTheStartEndEdge();
                     if (edge.pointInEdgeOrOnEdge(this.mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
@@ -87,7 +85,25 @@ Snap.prototype.snap = function(x, y, type, isSnap) {
             
         }
         
-        //4 和XY轴比
+        //4 如果不靠近角 再和边比
+        if (this.mFocus.keypoint == null) {
+            for (var i = 0; i < lines.length; i++) {
+                var edge = lines[i];
+                if (edge.pointInEdge(this.mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
+                    var point = edge.getIntersectionPointByPoint(this.mouseSnapped, true);
+                    
+                    if (point.equals(edge.mStart) || point.equals(edge.mEnd)) {
+                        this.mFocus.keypoint = point.clone();
+                    } else {
+                        this.mFocus.hintpoint = point.clone();
+                    }
+                    this.mouseSnapped.copy(point);
+                    break;
+                }
+            }
+        }
+        
+        //5 和XY轴比
         var snapX = [];
         var snapY = [];
         for (var j = 0; j < this.mFloor.mCurves.length; j++) {
