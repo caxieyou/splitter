@@ -703,22 +703,22 @@ MyFloor.prototype.renderOutput = function(renderer) {
     }
     
     for (var i = 0; i < this.mAreasControllers.length; i++) {
-        renderer.drawOutput(this.mAreasControllers[i]);
-    }
-    
-    if (this.mPickedIndex != -1) {
-        var height = this.mAreaHeightRecord[this.mPickedIndex].height;
+        var height = this.mAreaHeightRecord[i].height;
         if (height == 0) {
-            height = undefined;
-            renderer.drawOutput(this.mAreasControllers[this.mPickedIndex], true);
+            renderer.drawOutput(this.mAreasControllers[i]);
         } else {
             height = Math.max(Math.min(1, height), 10);
             renderer.enterShadow(height);
-            renderer.drawOutput(this.mAreasControllers[this.mPickedIndex], true);
+            renderer.drawOutput(this.mAreasControllers[i]);
             renderer.exitShadow();
         }
     }
-    
+
+    if (this.mPickedIndex != -1) {
+        renderer.drawOutput(this.mAreasControllers[this.mPickedIndex], true);
+    }
+
+
 }
 
 //画内部标注线
