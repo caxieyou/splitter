@@ -415,3 +415,59 @@ MyCurve.prototype.getLength = function()
 {
     return this.enlarge_xx(1);
 }
+
+MyCurve.prototype.getValidPart = function(curve)
+{
+    if (!MyNumber.isEqual(this.mRadius, curve.mRadius) || !Vec2.isEqual(this.mCenter, curve.mCenter)) {
+        return this;
+    }
+    
+    var s0 = this.getSplitPosByRatio(0);
+    var e0 = this.getSplitPosByRatio(1);
+    
+    var r0 = curve.isInsideArcFan(s0);
+    var r1 = curve.isInsideArcFan(e0);
+    
+    if (r0 && r1) {
+        return null;
+    }
+    
+    var s1 = curve.getSplitPosByRatio(0);
+    var e1 = curve.getSplitPosByRatio(1);
+    
+    var r2 = this.isInsideArcFan(s1);
+    var r3 = this.isInsideArcFan(e1);
+    
+    if (!r0 && !r1 && !r2 && !r3) {
+        return this;
+    }
+    
+    var start, end;
+    if (r1 && r2) {
+        start = s0;
+        end = s1;
+    }
+    
+    if (r1 && r3) {
+        start = s0;
+        end = e1;
+    }
+    
+    if (r0 && r2) {
+        start = e0;
+        end = s1;
+    }
+    
+    if (r0 && r3) {
+        start = e0;
+        end = e1;
+    }
+    var startAngle = this.getCenterIntersectAngle(start);
+    var deltaAngle = Angle.normalize(this.getCenterIntersectAngle(end) - startAngle);
+    return new MyCurve(this.mCenter.clone(), this.mRadius, startAngle, deltaAngle);
+    
+    
+    
+}
+
+

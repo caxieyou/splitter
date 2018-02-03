@@ -184,7 +184,20 @@ Splitter.prototype.getSubCurvesCircleSplitByCurves = function(param1, param2)
             startAngle = subject.getCenterIntersectAngle(intersection);
             deltaAngle = Angle.normalize(subject.getCenterIntersectAngle(nextIntersection) - startAngle);
             newArc = new MyCurve(subject.mCenter.clone(),subject.mRadius,startAngle,deltaAngle);
-            ArrayHelperClass.addItem(res,newArc);
+            
+            for (var j = 0; j < clippers.length; j++) {
+                if (clippers[j] instanceof CurveController) {
+                    var c = clippers[j].getCurveFromController();
+                    newArc = newArc.getValidPart(c);
+                    if (!newArc) {
+                        break;
+                    }
+                }
+            }
+            
+            if (newArc) {
+                ArrayHelperClass.addItem(res,newArc);
+            }
             i++;
         }
     }
@@ -308,8 +321,6 @@ Splitter.prototype.execute = function() {
         this.addCorner(_loc2_[i].mEnd);
 
         this.mWall.addSection(_loc2_[i]);
-        var a = 0;
-        a++;
     }
     
     var edges;
