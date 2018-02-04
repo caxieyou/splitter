@@ -174,7 +174,7 @@ Splitter.prototype.getSubCurvesCircleSplitByCurves = function(param1, param2)
             var _loc4_ = subject.getCenterIntersectAngle(param2);
             return MyMath.sign(_loc3_ - _loc4_);
         });
-        newArc = null;
+        newArc = [];
         nextIntersection = null;
         i = 0;
         while(i < intersections.length)
@@ -183,22 +183,46 @@ Splitter.prototype.getSubCurvesCircleSplitByCurves = function(param1, param2)
             nextIntersection = intersections[(i + 1) % intersections.length];
             startAngle = subject.getCenterIntersectAngle(intersection);
             deltaAngle = Angle.normalize(subject.getCenterIntersectAngle(nextIntersection) - startAngle);
-            newArc = new MyCurve(subject.mCenter.clone(),subject.mRadius,startAngle,deltaAngle);
+            newArc.push(new MyCurve(subject.mCenter.clone(),subject.mRadius,startAngle,deltaAngle));
             
+            i++;
+        }
+        
+        for (var i = 0; i < newArc.length; i++ ) {
             for (var j = 0; j < clippers.length; j++) {
                 if (clippers[j] instanceof CurveController) {
                     var c = clippers[j].getCurveFromController();
-                    newArc = newArc.getValidPart(c);
-                    if (!newArc) {
-                        break;
+                    
+                    if (newArc[i] instanceof Array) {
+                        var total = [];
+                        for (var m = 0; m < newArc[i].length; m++) {
+                            var result = newArc[i][m].getValidPart(c);
+                            if (result == null) {
+                                // do nothing
+                            } else if (result instanceof Array) {
+                                total.push(result[0]);
+                                total.push(result[1]);
+                            } else {
+                                total.push(result);
+                            }
+                        }
+                        newArc[i] = total;
+                    } else if (newArc[i] != null){
+                        newArc[i] = newArc[i].getValidPart(c);
                     }
                 }
             }
-            
-            if (newArc) {
-                ArrayHelperClass.addItem(res,newArc);
+        }
+        
+        for (var i = 0; i < newArc.length; i++) {
+            if (newArc[i] == null) {
+            } else if (newArc[i] instanceof Array && newArc[i].length > 0) {
+                for (var j = 0; j < newArc[i].length; j++) {
+                    ArrayHelperClass.addItem(res,newArc[i][ja]);
+                }
+            } else {
+                ArrayHelperClass.addItem(res,newArc[i]);
             }
-            i++;
         }
     }
     

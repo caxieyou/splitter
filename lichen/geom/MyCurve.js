@@ -442,6 +442,40 @@ MyCurve.prototype.getValidPart = function(curve)
         return this;
     }
     
+    
+    if (r2 && r3) {
+        var a1 = this.createCircle_canvas().getCenterIntersectAngle(s1);
+        var ratio1 = this.getAngleRatio(a1);
+        var a2 = this.createCircle_canvas().getCenterIntersectAngle(e1);
+        var ratio2 = this.getAngleRatio(a2);
+        
+        var max = Math.max(ratio1, ratio2);
+        var min = Math.min(ratio1, ratio2);
+        
+        if (MyNumber.isEqual(min, 0)) {
+            var startAngle = this.getCenterIntersectAngle(curve.getSplitPosByRatio(1));
+            var deltaAngle = Angle.normalize(this.getCenterIntersectAngle(this.getSplitPosByRatio(1)) - startAngle);
+            return new MyCurve(this.mCenter.clone(), this.mRadius, startAngle, deltaAngle);
+        }
+        
+        if (MyNumber.isEqual(max, 1)) {
+            var startAngle = this.getCenterIntersectAngle(this.getSplitPosByRatio(0));
+            var deltaAngle = Angle.normalize(this.getCenterIntersectAngle(curve.getSplitPosByRatio(0)) - startAngle);
+            return new MyCurve(this.mCenter.clone(), this.mRadius, startAngle, deltaAngle);
+        }
+        
+        
+        var startAngle = this.getCenterIntersectAngle(this.getSplitPosByRatio(0));
+        var deltaAngle = Angle.normalize(this.getCenterIntersectAngle(curve.getSplitPosByRatio(0)) - startAngle);
+        var newCurve0 = new MyCurve(this.mCenter.clone(), this.mRadius, startAngle, deltaAngle);
+        
+        var startAngle = this.getCenterIntersectAngle(curve.getSplitPosByRatio(1));
+        var deltaAngle = Angle.normalize(this.getCenterIntersectAngle(this.getSplitPosByRatio(1)) - startAngle);
+        var newCurve1 = new MyCurve(this.mCenter.clone(), this.mRadius, startAngle, deltaAngle);
+        
+        return [newCurve0, newCurve1];
+    }
+    
     var start, end;
     if (r1 && r2) {
         start = s0;
@@ -465,9 +499,6 @@ MyCurve.prototype.getValidPart = function(curve)
     var startAngle = this.getCenterIntersectAngle(start);
     var deltaAngle = Angle.normalize(this.getCenterIntersectAngle(end) - startAngle);
     return new MyCurve(this.mCenter.clone(), this.mRadius, startAngle, deltaAngle);
-    
-    
-    
 }
 
 
