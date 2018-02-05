@@ -48,6 +48,9 @@ _LineOp.prototype.intersect = function(intersects) {
         }
     }
     
+    if (MyNumber.isEqual(this._currentLine.getLength(), 0)) {
+        return;
+    }
     for (var i = 0; i < this._lineRecords.length; i++) {
         var edges = this._lineRecords[i]._lineEdges;
         for (var j = 0; j < edges.length; j++) {
@@ -77,6 +80,7 @@ _LineOp.prototype.getLastEdge = function() {
     if (edges.length <= 1) {
         return null;
     }
+    
     return new MyEdge(edges[edges.length-1].mEnd.clone(), edges[0].mStart.clone());
 }
 
@@ -182,9 +186,7 @@ _LineOp.prototype.extractValidLines = function(curves) {
         }
     }
     
-    
     return this._removeSingle(linesSplit, curves);
-    
 }
 
 function _RectOp() {
