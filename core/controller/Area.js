@@ -3,13 +3,11 @@ function Area(param1) {
         param1 = null;
     }
 
-    this.mAreaNotUnderstand;//整块的大属性？
-    //this.m_Decorations:Vector.<MyBasicArea>;//里面好多块的属性？
-    this.mCurves;
+    this.mElements;
     this.mFloor = param1;
     
     this.mPath; 
-      
+
     this.initialize();
     this.mId = ID.assignUniqueId();
 }
@@ -20,12 +18,12 @@ Area.outputStructure = function(param1) {
     };
     
     if (param1 instanceof Area) {
-        for (var i = 0; i < param1.mCurves.length; i++) {
-            if (param1.mCurves[i] instanceof Arc) {
-                var curve = param1.mCurves[i].getCurveFromController();
+        for (var i = 0; i < param1.mElements.length; i++) {
+            if (param1.mElements[i] instanceof Arc) {
+                var curve = param1.mElements[i].getCurveFromController();
                 res.edges.push(curve);
-            } else if (param1.mCurves[i] instanceof Segment) {
-                var edge = param1.mCurves[i].getTheStartEndEdge();
+            } else if (param1.mElements[i] instanceof Segment) {
+                var edge = param1.mElements[i].getTheStartEndEdge();
                 res.edges.push(edge);
             }
         }
@@ -62,12 +60,11 @@ Area.outputStructures = function(param1, param2) {
         res.mHoles.push(Area.outputStructure(param2[0]));
         return res;
     } else {
-        //TODO: 排除重复，然后继续取边界
         var curves = [];
         
         for (var i = 0; i < param2.length; i++) {
-            for (var j = 0; j < param2[i].mCurves.length; j++) {
-                var curve = param2[i].mCurves[j];
+            for (var j = 0; j < param2[i].mElements.length; j++) {
+                var curve = param2[i].mElements[j];
                 var index = curves.indexOf(curve);
                 if (index != -1) {
                     curves.splice(index, 1);
@@ -82,7 +79,7 @@ Area.outputStructures = function(param1, param2) {
         var clockwisePaths = Path.getClockWisePaths(paths);
         
         for (var i = 0; i < clockwisePaths.length; i++) {
-            res.mHoles.push(Area.outputStructure(clockwisePaths[i].mCurves));
+            res.mHoles.push(Area.outputStructure(clockwisePaths[i].mElements));
         }
         
         return res;
@@ -109,14 +106,14 @@ Area.outputStructures2 = function(param1, param2) {
 
 Area.outputStructures3 = function(param1, param2) {
     var res = [];
-    res = res.concat(param1.mCurves);
+    res = res.concat(param1.mElements);
 
     if (param2.length == 0) {
         return res;
     } else {
         res.mHoles = [];
         for (var i = 0; i < param2.length; i++) {
-            res = res.concat(param2[i].mCurves);
+            res = res.concat(param2[i].mElements);
         }
         return res;
     }
@@ -126,7 +123,7 @@ Area.outputStructures3 = function(param1, param2) {
 
 Area.prototype.initialize = function()
 {
-    this.mCurves = [];
+    this.mElements = [];
 
     this.mOffset = 0;
 
@@ -155,16 +152,15 @@ Area.prototype.tryCalculatePolygon = function()
 
 Area.prototype.addSection = function(param1)
 {
-    return ArrayHelperClass.ifHasAndSave(this.mCurves,param1);
+    return ArrayHelperClass.ifHasAndSave(this.mElements,param1);
 }
       
 Area.prototype.dispose = function()
 {
     var _loc1_ = null;
-    for (var i = 0; i < this.mCurves.length; i++)
-    //for each(_loc1_ in this.m_curves)
+    for (var i = 0; i < this.mElements.length; i++)
     {
-        this.mCurves[i].wallDleleteSame(this);
+        this.mElements[i].wallDleleteSame(this);
     }
     if(this.mFloor)
     {
@@ -246,5 +242,5 @@ Area.prototype.getAbsArea = function()
 
 Area.prototype.removeSection = function(param1)
 {
-    return ArrayHelperClass.removeItem(this.mCurves, param1);
+    return ArrayHelperClass.removeItem(this.mElements, param1);
 }

@@ -1,6 +1,6 @@
 function Path() {
     this.mStart;
-    this.mCurves;
+    this.mElements;
     this.mPolygon;
     this.mArea;
     this.mCorners;
@@ -63,7 +63,7 @@ Path.getArea_0_Paths = function(param1)
 Path.prototype.initialize = function()
 {
     this.mPolygon = new Polygon();
-    this.mCurves = [];
+    this.mElements = [];
     this.mCorners = [];
 }
 
@@ -81,7 +81,7 @@ Path.prototype.buildCorners = function()
     var _loc3_ = 0;
     while(_loc3_ < _loc1_)
     {
-        _loc2_ = this.mCurves[_loc3_].getStartOrEndOrNull(_loc2_);
+        _loc2_ = this.mElements[_loc3_].getStartOrEndOrNull(_loc2_);
         this.mCorners.push(_loc2_);
         _loc3_++;
     }
@@ -97,7 +97,7 @@ Path.prototype.buildPolygon = function()
     var _loc3_ = 0;
     while(_loc3_ < _loc1_)
     {
-        _loc4_ = this.mCurves[_loc3_];
+        _loc4_ = this.mElements[_loc3_];
         _loc5_ = this.mCorners.indexOf(_loc4_.mStart,_loc3_);
         _loc6_ = _loc5_ != _loc3_;
         _loc2_ = _loc4_.switchOrder(_loc6_);
@@ -110,7 +110,7 @@ Path.prototype.buildPolygon = function()
 
 Path.prototype.addSection = function(param1)
 {
-    this.mCurves.push(param1);
+    this.mElements.push(param1);
 }
 
 Path.prototype.isClockWise = function()
@@ -130,8 +130,8 @@ Path.prototype.isIsolated = function()
 
 Path.prototype.isCurveInPath_not_sure = function(param1)
 {
-    var _loc2_ = this.mCurves.indexOf(param1);
-    var _loc3_ = this.mCurves.lastIndexOf(param1);
+    var _loc2_ = this.mElements.indexOf(param1);
+    var _loc3_ = this.mElements.lastIndexOf(param1);
     if(_loc2_ != _loc3_)
     {
         return false;
@@ -142,7 +142,7 @@ Path.prototype.isCurveInPath_not_sure = function(param1)
 
 Path.prototype.getCurveByIndex = function(param1)
 {
-    return this.mCurves[param1];
+    return this.mElements[param1];
 }
 
 Path.prototype.getCornerByIndex = function(param1)
@@ -152,7 +152,7 @@ Path.prototype.getCornerByIndex = function(param1)
 
 Path.prototype.getSize = function()
 {
-    return this.mCurves.length;
+    return this.mElements.length;
 }
 
 Path.prototype.getPolygon = function() {

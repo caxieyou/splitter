@@ -17,7 +17,7 @@ GeoHelpSomeClass.getPolygonFromAreaPath = function(param1)
 
     var _loc2_ = new Polygon();
     var _loc3_ = param1.mPath;
-    var _loc4_ = _loc3_.mCurves;
+    var _loc4_ = _loc3_.mElements;
     var _loc5_ = _loc3_.mCorners;
     var _loc6_ = _loc4_.length;
     var _loc7_ = 0;

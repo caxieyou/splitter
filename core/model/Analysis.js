@@ -1,6 +1,6 @@
 function Analysis(param1) {
     this.mAreas;
-    this.mCurves;
+    this.mElements;
     this.mAreasPick;
     this.mCurveCornerHelper;
     this.mFloor = param1;
@@ -11,8 +11,8 @@ Analysis.prototype.calculateAreaAndCurves = function()
 {
     //this.mAreas = Area.cloneAreas(this.mFloor.mAreas);
     this.mAreas = this.mFloor.mAreas;
-    //this.mCurves = Arc.cloneAreas(this.mFloor.curves);
-    this.mCurves = this.mFloor.mCurves;
+    //this.mElements = Arc.cloneAreas(this.mFloor.curves);
+    this.mElements = this.mFloor.mElements;
 }
 
 Analysis.prototype.clearAreas = function()
@@ -24,14 +24,14 @@ Analysis.prototype.clearAreas = function()
 Analysis.prototype.prepare = function()
 {
     var _loc1_ = null;
-    this.mCurveCornerHelper = new curveCornerHelperClass(this.mCurves);
+    this.mCurveCornerHelper = new curveCornerHelperClass(this.mElements);
     this.mAreaPick = this.mAreas.concat();
     
     //???????
-    for (var i = 0; i < this.mCurves.length; i++) {
-        this.mCurves[i].mAreas = [];//initialCurveAreas();
-        //this.mCurves[i].invalidate();
-        //this.mCurves[i].invalidateStructure();
+    for (var i = 0; i < this.mElements.length; i++) {
+        this.mElements[i].mAreas = [];//initialCurveAreas();
+        //this.mElements[i].invalidate();
+        //this.mElements[i].invalidateStructure();
     }
     
 }
@@ -159,7 +159,7 @@ Analysis.prototype.seperateAreasInClip = function()
     for (var j = 0; j < clockwisePaths.length; j++)
     //for each(path in clockwisePaths)
     {
-        curves = clockwisePaths[j].mCurves;
+        curves = clockwisePaths[j].mElements;
         area = this.generateWallAreasByWall();
         area.mPath = clockwisePaths[j];
         this.addNotHoleParts(area,curves);
@@ -192,19 +192,19 @@ Analysis.prototype.seperateAreasInClip = function()
         i++;
     }
     
-    for (var j = 0; j < this.mCurves.length; j++)
+    for (var j = 0; j < this.mElements.length; j++)
     //for each(tmpCurve in this.m_curves)
     {
-        if(this.mCurves[j].mAreas.length == 0)
+        if(this.mElements[j].mAreas.length == 0)
         {
             for (var k = 0; k < areas.length; k++)
             //for each(tmpArea in areas)
             {
                 polygonWithHole = areas[k].generatePolyTree();
-                if(polygonWithHole.contains(this.mCurves[j].getCenter()))
+                if(polygonWithHole.contains(this.mElements[j].getCenter()))
                 {
-                    this.mCurves[j].isHasAndSaveOnCurve(areas[k]);
-                    areas[k].addSection(this.mCurves[j]);
+                    this.mElements[j].isHasAndSaveOnCurve(areas[k]);
+                    areas[k].addSection(this.mElements[j]);
                 }
             }
         }
@@ -216,7 +216,7 @@ Analysis.prototype.seperateAreasInClip = function()
 Analysis.prototype.setBackAreaAndCurvesToWall = function()
 {
     this.mFloor.mAreas = this.mAreas;
-    this.mFloor.mCurves = this.mCurves;
+    this.mFloor.mElements = this.mElements;
 }
 
 Analysis.prototype.correctAreas = function()
@@ -230,7 +230,7 @@ Analysis.prototype.diagnose = function()
     var _loc3_ = null;
     var _loc4_ = null;
     var _loc1_ = this.mAreas;
-    var _loc2_ = this.mCurves;
+    var _loc2_ = this.mElements;
     
     for each(_loc3_ in _loc1_)
     {
@@ -264,7 +264,7 @@ Analysis.prototype.diagnose = function()
 Analysis.isSameCurveInClipFather = function(param1, param2)
 {
     var _loc4_ = null;
-    var _loc3_ = param1.mCurves;
+    var _loc3_ = param1.mElements;
     //for each(_loc4_ in _loc3_)
     for (var i = 0; i < _loc3_.length; i++)
     {
@@ -293,7 +293,7 @@ Analysis.prototype.getSameCurveNumber = function(param1, param2)
 {
     var _loc5_ = null;
     var _loc3_ = 0;
-    var _loc4_ = param1.mCurves;
+    var _loc4_ = param1.mElements;
     
     for (var i = 0; i < _loc4_.length; i++)
     //for each(_loc5_ in _loc4_)

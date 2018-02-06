@@ -19,7 +19,7 @@ CurveSplitClass.prototype.initialize = function()
     this.mCurveArray = [];
     
     for (var i = 0; i < this.mCornerArray.length; i++) {
-        ArrayHelperClass.ifHaveSameTheLaterOne(this.mCurveArray,this.mCornerArray[i].mCurves);
+        ArrayHelperClass.ifHaveSameTheLaterOne(this.mCurveArray,this.mCornerArray[i].mElements);
     }
 }
 
@@ -39,7 +39,7 @@ CurveSplitClass.prototype.execute = function()
     var _loc9_ = NaN;
     var _loc10_ = null;
     this.mValid = true;
-    var _loc2_ = this.mFloor.mCurves;
+    var _loc2_ = this.mFloor.mElements;
     var _loc3_ = this.mFloor.mCorners;
     var DISTANCE_TOLERANCE = 1.01376;
     

@@ -310,7 +310,7 @@ Segment.prototype.dispose = function()
         _loc2_ = _loc1_[i];
         if (_loc2_) {
             _loc2_.removeSection(this);
-            if(_loc2_.mCurves.length == 0)
+            if(_loc2_.mElements.length == 0)
             {
                 _loc2_.dispose();
             }
@@ -531,12 +531,12 @@ Segment.prototype.updatePosition = function(x, y) {
         return true;
     }
     var c = [];
-    for (var i = 0; i < coners[0].mCurves.length; i++) {
-        c = c.concat(coners[0].mCurves[i].toCorners());
+    for (var i = 0; i < coners[0].mElements.length; i++) {
+        c = c.concat(coners[0].mElements[i].toCorners());
     }
     
-    for (var i = 0; i < coners[1].mCurves.length; i++) {
-        c = c.concat(coners[1].mCurves[i].toCorners());
+    for (var i = 0; i < coners[1].mElements.length; i++) {
+        c = c.concat(coners[1].mElements[i].toCorners());
     }
     var illegal = false;
     for (var i = 0; i < c.length; i++) {

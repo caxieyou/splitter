@@ -271,7 +271,7 @@ ElementDrawer.prototype.isStart = function() {
 }
 
 ElementDrawer.prototype.creatRect = function(pt0, pt1) {
-    var res = this.mRect.create(pt0, pt1, this.mFloor.mCurves);
+    var res = this.mRect.create(pt0, pt1, this.mFloor.mElements);
     this.add(res);
 }
 
@@ -313,7 +313,7 @@ ElementDrawer.prototype.setStatus = function(status) {
 }
 
 ElementDrawer.prototype.lineOperationStart = function(point) {
-    var curves = this.mFloor.mCurves;
+    var curves = this.mFloor.mElements;
     if (this.mStatus == STATUS.LINE_START) {
         this.mLine._currentLine.mStart.copy(point);
         this.mLine.creatRecord();
@@ -351,7 +351,7 @@ ElementDrawer.prototype.lineOperationStart = function(point) {
 }
 
 ElementDrawer.prototype.lineOperationEnd = function(point, hintPoints) {
-    var curves = this.mFloor.mCurves;
+    var curves = this.mFloor.mElements;
     if (this.mStatus ==  STATUS.NOT_STARTED || this.mStatus ==  STATUS.LINE_START) {
         return false;
     }
@@ -398,7 +398,7 @@ ElementDrawer.prototype.lineOperationEnd = function(point, hintPoints) {
 }
 
 ElementDrawer.prototype.reset = function() {
-    var curves = this.mFloor.mCurves;
+    var curves = this.mFloor.mElements;
     if (this.mStatus  == STATUS.LINE_DRAWING) {
         this.mStatus = STATUS.LINE_START;
         var e = this.mLine.getLastEdge();

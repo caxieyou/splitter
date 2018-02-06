@@ -1012,9 +1012,9 @@ Renderer = function () {
     
     this.drawCornerDimentions = function(corner) {
         if (corner && corner instanceof Corner) {
-            for (var i = 0; i < corner.mCurves.length; i++) {
-                if (corner.mCurves[i] instanceof Segment) {
-                    var curve = corner.mCurves[i];
+            for (var i = 0; i < corner.mElements.length; i++) {
+                if (corner.mElements[i] instanceof Segment) {
+                    var curve = corner.mElements[i];
                     var edge = curve.getTheStartEndEdge();
                     var start = edge.mStart.clone();
                     var end = edge.mEnd.clone();

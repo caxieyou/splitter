@@ -20,9 +20,9 @@ CurveAreaRelationshipHelper.isHole = function(param1)
         return false;
     }
 
-    for (var i = 0; i < param1.mCurves.length; i++)
+    for (var i = 0; i < param1.mElements.length; i++)
     {
-        if(param1.mCurves[i].type == WallCurveType.DEFAULT_LINE)
+        if(param1.mElements[i].type == WallCurveType.DEFAULT_LINE)
         {
             return false;
         }

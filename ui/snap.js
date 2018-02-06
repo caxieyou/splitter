@@ -61,8 +61,8 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
         
         //3 如果不靠近角 再和边比
         if (this.mFocus.keypoint == null) {
-            for (var i = 0; i < this.mFloor.mCurves.length; i++) {
-                var curve = this.mFloor.mCurves[i];
+            for (var i = 0; i < this.mFloor.mElements.length; i++) {
+                var curve = this.mFloor.mElements[i];
                 var edge;
                 if (curve instanceof Segment) {
                     var edge = curve.getTheStartEndEdge();
@@ -106,12 +106,12 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
         //5 和XY轴比
         var snapX = [];
         var snapY = [];
-        for (var j = 0; j < this.mFloor.mCurves.length; j++) {
-            if (this.mFloor.mCurves[j].isBoundry) {
+        for (var j = 0; j < this.mFloor.mElements.length; j++) {
+            if (this.mFloor.mElements[j].isBoundry) {
                 continue;
             }
             
-            var edge2 = this.mFloor.mCurves[j].getTheStartEndEdge();
+            var edge2 = this.mFloor.mElements[j].getTheStartEndEdge();
             var angle2 = edge2.getAngle();
             
             if (Angle.isHorizontal(angle2)) {
@@ -145,11 +145,11 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
         }
         
         
-        for (var j = 0; j < this.mFloor.mCurves.length; j++) {
-            if (!this.mFloor.mCurves[j].isBoundry) {
+        for (var j = 0; j < this.mFloor.mElements.length; j++) {
+            if (!this.mFloor.mElements[j].isBoundry) {
                 continue;
             }
-            var edge2 = this.mFloor.mCurves[j].getTheStartEndEdge();
+            var edge2 = this.mFloor.mElements[j].getTheStartEndEdge();
             
             var angle2 = edge2.getAngle();
             
@@ -187,8 +187,8 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
         
         //3 如果不靠近角 再和边比
         if (this.mFocus.controller == null) {
-            for (var i = 0; i < this.mFloor.mCurves.length; i++) {
-                var curve = this.mFloor.mCurves[i];
+            for (var i = 0; i < this.mFloor.mElements.length; i++) {
+                var curve = this.mFloor.mElements[i];
                 var edge;
                 if (curve instanceof Segment && !curve.isBoundry) {
                     var edge = curve.getTheStartEndEdge();

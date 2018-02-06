@@ -332,7 +332,7 @@ Arc.prototype.dispose = function()
         _loc2_ = _loc1_[i];
         if (_loc2_) {
             _loc2_.removeSection(this);
-            if(_loc2_.mCurves.length == 0)
+            if(_loc2_.mElements.length == 0)
             {
                 _loc2_.dispose();
             }

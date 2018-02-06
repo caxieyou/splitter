@@ -250,7 +250,7 @@ Splitter.prototype.addCorner = function(param1)
     var _loc3_ = wallCurveCornerHelper.getSamePositionButNotSamePointerCorner(param1, this.mFloor.mCorners, Splitter.DISTANCE_TOLERANCE);
     if(_loc3_ != null)
     {
-        _loc2_ = _loc3_.mCurves.concat();
+        _loc2_ = _loc3_.mElements.concat();
         
         for (var i = 0; i < _loc2_.length; i++)
         {
@@ -259,7 +259,7 @@ Splitter.prototype.addCorner = function(param1)
         _loc3_.dispose();
     }
 
-    var _loc4_ = CurveRelationHelper.getTheClosestCurve_ax(param1.mPosition.clone(), this.mFloor.mCurves, false, Splitter.DISTANCE_TOLERANCE);
+    var _loc4_ = CurveRelationHelper.getTheClosestCurve_ax(param1.mPosition.clone(), this.mFloor.mElements, false, Splitter.DISTANCE_TOLERANCE);
     if(_loc4_ != null)
     {
         _loc4_.updateInfo(param1);
@@ -326,11 +326,11 @@ Splitter.prototype.execute = function() {
     var _loc1_, _loc2_ = [];
     
     if (this.mCircle instanceof Circle) {
-        _loc1_ = this.getSubCurvesCircleSplitByCurves(this.mCircle,this.mFloor.mCurves);
+        _loc1_ = this.getSubCurvesCircleSplitByCurves(this.mCircle,this.mFloor.mElements);
     } else if (this.mCircle instanceof Polygon || this.mCircle instanceof Array) {
-        _loc1_ = this.getSubSegmentsSplitByCurves(this.mCircle,this.mFloor.mCurves);
+        _loc1_ = this.getSubSegmentsSplitByCurves(this.mCircle,this.mFloor.mElements);
     } //else if (this.mCircle instanceof Array) {
-    //    _loc1_ = this.getSubSegmentsSplitByCurves(this.mCircle,this.mFloor.mCurves);
+    //    _loc1_ = this.getSubSegmentsSplitByCurves(this.mCircle,this.mFloor.mElements);
     //}
     
     if (_loc1_[0] instanceof Curve) {
@@ -352,8 +352,8 @@ Splitter.prototype.execute = function() {
         edges = this.mPolytree.mOutLines.getEdges();
     }
     
-    for (var i = 0; i < this.mFloor.mCurves.length; i++) {
-        var seg = this.mFloor.mCurves[i];
+    for (var i = 0; i < this.mFloor.mElements.length; i++) {
+        var seg = this.mFloor.mElements[i];
         if (seg instanceof Segment) {
             if (!this.mPolytree) {
                 seg.isBoundry = true;

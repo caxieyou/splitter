@@ -4,7 +4,7 @@ function Corner(param1) {
     }
     this.mFloor = param1;
     this.mPosition = new Vec2();
-    this.mCurves = [];
+    this.mElements = [];
     this.initialize();
     this.mId = ID.assignUniqueId();
 }
@@ -12,15 +12,15 @@ function Corner(param1) {
 Corner.prototype.initialize = function()
 {
     this.mPosition = new Vec2();
-    this.mCurves = [];
+    this.mElements = [];
     mPosition = new Vec2();
 }
 
 Corner.prototype.dispose = function()
 {
-    for(var i = 0; i < this.mCurves.length; i++)
+    for(var i = 0; i < this.mElements.length; i++)
     {
-        this.mCurves[i].setCornerStartAndEndButHasToBeSame(this,null);
+        this.mElements[i].setCornerStartAndEndButHasToBeSame(this,null);
     }
     if(this.mFloor != null)
     {
@@ -31,39 +31,39 @@ Corner.prototype.dispose = function()
 Corner.prototype.clone = function()
 {
     var _loc1_ = new Corner(this.mFloor);
-    _loc1_.mCurves = this.mCurves.concat();
+    _loc1_.mElements = this.mElements.concat();
     _loc1_.mPosition = this.mPosition;
     return _loc1_;
 }
 Corner.prototype.addSection = function(param1)
 {
-    return ArrayHelperClass.ifHasAndSave(this.mCurves,param1);
+    return ArrayHelperClass.ifHasAndSave(this.mElements,param1);
 }
 
 Corner.prototype.removeSection = function(param1)
 {
-    return ArrayHelperClass.removeItem(this.mCurves,param1);
+    return ArrayHelperClass.removeItem(this.mElements,param1);
 }
 
 Corner.prototype.updatePosition = function(x, y)
 {
     var arc = [];
-    for (var i = 0; i < this.mCurves.length; i++) {
-        if (this.mCurves[i] instanceof Arc) {
-            arc.push(this.mCurves[i].getCurveFromController().mArcAngle);
+    for (var i = 0; i < this.mElements.length; i++) {
+        if (this.mElements[i] instanceof Arc) {
+            arc.push(this.mElements[i].getCurveFromController().mArcAngle);
         }
     }
     
     if (this.mFloor) {
 
-        var curves = this.mFloor.mCurves;
+        var curves = this.mFloor.mElements;
 
         for (var i = 0; i < curves.length; i++) {
             var curve = curves[i];
             var same = false;
 
-            for (var j = 0; j < this.mCurves.length; j++) {
-                if (this.mCurves[j].mId == curve.mId) {
+            for (var j = 0; j < this.mElements.length; j++) {
+                if (this.mElements[j].mId == curve.mId) {
                     same = true;
                     break;
                 }
@@ -90,9 +90,9 @@ Corner.prototype.updatePosition = function(x, y)
     
     this.mPosition.set(x, y);
     var idx = 0;
-    for (var i = 0; i < this.mCurves.length; i++) {
-        if (this.mCurves[i] instanceof Arc) {
-            this.mCurves[i].adjustCurve(arc[idx]);
+    for (var i = 0; i < this.mElements.length; i++) {
+        if (this.mElements[i] instanceof Arc) {
+            this.mElements[i].adjustCurve(arc[idx]);
             idx++;
         }
     }
@@ -109,8 +109,8 @@ Corner.prototype.revertUpdatePosition = function(last) {
 Corner.prototype.isBoundryCorner = function() {
     var ret = false;
     
-    for (var i = 0; i < this.mCurves.length; i++) {
-        if (this.mCurves[i].isBoundry) {
+    for (var i = 0; i < this.mElements.length; i++) {
+        if (this.mElements[i].isBoundry) {
             return true;
         }
     }
@@ -120,9 +120,9 @@ Corner.prototype.isBoundryCorner = function() {
 Corner.prototype.getBoundrySegments = function() {
     var ret = [];
     
-    for (var i = 0; i < this.mCurves.length; i++) {
-        if (this.mCurves[i].isBoundry) {
-            ret.push(this.mCurves[i].getTheStartEndEdge());
+    for (var i = 0; i < this.mElements.length; i++) {
+        if (this.mElements[i].isBoundry) {
+            ret.push(this.mElements[i].getTheStartEndEdge());
         }
     }
     return ret;

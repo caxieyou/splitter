@@ -7,7 +7,7 @@ function AreaHeightRecord() {
 
 function Floor() {
     this.mAreas;
-    this.mCurves;
+    this.mElements;
     this.mCorners;
     this.mHoles;
     this.mProfile;
@@ -26,7 +26,7 @@ function Floor() {
 
 Floor.prototype.initialize = function() {
     this.mAreas = [];
-    this.mCurves = [];
+    this.mElements = [];
     this.mCorners = [];
     this.mHoles = [];
     this.mProfile = null;
@@ -66,7 +66,7 @@ Floor.prototype.generatePolyTree = function()
 
 Floor.prototype.getTheBiggestAreaPath = function()
 {
-    var pathFinder = new curveCornerHelperClass(this.mCurves);
+    var pathFinder = new curveCornerHelperClass(this.mElements);
     var paths = pathFinder.getPaths_eh();
     var counterClockPaths = Path.getCountClockWisePath(paths);
     //从大到小排序
@@ -93,9 +93,9 @@ Floor.prototype.correctAreas = function()
     {
         this.mHoles.push(_loc1_[i]);
         
-        for (var j = 0; j < _loc1_[i].mCurves.length; j++)
+        for (var j = 0; j < _loc1_[i].mElements.length; j++)
         {
-            _loc3_ = _loc1_[i].mCurves[j];
+            _loc3_ = _loc1_[i].mElements[j];
             _loc3_.wallDleleteSame(_loc1_[i]);
         }
     }
@@ -104,7 +104,7 @@ Floor.prototype.correctAreas = function()
 
 Floor.prototype.addSection = function(param1)
 {
-    var _loc2_ = ArrayHelperClass.ifHasAndSave(this.mCurves,param1);
+    var _loc2_ = ArrayHelperClass.ifHasAndSave(this.mElements,param1);
     if(_loc2_)
     {
         param1.mFloor = this;
@@ -133,7 +133,7 @@ Floor.prototype.removeCorner = function(param1)
 
 Floor.prototype.removeSection = function(param1)
 {
-    return ArrayHelperClass.removeItem(this.mCurves, param1);
+    return ArrayHelperClass.removeItem(this.mElements, param1);
 }
 
 Floor.prototype.clearPickedArea = function() {
@@ -196,10 +196,10 @@ Floor.prototype.getAreaName = function() {
 
 Floor.prototype.checkOverlap = function()  {
     var overlapped = false;
-    for (var i = 0; i < this.mCurves.length; i++) {
-        for (var j = i+1; j < this.mCurves.length; j++) {
-            var curve0 = this.mCurves[i];
-            var curve1 = this.mCurves[j];
+    for (var i = 0; i < this.mElements.length; i++) {
+        for (var j = i+1; j < this.mElements.length; j++) {
+            var curve0 = this.mElements[i];
+            var curve1 = this.mElements[j];
             
             if (curve0.isIntersectWith(curve1)) {
                 overlapped = true;
@@ -348,9 +348,9 @@ Floor.prototype._updateGeoStructure = function() {
         }
     }
 
-    for (var i = 0; i < this.mCurves.length; i++) {
-        if (!this.mCurves[i].isBoundry) {
-            this.mKeyPoints.push(this.mCurves[i].getCenter());
+    for (var i = 0; i < this.mElements.length; i++) {
+        if (!this.mElements[i].isBoundry) {
+            this.mKeyPoints.push(this.mElements[i].getCenter());
         }
     }
     
@@ -564,7 +564,7 @@ Floor.prototype.Analysis = function() {
         var _loc3_ = null;
         var _loc4_ = null;
         var _loc5_ = null;
-        var _loc1_ = this.mCorners[i].mCurves;
+        var _loc1_ = this.mCorners[i].mElements;
         
         for (var j = 0; j < _loc1_.length; j++) {
             if(_loc1_.length == 2)
@@ -637,11 +637,11 @@ Floor.prototype._seperateType = function() {
     var validSegmentIndex = [];
     var validCurveIndex = [];
     var pickedArea = this.mOutput[this.mPickedIndex];// this.mPickedArea;
-    for (var i = 0; i < this.mCurves.length; i++) {
-        if (this.mCurves[i].isBoundry) {
-            boundries.push(this.mCurves[i]);
-        } else if (this.mCurves[i] instanceof Segment) {
-            var seg = this.mCurves[i];
+    for (var i = 0; i < this.mElements.length; i++) {
+        if (this.mElements[i].isBoundry) {
+            boundries.push(this.mElements[i]);
+        } else if (this.mElements[i] instanceof Segment) {
+            var seg = this.mElements[i];
             segments.push(seg);
             
             if (pickedArea) {
@@ -661,10 +661,10 @@ Floor.prototype._seperateType = function() {
                     }
                 }
             }
-        } else if (this.mCurves[i] instanceof Arc) {
-            curves.push(this.mCurves[i]);
+        } else if (this.mElements[i] instanceof Arc) {
+            curves.push(this.mElements[i]);
             if (pickedArea) {
-                var cur = this.mCurves[i].getCurveFromController();
+                var cur = this.mElements[i].getCurveFromController();
                 for (var j = 0; j < pickedArea.mOutline.edges.length; j++) {
                     var edge = pickedArea.mOutline.edges[j];
                     if (edge instanceof Curve && Curve.isSameCurve(cur, edge)) {
@@ -824,12 +824,12 @@ Floor.prototype._renderRelativeDistance = function(segments, validIndex, canvas,
                 if (direction > -1) {
                     var valid = true;
                     
-                    for (var m = 0; m < this.mCurves.length; m++) {
-                        if (this.mCurves[m] instanceof Arc) {
+                    for (var m = 0; m < this.mElements.length; m++) {
+                        if (this.mElements[m] instanceof Arc) {
                             continue;
                         }
                         var intersects = [];
-                        if (Segment.isIntersectWith(markLine, this.mCurves[m], intersects)) {
+                        if (Segment.isIntersectWith(markLine, this.mElements[m], intersects)) {
                             if (intersects.length > 0 && !Vec2.isEqual(intersects[0], markLine.mEnd))
                             {
                                 valid = false;
@@ -854,8 +854,8 @@ Floor.prototype._renderRelativeDistance = function(segments, validIndex, canvas,
                             var corners = segments[i].toCorners();
                             for (var n = 0; n < corners.length; n++) {
                                 var corner = corners[n];
-                                for (var p = 0; p < corner.mCurves.length; p++) {
-                                    if (corner.mCurves[p] instanceof Arc) {
+                                for (var p = 0; p < corner.mElements.length; p++) {
+                                    if (corner.mElements[p] instanceof Arc) {
                                         arcValid_i = false;
                                         break;
                                     }
@@ -914,13 +914,13 @@ Floor.prototype._renderAbosoluteDistance = function(segments, validIndex, boundr
                         markLine.mEnd.mX = boundries[j].mStart.mPosition.mX;
                     }
                     var valid = true;
-                    for (var m = 0; m < this.mCurves.length; m++) {
-                        if (this.mCurves[m] instanceof Arc) {
+                    for (var m = 0; m < this.mElements.length; m++) {
+                        if (this.mElements[m] instanceof Arc) {
                             continue;
                         }
                         var intersects = [];
-                        if (Segment.isIntersectWith(markLine, this.mCurves[m], intersects)) {
-                            if (intersects.length > 0 && !Vec2.isEqual(intersects[0], markLine.mEnd) && this._isWithinSameArea(segments[i],this.mCurves[m]))
+                        if (Segment.isIntersectWith(markLine, this.mElements[m], intersects)) {
+                            if (intersects.length > 0 && !Vec2.isEqual(intersects[0], markLine.mEnd) && this._isWithinSameArea(segments[i],this.mElements[m]))
                             {
                                 valid = false;
                                 continue;
@@ -1007,15 +1007,15 @@ Floor.prototype.renderMarkerLines = function(flags, renderer, canvas)  {
 Floor.prototype.getIntersectPoints = function(edges) {
     var intersects = [];
     for (var i = 0; i < edges.length; i++) {
-        for (var j = 0; j < this.mCurves.length; j++) {
-            if(!this.mCurves[j].isBoundry) {
-                if (this.mCurves[j] instanceof Segment) {
-                    var edge = this.mCurves[j].getTheStartEndEdge();
+        for (var j = 0; j < this.mElements.length; j++) {
+            if(!this.mElements[j].isBoundry) {
+                if (this.mElements[j] instanceof Segment) {
+                    var edge = this.mElements[j].getTheStartEndEdge();
                     
-                    if (this.mCurves[j].containsPoint(edges[i].mStart)) {
+                    if (this.mElements[j].containsPoint(edges[i].mStart)) {
                         intersects.push(edges[i].mStart.clone());
                     }
-                    if (this.mCurves[j].containsPoint(edges[i].mEnd)) {
+                    if (this.mElements[j].containsPoint(edges[i].mEnd)) {
                         intersects.push(edges[i].mEnd.clone());
                     }
                     
@@ -1027,7 +1027,7 @@ Floor.prototype.getIntersectPoints = function(edges) {
                     }
                 }
                 
-                Segment.isIntersectWith(edges[i], this.mCurves[j], intersects);
+                Segment.isIntersectWith(edges[i], this.mElements[j], intersects);
             }
         }
     }

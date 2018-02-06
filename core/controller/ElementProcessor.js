@@ -9,11 +9,8 @@ ElementProcessor.prototype.onSplitCurve = function(param1)
     _loc1_.mPosition = param1.getCenter();
     this.mFloor.addCorner(_loc1_);
     param1.updateInfo(_loc1_);
-    //var analysis = new Analysis(this.mFloor);
-    //analysis.execute();
     this.mFloor.Analysis();
     this.mFloor.clearPickedArea();
-    //this.mFloor._updateGeoStructure();
 }
 
 ElementProcessor.prototype.onToLine = function(param1)
@@ -27,8 +24,8 @@ ElementProcessor.prototype.onToLine = function(param1)
     _loc6_.mStart = _loc7_;
     _loc6_.mEnd = _loc8_;
     
-    for (var i = 0; i < this.mFloor.mCurves.length; i++) {
-        var curve = this.mFloor.mCurves[i];
+    for (var i = 0; i < this.mFloor.mElements.length; i++) {
+        var curve = this.mFloor.mElements[i];
         if (_loc6_.isIntersectWith(curve)) {
             console.warn("WARNING: INTERSECTED!!!");
             return false;
@@ -36,15 +33,15 @@ ElementProcessor.prototype.onToLine = function(param1)
     }
     
     
-    for (var i = 0; i < _loc6_.mStart.mCurves.length; i++) {
-        if (_loc6_.mStart.mCurves[i].mId == param1.mId) {
-            _loc6_.mStart.mCurves[i] = _loc6_;
+    for (var i = 0; i < _loc6_.mStart.mElements.length; i++) {
+        if (_loc6_.mStart.mElements[i].mId == param1.mId) {
+            _loc6_.mStart.mElements[i] = _loc6_;
         }
     }
     
-    for (var i = 0; i < _loc6_.mEnd.mCurves.length; i++) {
-        if (_loc6_.mEnd.mCurves[i].mId == param1.mId) {
-            _loc6_.mEnd.mCurves[i] = _loc6_;
+    for (var i = 0; i < _loc6_.mEnd.mElements.length; i++) {
+        if (_loc6_.mEnd.mElements[i].mId == param1.mId) {
+            _loc6_.mEnd.mElements[i] = _loc6_;
         }
     }
     
@@ -56,8 +53,6 @@ ElementProcessor.prototype.onToLine = function(param1)
     this.mFloor.removeSection(param1);
     this.mFloor.Analysis();
     this.mFloor.clearPickedArea();
-    //var analysis = new Analysis(this.mFloor);
-    //analysis.execute();
 }
 
 ElementProcessor.prototype.onToArc = function(param1)
@@ -69,23 +64,23 @@ ElementProcessor.prototype.onToArc = function(param1)
     var _loc4_ = 0.1;
     _loc7_.resetCurve(_loc4_);
     
-    for (var i = 0; i < this.mFloor.mCurves.length; i++) {
-        var curve = this.mFloor.mCurves[i];
+    for (var i = 0; i < this.mFloor.mElements.length; i++) {
+        var curve = this.mFloor.mElements[i];
         if (_loc7_.isIntersectWith(curve)) {
             console.warn("WARNING: TOO NARROW!!!");
             return false;
         }
     }
     
-    for (var i = 0; i < _loc7_.mStart.mCurves.length; i++) {
-        if (_loc7_.mStart.mCurves[i].mId == param1.mId) {
-            _loc7_.mStart.mCurves[i] = _loc7_;
+    for (var i = 0; i < _loc7_.mStart.mElements.length; i++) {
+        if (_loc7_.mStart.mElements[i].mId == param1.mId) {
+            _loc7_.mStart.mElements[i] = _loc7_;
         }
     }
     
-    for (var i = 0; i < _loc7_.mEnd.mCurves.length; i++) {
-        if (_loc7_.mEnd.mCurves[i].mId == param1.mId) {
-            _loc7_.mEnd.mCurves[i] = _loc7_;
+    for (var i = 0; i < _loc7_.mEnd.mElements.length; i++) {
+        if (_loc7_.mEnd.mElements[i].mId == param1.mId) {
+            _loc7_.mEnd.mElements[i] = _loc7_;
         }
     }
     
@@ -94,8 +89,6 @@ ElementProcessor.prototype.onToArc = function(param1)
     
     this.mFloor.Analysis();
     this.mFloor.clearPickedArea();
-    //var analysis = new Analysis(this.mFloor);
-    //analysis.execute();
     return true;
 }
 
@@ -114,7 +107,7 @@ ElementProcessor.prototype.onDelete = function(param1) {
         var _loc3_ = null;
         var _loc4_ = null;
         var _loc5_ = null;
-        var _loc1_ = _loc0_[i].mCurves;
+        var _loc1_ = _loc0_[i].mElements;
         
         for (var j = 0; j < _loc1_.length; j++) {
             if(_loc1_.length == 2)
@@ -142,9 +135,9 @@ ElementProcessor.prototype.onDelete = function(param1) {
         for(var i = 0; i < _loc5_.length; i++)
         {
             _loc6_ = _loc5_[i];
-            if(_loc6_.mCurves.length == 1)
+            if(_loc6_.mElements.length == 1)
             {
-               return _loc6_.mCurves[0];
+               return _loc6_.mElements[0];
             }
         }
         return null;
