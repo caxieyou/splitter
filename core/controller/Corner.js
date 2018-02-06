@@ -1,4 +1,4 @@
-function MyCorner(param1) {
+function Corner(param1) {
     if (param1 == null || param1 == undefined) {
         param1 = null;
     }
@@ -9,14 +9,14 @@ function MyCorner(param1) {
     this.mId = ID.assignUniqueId();
 }
 
-MyCorner.prototype.initialize = function()
+Corner.prototype.initialize = function()
 {
     this.mPosition = new Vec2();
     this.mCurves = [];
     mPosition = new Vec2();
 }
 
-MyCorner.prototype.dispose = function()
+Corner.prototype.dispose = function()
 {
     for(var i = 0; i < this.mCurves.length; i++)
     {
@@ -28,24 +28,24 @@ MyCorner.prototype.dispose = function()
     }
 }
 
-MyCorner.prototype.clone = function()
+Corner.prototype.clone = function()
 {
-    var _loc1_ = new MyCorner(this.mFloor);
+    var _loc1_ = new Corner(this.mFloor);
     _loc1_.mCurves = this.mCurves.concat();
     _loc1_.mPosition = this.mPosition;
     return _loc1_;
 }
-MyCorner.prototype.addSection = function(param1)
+Corner.prototype.addSection = function(param1)
 {
     return ArrayHelperClass.ifHasAndSave(this.mCurves,param1);
 }
 
-MyCorner.prototype.removeSection = function(param1)
+Corner.prototype.removeSection = function(param1)
 {
     return ArrayHelperClass.removeItem(this.mCurves,param1);
 }
 
-MyCorner.prototype.updatePosition = function(x, y)
+Corner.prototype.updatePosition = function(x, y)
 {
     var arc = [];
     for (var i = 0; i < this.mCurves.length; i++) {
@@ -98,15 +98,15 @@ MyCorner.prototype.updatePosition = function(x, y)
     }
 }
 
-MyCorner.prototype.getLast = function(){
+Corner.prototype.getLast = function(){
     return this.mPosition.clone();
 }
 
-MyCorner.prototype.revertUpdatePosition = function(last) {
+Corner.prototype.revertUpdatePosition = function(last) {
     this.updatePosition(last.mX, last.mY);
 }
 
-MyCorner.prototype.isBoundryCorner = function() {
+Corner.prototype.isBoundryCorner = function() {
     var ret = false;
     
     for (var i = 0; i < this.mCurves.length; i++) {
@@ -117,7 +117,7 @@ MyCorner.prototype.isBoundryCorner = function() {
     return ret;
 }
 
-MyCorner.prototype.getBoundrySegments = function() {
+Corner.prototype.getBoundrySegments = function() {
     var ret = [];
     
     for (var i = 0; i < this.mCurves.length; i++) {

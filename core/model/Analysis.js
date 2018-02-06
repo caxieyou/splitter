@@ -9,7 +9,7 @@ function Analysis(param1) {
 
 Analysis.prototype.calculateAreaAndCurves = function()
 {
-    //this.mAreas = MyArea.cloneAreas(this.mFloor.mAreas);
+    //this.mAreas = Area.cloneAreas(this.mFloor.mAreas);
     this.mAreas = this.mFloor.mAreas;
     //this.mCurves = Arc.cloneAreas(this.mFloor.curves);
     this.mCurves = this.mFloor.mCurves;
@@ -38,7 +38,7 @@ Analysis.prototype.prepare = function()
 
 Analysis.prototype.generateWallAreasByWall = function()
 {
-    return new MyArea(this.mFloor);
+    return new Area(this.mFloor);
 }
 
 //private function addNotHoleParts(param1:AreaFatherClass, param2:Vector.<curveBasicClass>) : void

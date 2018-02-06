@@ -282,11 +282,11 @@ Floor.prototype._updateGeoStructure = function() {
     
     var polyTree = null;
     for (var i = 0; i < areas.length; i++) {
-        var res = MyArea.outputStructures(areas[i], holesList[i]);
+        var res = Area.outputStructures(areas[i], holesList[i]);
         //inner geom structure
-        var res2 = MyArea.outputStructures2(areas[i], holesList[i]);
+        var res2 = Area.outputStructures2(areas[i], holesList[i]);
         //inner controllers' info
-        var res3 = MyArea.outputStructures3(areas[i], holesList[i]);
+        var res3 = Area.outputStructures3(areas[i], holesList[i]);
         
         res3.sort(function(a, b) {return a.mId - b.mId});
         

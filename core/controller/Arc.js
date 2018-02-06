@@ -2,8 +2,8 @@ function Arc(param1) {
     if (param1 == null || param1 == undefined) {
         param1 = null;
     }
-    this.mStart = new MyCorner(param1);
-    this.mEnd = new MyCorner(param1);
+    this.mStart = new Corner(param1);
+    this.mEnd = new Corner(param1);
     this.mAreas = [];
     this.mFloor = param1;
     this.mCurvePoint = new Vec2();
@@ -18,10 +18,10 @@ Arc.getSplitOneThirdCurve = function(param1)
 {
     var _loc2_ = null;
     var _loc3_ = new Arc();
-    _loc2_ = new MyCorner();
+    _loc2_ = new Corner();
     _loc2_.mPosition = param1.getSplitPosByRatio(0);
     _loc3_.updateStartCorner(_loc2_);
-    _loc2_ = new MyCorner();
+    _loc2_ = new Corner();
     _loc2_.mPosition = param1.getSplitPosByRatio(1);
     
     _loc3_.updateEndCorner(_loc2_);

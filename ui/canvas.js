@@ -307,7 +307,7 @@ Canvas.prototype.updateElement = function(x, y){
         this._mSnap.mFocus.keypoint = null;
         this.render();
         if (overlapped) {
-            if (this._mUpdateElment instanceof MyCorner) {
+            if (this._mUpdateElment instanceof Corner) {
                 var last = this._mUpdateElment.getLast();
                 this._mRenderer.drawLine(new Edge(last, new Vec2(x, y)), Style.OverLine.isDash, Style.OverLine.color)
                 this._mRenderer.drawCorner(last, Style.UpdateCorner.radius, Style.UpdateCorner.color);

@@ -1,4 +1,4 @@
-function MyArea(param1) {
+function Area(param1) {
     if (param1 == null || param1 == undefined) {
         param1 = null;
     }
@@ -14,12 +14,12 @@ function MyArea(param1) {
     this.mId = ID.assignUniqueId();
 }
 
-MyArea.outputStructure = function(param1) {
+Area.outputStructure = function(param1) {
     var res = {
         edges : []
     };
     
-    if (param1 instanceof MyArea) {
+    if (param1 instanceof Area) {
         for (var i = 0; i < param1.mCurves.length; i++) {
             if (param1.mCurves[i] instanceof Arc) {
                 var curve = param1.mCurves[i].getCurveFromController();
@@ -51,15 +51,15 @@ function MyOutput (outline) {
     this.mHoles = [];
 }
 
-MyArea.outputStructures = function(param1, param2) {
-    var outline = MyArea.outputStructure(param1);
+Area.outputStructures = function(param1, param2) {
+    var outline = Area.outputStructure(param1);
     
     res = new MyOutput(outline);
 
     if (param2.length == 0) {
         return res;
     } else if (param2.length == 1){
-        res.mHoles.push(MyArea.outputStructure(param2[0]));
+        res.mHoles.push(Area.outputStructure(param2[0]));
         return res;
     } else {
         //TODO: 排除重复，然后继续取边界
@@ -82,7 +82,7 @@ MyArea.outputStructures = function(param1, param2) {
         var clockwisePaths = Path.getClockWisePaths(paths);
         
         for (var i = 0; i < clockwisePaths.length; i++) {
-            res.mHoles.push(MyArea.outputStructure(clockwisePaths[i].mCurves));
+            res.mHoles.push(Area.outputStructure(clockwisePaths[i].mCurves));
         }
         
         return res;
@@ -90,7 +90,7 @@ MyArea.outputStructures = function(param1, param2) {
     
 }
 
-MyArea.outputStructures2 = function(param1, param2) {
+Area.outputStructures2 = function(param1, param2) {
     var outline = param1.getPathPolygon();
     
     res = new Polytree(outline);
@@ -107,7 +107,7 @@ MyArea.outputStructures2 = function(param1, param2) {
     
 }
 
-MyArea.outputStructures3 = function(param1, param2) {
+Area.outputStructures3 = function(param1, param2) {
     var res = [];
     res = res.concat(param1.mCurves);
 
@@ -124,7 +124,7 @@ MyArea.outputStructures3 = function(param1, param2) {
 }
 
 
-MyArea.prototype.initialize = function()
+Area.prototype.initialize = function()
 {
     this.mCurves = [];
 
@@ -135,7 +135,7 @@ MyArea.prototype.initialize = function()
     this.mPatternOffset = new Vec2();
 }
 
-MyArea.prototype.getPolygon = function()
+Area.prototype.getPolygon = function()
 {
     if(this.mPath == null)
     {
@@ -144,7 +144,7 @@ MyArea.prototype.getPolygon = function()
     return this.mPath.getPolygon();
 }
 
-MyArea.prototype.tryCalculatePolygon = function()
+Area.prototype.tryCalculatePolygon = function()
 {
     if(this.IsNotGetPolygonOnce == true)
     {
@@ -153,12 +153,12 @@ MyArea.prototype.tryCalculatePolygon = function()
     }
 }
 
-MyArea.prototype.addSection = function(param1)
+Area.prototype.addSection = function(param1)
 {
     return ArrayHelperClass.ifHasAndSave(this.mCurves,param1);
 }
       
-MyArea.prototype.dispose = function()
+Area.prototype.dispose = function()
 {
     var _loc1_ = null;
     for (var i = 0; i < this.mCurves.length; i++)
@@ -171,30 +171,30 @@ MyArea.prototype.dispose = function()
         this.mFloor.wallDleleteSame(this);
     }
 }
-MyArea.prototype.getPolygonFunc_EH = function()
+Area.prototype.getPolygonFunc_EH = function()
 {
     this.tryCalculatePolygon();
     return this.mPolygon;
 }
 
 //get holes
-MyArea.prototype.clonePolygons = function()
+Area.prototype.clonePolygons = function()
 {
     return [];
 }
       
-MyArea.prototype.generateElementDiscribeUnit = function()
+Area.prototype.generateElementDiscribeUnit = function()
 {
     return new Polytree(this.getPolygonFunc_EH(),this.clonePolygons());
 }
 
-MyArea.prototype.generatePolyTree = function()
+Area.prototype.generatePolyTree = function()
 {
     return new Polytree(this.getPolygon(),this.clonePolygons());
 }
 
 
-MyArea.prototype.isIncludedArea = function(param1)
+Area.prototype.isIncludedArea = function(param1)
 {
     if(!this.getPathPolygon().isIncludedPolygon(param1.getPathPolygon()))
     {
@@ -203,7 +203,7 @@ MyArea.prototype.isIncludedArea = function(param1)
     return true;
 }
 
-MyArea.prototype.containsPoint = function(param1)
+Area.prototype.containsPoint = function(param1)
 {
     if(!this.getPathPolygon().containsInclusive(param1))
     {
@@ -213,7 +213,7 @@ MyArea.prototype.containsPoint = function(param1)
 }
 
 
-MyArea.prototype.isIncludedPolygon = function(param1)
+Area.prototype.isIncludedPolygon = function(param1)
 {
 
     if(!this.getPathPolygon().isIncludedPolygon(param1))
@@ -224,7 +224,7 @@ MyArea.prototype.isIncludedPolygon = function(param1)
     return true;
 }
 
-MyArea.prototype.getPathPolygon = function()
+Area.prototype.getPathPolygon = function()
 {
     if(this.mPath == null)
     {
@@ -234,17 +234,17 @@ MyArea.prototype.getPathPolygon = function()
 }
 
 
-MyArea.prototype.GetPolygonFromSelf = function()
+Area.prototype.GetPolygonFromSelf = function()
 {
     this.mPolygon = GeoHelpSomeClass.getPolygonFromAreaPath(this);
 }
 
-MyArea.prototype.getAbsArea = function()
+Area.prototype.getAbsArea = function()
 {
     return Math.abs(this.getPolygon().getSignedArea());
 }
 
-MyArea.prototype.removeSection = function(param1)
+Area.prototype.removeSection = function(param1)
 {
     return ArrayHelperClass.removeItem(this.mCurves, param1);
 }

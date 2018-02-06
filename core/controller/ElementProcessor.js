@@ -5,7 +5,7 @@ function ElementProcessor(param1) {
 
 ElementProcessor.prototype.onSplitCurve = function(param1)
 {
-    var _loc1_ = new MyCorner();
+    var _loc1_ = new Corner();
     _loc1_.mPosition = param1.getCenter();
     this.mFloor.addCorner(_loc1_);
     param1.updateInfo(_loc1_);

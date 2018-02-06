@@ -1011,7 +1011,7 @@ Renderer = function () {
     }
     
     this.drawCornerDimentions = function(corner) {
-        if (corner && corner instanceof MyCorner) {
+        if (corner && corner instanceof Corner) {
             for (var i = 0; i < corner.mCurves.length; i++) {
                 if (corner.mCurves[i] instanceof Segment) {
                     var curve = corner.mCurves[i];

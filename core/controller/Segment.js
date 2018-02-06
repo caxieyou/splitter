@@ -6,8 +6,8 @@ function Segment(param1, param2) {
         param2 = false;
     }
     
-    this.mStart = new MyCorner(param1);
-    this.mEnd = new MyCorner(param1);
+    this.mStart = new Corner(param1);
+    this.mEnd = new Corner(param1);
     this.mAreas = [];
     this.mFloor = param1;
     this.mId = ID.assignUniqueId();
@@ -23,10 +23,10 @@ Segment.createSegmentByMyEdge = function(param1)
 {
     var _loc2_ = null;
     var _loc3_ = new Segment();
-    _loc2_ = new MyCorner();
+    _loc2_ = new Corner();
     _loc2_.mPosition = param1.mStart;
     _loc3_.updateStartCorner(_loc2_);
-    _loc2_ = new MyCorner();
+    _loc2_ = new Corner();
     _loc2_.mPosition = param1.mEnd;
     _loc3_.updateEndCorner(_loc2_);
     return _loc3_;
