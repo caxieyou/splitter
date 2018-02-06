@@ -300,7 +300,7 @@ Canvas.prototype.updateElement = function(x, y){
         if (this._mUpdateElment instanceof Segment) {
             this._mSnap.mFocus.geom = this._mUpdateElment.getTheStartEndEdge();
         } else if(this._mUpdateElment instanceof Arc) {
-            this._mSnap.mFocus.geom =  this._mUpdateElment.getCurveFromController();
+            this._mSnap.mFocus.geom =  this._mUpdateElment.getCurve();
         } else {
             this._mSnap.mFocus.geom = this._mUpdateElment.mPosition.clone();
         }
@@ -359,7 +359,7 @@ Canvas.prototype._renderFocusPrimitive = function() {
             this._mRenderer.drawLine(this._mProcessElement.getTheStartEndEdge(), null, null, true);
             
         } else if(this._mProcessElement instanceof Arc) {
-            this._mRenderer.drawArc(this._mProcessElement.getCurveFromController(), true);
+            this._mRenderer.drawArc(this._mProcessElement.getCurve(), true);
             
         }
     }

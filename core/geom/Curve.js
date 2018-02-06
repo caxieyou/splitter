@@ -166,7 +166,7 @@ Curve.prototype.isPointOnCurve = function(param1, param2)
         param2 = 1.0E-6;
     }
     
-    return this.getSplitPosByRatio(0).isClose(param1,param2) || this.getSplitPosByRatio(1).isClose(param1,param2);
+    return this.getPointByRatio(0).isClose(param1,param2) || this.getPointByRatio(1).isClose(param1,param2);
 }
 
 
@@ -195,7 +195,7 @@ Curve.prototype.isClockWise = function()
 
 Curve.prototype.getVectorByRatio = function(param1)
 {
-    var _loc2_ = this.getSplitPosByRatio(param1).sub(this.mCenter).normalize();
+    var _loc2_ = this.getPointByRatio(param1).sub(this.mCenter).normalize();
     if(this.isClockWise())
     {
         _loc2_.negtive();
@@ -213,8 +213,8 @@ Curve.prototype.getIntersectionPointByPoint = function(param1)
     var _loc2_ = param1.clone().sub(this.mCenter).getAngle();
     if(!this.isBetweenArcAngleRange(_loc2_))
     {
-        _loc3_ = this.getSplitPosByRatio(0);
-        _loc4_ = this.getSplitPosByRatio(1);
+        _loc3_ = this.getPointByRatio(0);
+        _loc4_ = this.getPointByRatio(1);
         _loc5_ = param1.distance(_loc3_);
         _loc6_ = param1.distance(_loc4_);
         if(_loc5_ < _loc6_)
@@ -304,7 +304,7 @@ Curve.prototype.curveAngleByRatio = function(param1)
     return this.mStartAngle + param1 * this.mArcAngle;
 }
 
-Curve.prototype.getSplitPosByRatio = function(param1)
+Curve.prototype.getPointByRatio = function(param1)
 {
     this.diagnose();
     return this.curvePosByRatio(this.curveAngleByRatio(param1));
@@ -363,17 +363,17 @@ Curve.prototype.tessallation_NotUnderstand = function(param1)
     {
         _loc4_ = _loc3_.pop();
         _loc5_ = (_loc4_.mX + _loc4_.mY) * 0.5;
-        _loc6_ = Edge.distancePointToCurve(this.getSplitPosByRatio(_loc4_.mX),this.getSplitPosByRatio(_loc4_.mY),this.getSplitPosByRatio(_loc5_));
+        _loc6_ = Edge.distancePointToCurve(this.getPointByRatio(_loc4_.mX),this.getPointByRatio(_loc4_.mY),this.getPointByRatio(_loc5_));
         if(Math.abs(_loc6_) < param1)
         {
-            _loc2_.push(this.getSplitPosByRatio(_loc4_.mX));
+            _loc2_.push(this.getPointByRatio(_loc4_.mX));
         }
         else
         {
             _loc3_.push(new Vec2(_loc5_,_loc4_.mY),new Vec2(_loc4_.mX,_loc5_));
         }
     }
-    _loc2_.push(this.getSplitPosByRatio(1));
+    _loc2_.push(this.getPointByRatio(1));
     return _loc2_;
 }
 
@@ -389,12 +389,12 @@ Curve.prototype.tessallation = function(param1)
     var _loc3_ = 0;
     while(_loc3_ <= 1)
     {
-        _loc2_.push(this.getSplitPosByRatio(_loc3_));
+        _loc2_.push(this.getPointByRatio(_loc3_));
         _loc3_ = _loc3_ + param1;
     }
     if(!MyNumber.isEqual(_loc3_,1,0.5 * param1))
     {
-        _loc2_.push(this.getSplitPosByRatio(1));
+        _loc2_.push(this.getPointByRatio(1));
     }
     return _loc2_;
 }
@@ -422,8 +422,8 @@ Curve.prototype.getValidPart = function(curve)
         return this;
     }
     
-    var s0 = this.getSplitPosByRatio(0);
-    var e0 = this.getSplitPosByRatio(1);
+    var s0 = this.getPointByRatio(0);
+    var e0 = this.getPointByRatio(1);
     
     var r0 = curve.isInsideArcFan(s0);
     var r1 = curve.isInsideArcFan(e0);
@@ -432,8 +432,8 @@ Curve.prototype.getValidPart = function(curve)
         return null;
     }
     
-    var s1 = curve.getSplitPosByRatio(0);
-    var e1 = curve.getSplitPosByRatio(1);
+    var s1 = curve.getPointByRatio(0);
+    var e1 = curve.getPointByRatio(1);
     
     var r2 = this.isInsideArcFan(s1);
     var r3 = this.isInsideArcFan(e1);
@@ -453,24 +453,24 @@ Curve.prototype.getValidPart = function(curve)
         var min = Math.min(ratio1, ratio2);
         
         if (MyNumber.isEqual(min, 0)) {
-            var startAngle = this.getCenterIntersectAngle(curve.getSplitPosByRatio(1));
-            var deltaAngle = Angle.normalize(this.getCenterIntersectAngle(this.getSplitPosByRatio(1)) - startAngle);
+            var startAngle = this.getCenterIntersectAngle(curve.getPointByRatio(1));
+            var deltaAngle = Angle.normalize(this.getCenterIntersectAngle(this.getPointByRatio(1)) - startAngle);
             return new Curve(this.mCenter.clone(), this.mRadius, startAngle, deltaAngle);
         }
         
         if (MyNumber.isEqual(max, 1)) {
-            var startAngle = this.getCenterIntersectAngle(this.getSplitPosByRatio(0));
-            var deltaAngle = Angle.normalize(this.getCenterIntersectAngle(curve.getSplitPosByRatio(0)) - startAngle);
+            var startAngle = this.getCenterIntersectAngle(this.getPointByRatio(0));
+            var deltaAngle = Angle.normalize(this.getCenterIntersectAngle(curve.getPointByRatio(0)) - startAngle);
             return new Curve(this.mCenter.clone(), this.mRadius, startAngle, deltaAngle);
         }
         
         
-        var startAngle = this.getCenterIntersectAngle(this.getSplitPosByRatio(0));
-        var deltaAngle = Angle.normalize(this.getCenterIntersectAngle(curve.getSplitPosByRatio(0)) - startAngle);
+        var startAngle = this.getCenterIntersectAngle(this.getPointByRatio(0));
+        var deltaAngle = Angle.normalize(this.getCenterIntersectAngle(curve.getPointByRatio(0)) - startAngle);
         var newCurve0 = new Curve(this.mCenter.clone(), this.mRadius, startAngle, deltaAngle);
         
-        var startAngle = this.getCenterIntersectAngle(curve.getSplitPosByRatio(1));
-        var deltaAngle = Angle.normalize(this.getCenterIntersectAngle(this.getSplitPosByRatio(1)) - startAngle);
+        var startAngle = this.getCenterIntersectAngle(curve.getPointByRatio(1));
+        var deltaAngle = Angle.normalize(this.getCenterIntersectAngle(this.getPointByRatio(1)) - startAngle);
         var newCurve1 = new Curve(this.mCenter.clone(), this.mRadius, startAngle, deltaAngle);
         
         return [newCurve0, newCurve1];

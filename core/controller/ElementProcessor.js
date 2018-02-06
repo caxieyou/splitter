@@ -46,11 +46,11 @@ ElementProcessor.prototype.onToLine = function(param1)
     }
     
     
-    _loc7_.removeSection(param1);
-    _loc8_.removeSection(param1);
+    _loc7_.removeElement(param1);
+    _loc8_.removeElement(param1);
     
-    this.mFloor.addSection(_loc6_);
-    this.mFloor.removeSection(param1);
+    this.mFloor.addElement(_loc6_);
+    this.mFloor.removeElement(param1);
     this.mFloor.Analysis();
     this.mFloor.clearPickedArea();
 }
@@ -84,8 +84,8 @@ ElementProcessor.prototype.onToArc = function(param1)
         }
     }
     
-    this.mFloor.addSection(_loc7_);
-    this.mFloor.removeSection(param1);
+    this.mFloor.addElement(_loc7_);
+    this.mFloor.removeElement(param1);
     
     this.mFloor.Analysis();
     this.mFloor.clearPickedArea();

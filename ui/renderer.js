@@ -1004,7 +1004,7 @@ Renderer = function () {
             }
             
             if (seg instanceof Arc) {
-                var edge = seg.getCurveFromController();
+                var edge = seg.getCurve();
                 this.drawArc(edge, isFocus);
             }
         }

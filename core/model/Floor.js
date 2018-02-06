@@ -102,7 +102,7 @@ Floor.prototype.correctAreas = function()
     ArrayHelperClass.deleteSameValues(this.mAreas,_loc1_);
 }
 
-Floor.prototype.addSection = function(param1)
+Floor.prototype.addElement = function(param1)
 {
     var _loc2_ = ArrayHelperClass.ifHasAndSave(this.mElements,param1);
     if(_loc2_)
@@ -131,7 +131,7 @@ Floor.prototype.removeCorner = function(param1)
     return ArrayHelperClass.removeItem(this.mCorners,param1);
 }
 
-Floor.prototype.removeSection = function(param1)
+Floor.prototype.removeElement = function(param1)
 {
     return ArrayHelperClass.removeItem(this.mElements, param1);
 }
@@ -209,17 +209,17 @@ Floor.prototype.checkOverlap = function()  {
             var c = null;
             if (curve0 instanceof Segment && curve1 instanceof Arc) {
                 e = curve0.getTheStartEndEdge();
-                c = curve1.getCurveFromController();
+                c = curve1.getCurve();
             }
             
             if (curve0 instanceof Arc && curve1 instanceof Segment) {
                 e = curve1.getTheStartEndEdge();
-                c = curve0.getCurveFromController();
+                c = curve0.getCurve();
             }
             
             if (e && c) {
-                var p0 = c.getSplitPosByRatio(0);
-                var p1 = c.getSplitPosByRatio(1);
+                var p0 = c.getPointByRatio(0);
+                var p1 = c.getPointByRatio(1);
                 
                 if (e.pointInEdgeOrOnEdge(p0) || e.pointInEdgeOrOnEdge(p1)) {
                     overlapped = true;
@@ -458,8 +458,8 @@ Floor.prototype._removeInvalid = function(output, pass) {
         
     for (var j = 0; j < output.length; j++) {
         var cur = output[j];
-        var curStart  = cur.mStart ? cur.mStart : cur.getSplitPosByRatio(0);
-        var curEnd    = cur.mEnd ? cur.mEnd : cur.getSplitPosByRatio(1);
+        var curStart  = cur.mStart ? cur.mStart : cur.getPointByRatio(0);
+        var curEnd    = cur.mEnd ? cur.mEnd : cur.getPointByRatio(1);
         sameCountStart[j] = 1;
         sameCountEnd[j] = 1;
         for (var m = 0; m < output.length; m++) {
@@ -467,8 +467,8 @@ Floor.prototype._removeInvalid = function(output, pass) {
                 continue;
             }
             var com = output[m];
-            var comStart  = com.mStart ? com.mStart : com.getSplitPosByRatio(0);
-            var comEnd    = com.mEnd ? com.mEnd : com.getSplitPosByRatio(1);
+            var comStart  = com.mStart ? com.mStart : com.getPointByRatio(0);
+            var comEnd    = com.mEnd ? com.mEnd : com.getPointByRatio(1);
         
             if (curStart.equals(comStart) || curStart.equals(comEnd)) {
                 sameCountStart[j]++;
@@ -517,16 +517,16 @@ Floor.prototype._reconnect = function(output, valid) {
         return null;
     }
     
-    var curStart  = output[index].mStart ? output[index].mStart : output[index].getSplitPosByRatio(0);
-    var curEnd    = output[index].mEnd ? output[index].mEnd : output[index].getSplitPosByRatio(1);
+    var curStart  = output[index].mStart ? output[index].mStart : output[index].getPointByRatio(0);
+    var curEnd    = output[index].mEnd ? output[index].mEnd : output[index].getPointByRatio(1);
     valid[index] = false;
     ret.push(output[index]);
     
     index = (index + 1) % output.length;
     while(true) {
         var edge = output[index];
-        var edgeStart  = edge.mStart ? edge.mStart : edge.getSplitPosByRatio(0);
-        var edgeEnd    = edge.mEnd ? edge.mEnd : edge.getSplitPosByRatio(1);
+        var edgeStart  = edge.mStart ? edge.mStart : edge.getPointByRatio(0);
+        var edgeEnd    = edge.mEnd ? edge.mEnd : edge.getPointByRatio(1);
         if (curEnd.equals(edgeStart)) {
             curEnd = edgeEnd;
             valid[index] = false;
@@ -664,7 +664,7 @@ Floor.prototype._seperateType = function() {
         } else if (this.mElements[i] instanceof Arc) {
             curves.push(this.mElements[i]);
             if (pickedArea) {
-                var cur = this.mElements[i].getCurveFromController();
+                var cur = this.mElements[i].getCurve();
                 for (var j = 0; j < pickedArea.mOutline.edges.length; j++) {
                     var edge = pickedArea.mOutline.edges[j];
                     if (edge instanceof Curve && Curve.isSameCurve(cur, edge)) {

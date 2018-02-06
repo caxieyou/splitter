@@ -35,12 +35,13 @@ Corner.prototype.clone = function()
     _loc1_.mPosition = this.mPosition;
     return _loc1_;
 }
-Corner.prototype.addSection = function(param1)
+
+Corner.prototype.addElement = function(param1)
 {
     return ArrayHelperClass.ifHasAndSave(this.mElements,param1);
 }
 
-Corner.prototype.removeSection = function(param1)
+Corner.prototype.removeElement = function(param1)
 {
     return ArrayHelperClass.removeItem(this.mElements,param1);
 }
@@ -50,7 +51,7 @@ Corner.prototype.updatePosition = function(x, y)
     var arc = [];
     for (var i = 0; i < this.mElements.length; i++) {
         if (this.mElements[i] instanceof Arc) {
-            arc.push(this.mElements[i].getCurveFromController().mArcAngle);
+            arc.push(this.mElements[i].getCurve().mArcAngle);
         }
     }
     
@@ -78,7 +79,7 @@ Corner.prototype.updatePosition = function(x, y)
                 }
 
                 if (curve instanceof Arc) {
-                    var edge = curve.getCurveFromController(); 
+                    var edge = curve.getCurve(); 
                     if (edge.getDistance(new Vec2(x, y) < 5)) {
                         return true;
                     }

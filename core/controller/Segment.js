@@ -92,7 +92,7 @@ Segment.prototype.updateInfo = function(param1)
     _loc2_.updateEndCorner(this.mEnd);
     this.updateEndCorner(param1);
 
-    this.mFloor.addSection(_loc2_);
+    this.mFloor.addElement(_loc2_);
     return _loc2_;
 }
       
@@ -162,24 +162,24 @@ Segment.prototype.getTheCurveStartEndEdgeToPointDistance = function(param1, para
 Segment.prototype.updateStartCorner = function(param1) {
     if(this.mStart != null)
     {
-        this.mStart.removeSection(this);
+        this.mStart.removeElement(this);
     }
     this.mStart = param1;
     if(this.mStart != null)
     {
-        this.mStart.addSection(this);
+        this.mStart.addElement(this);
     }
 };
 
 Segment.prototype.updateEndCorner = function(param1) {
     if(this.mEnd != null)
     {
-        this.mEnd.removeSection(this);
+        this.mEnd.removeElement(this);
     }
     this.mEnd = param1;
     if(this.mEnd != null)
     {
-        this.mEnd.addSection(this);
+        this.mEnd.addElement(this);
     }
 };
 
@@ -207,7 +207,7 @@ Segment.prototype.isIntersectWith = function(param1, param2, param3, param4)
     if(param1 instanceof Arc)
     {
         _loc7_ = param1;
-        _loc8_ = _loc7_.getCurveFromController();
+        _loc8_ = _loc7_.getCurve();
         return this.isCurveIntersectByAreaAndGetIntersectPoint(_loc8_,param2,param3,param4);
     }
     return false;
@@ -237,7 +237,7 @@ Segment.isIntersectWith = function(param1, param2, param3, param4, param5)
     if(param2 instanceof Arc)
     {
         _loc7_ = param2;
-        _loc8_ = _loc7_.getCurveFromController();
+        _loc8_ = _loc7_.getCurve();
         return Segment.isCurveIntersectByAreaAndGetIntersectPoint(param1, _loc8_,param3,param4,param5);
     }
     return false;
@@ -309,7 +309,7 @@ Segment.prototype.dispose = function()
     for (var i = 0; i < _loc1_.length; i++) {
         _loc2_ = _loc1_[i];
         if (_loc2_) {
-            _loc2_.removeSection(this);
+            _loc2_.removeElement(this);
             if(_loc2_.mElements.length == 0)
             {
                 _loc2_.dispose();
@@ -319,12 +319,12 @@ Segment.prototype.dispose = function()
     
     for (var i = 0; i < this.mAreas.length; i++) {
         _loc3_ = this.mAreas[i];
-        _loc3_.removeSection(this);
+        _loc3_.removeElement(this);
     }
          
     if(this.mFloor != null)
     {
-        this.mFloor.removeSection(this);
+        this.mFloor.removeElement(this);
     }
 }
 

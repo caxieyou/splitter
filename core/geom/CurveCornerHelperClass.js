@@ -4,7 +4,7 @@ function curveCornerHelperClass(param1) {
     
     for (var i = 0; i < param1.length; i++)
     {
-        this.addSection(param1[i]);
+        this.addElement(param1[i]);
     }
          
 }
@@ -23,7 +23,7 @@ curveCornerHelperClass.prototype.getCurvesByCorner = function(param1)
     return this.mMap2.itemFor(param1);
 }
 
-curveCornerHelperClass.prototype.addSection = function(param1)
+curveCornerHelperClass.prototype.addElement = function(param1)
 {
     var _loc2_ = param1.mStart;
     var _loc3_ = param1.mEnd;
@@ -100,7 +100,7 @@ curveCornerHelperClass.prototype.getPathByCornerCurve = function(param1, param2,
     {
         return;
     }
-    param3.addSection(param2);
+    param3.addElement(param2);
     this.addOne_to_map(param1,param2);
     var _loc4_ = param2.getStartOrEndOrNull(param1);
     var _loc5_ = this.getCurvesByCorner(_loc4_);

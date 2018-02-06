@@ -108,7 +108,7 @@ Path.prototype.buildPolygon = function()
     this.mArea = this.mPolygon.getSignedArea();
 }
 
-Path.prototype.addSection = function(param1)
+Path.prototype.addElement = function(param1)
 {
     this.mElements.push(param1);
 }

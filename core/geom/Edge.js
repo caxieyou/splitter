@@ -378,7 +378,7 @@ Edge.prototype.enlarge_xx = function(param1)
     return this.mStart.distance(this.mEnd) * param1;
 }
 
-Edge.prototype.getSplitPosByRatio = function(param1)
+Edge.prototype.getPointByRatio = function(param1)
 {
     return this.mEnd.sub(this.mStart).mulBy(param1).add(this.mStart);
 }

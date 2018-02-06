@@ -20,7 +20,7 @@ Area.outputStructure = function(param1) {
     if (param1 instanceof Area) {
         for (var i = 0; i < param1.mElements.length; i++) {
             if (param1.mElements[i] instanceof Arc) {
-                var curve = param1.mElements[i].getCurveFromController();
+                var curve = param1.mElements[i].getCurve();
                 res.edges.push(curve);
             } else if (param1.mElements[i] instanceof Segment) {
                 var edge = param1.mElements[i].getTheStartEndEdge();
@@ -30,7 +30,7 @@ Area.outputStructure = function(param1) {
     } else if (param1 instanceof Array) {
         for (var i = 0; i < param1.length; i++) {
             if (param1[i] instanceof Arc) {
-                var curve = param1[i].getCurveFromController();
+                var curve = param1[i].getCurve();
                 res.edges.push(curve);
             }
             if (param1[i] instanceof Segment) {
@@ -150,7 +150,7 @@ Area.prototype.tryCalculatePolygon = function()
     }
 }
 
-Area.prototype.addSection = function(param1)
+Area.prototype.addElement = function(param1)
 {
     return ArrayHelperClass.ifHasAndSave(this.mElements,param1);
 }
@@ -240,7 +240,7 @@ Area.prototype.getAbsArea = function()
     return Math.abs(this.getPolygon().getSignedArea());
 }
 
-Area.prototype.removeSection = function(param1)
+Area.prototype.removeElement = function(param1)
 {
     return ArrayHelperClass.removeItem(this.mElements, param1);
 }

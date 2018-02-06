@@ -2,31 +2,29 @@ function Arc(param1) {
     if (param1 == null || param1 == undefined) {
         param1 = null;
     }
-    this.mStart = new Corner(param1);
-    this.mEnd = new Corner(param1);
-    this.mAreas = [];
-    this.mFloor = param1;
+    this.mFloor      = param1;
+    this.mStart      = new Corner(param1);
+    this.mEnd        = new Corner(param1);
+    this.mAreas      = [];
     this.mCurvePoint = new Vec2();
-    this.mId = ID.assignUniqueId();
+    this.mId         = ID.assignUniqueId();
 }
 
 Arc.CONST_SPLIT = 0.3333333;
 Arc.TOLERANCE   = 1.0E-6;
 
 
-Arc.getSplitOneThirdCurve = function(param1)
+Arc.copy = function(param1)
 {
     var _loc2_ = null;
     var _loc3_ = new Arc();
     _loc2_ = new Corner();
-    _loc2_.mPosition = param1.getSplitPosByRatio(0);
+    _loc2_.mPosition = param1.getPointByRatio(0);
     _loc3_.updateStartCorner(_loc2_);
     _loc2_ = new Corner();
-    _loc2_.mPosition = param1.getSplitPosByRatio(1);
-    
+    _loc2_.mPosition = param1.getPointByRatio(1);
     _loc3_.updateEndCorner(_loc2_);
-
-    _loc3_.mCurvePoint = param1.getSplitPosByRatio(Arc.CONST_SPLIT);
+    _loc3_.mCurvePoint = param1.getPointByRatio(Arc.CONST_SPLIT);
     return _loc3_;
 }
 
@@ -48,21 +46,18 @@ Arc.isIntersectWith = function(param1, param2, param3, param4)
     var _loc8_ = null;
     if(param1 instanceof Curve)
     {
-        //_loc5_ = param1
         _loc6_ = param1;
         return this.isCurveIntersectByAreaAndGetIntersectPoint(_loc6_,param2,param3,param4);
     }
     if(param1 instanceof Edge)
     {
-        //_loc7_ = param1;
         _loc8_ = param1;
         return this.intersectSub(_loc8_,param2,param3,param4);
     }
     return false;                   
 }
 
-//求圆心
-Arc.prototype.getInnerIntersectionPoint_XX = function()
+Arc.prototype.getCircleCenter = function()
 {
     var _loc1_ = new Edge(this.mStart.mPosition.clone(),this.mEnd.mPosition.clone());
     var _loc2_ = new Edge(this.mStart.mPosition.clone(),this.mCurvePoint.clone());
@@ -77,15 +72,15 @@ Arc.prototype.getInnerIntersectionPoint_XX = function()
 
 Arc.prototype.containsPoint = function(param1)
 {
-    return this.getCurveFromController().isInsideCurveAndOnCurve(param1);
+    return this.getCurve().isInsideCurveAndOnCurve(param1);
 }
 
-Arc.prototype.getCurveFromController = function()
+Arc.prototype.getCurve = function()
 {
-    var _loc1_ = this.getInnerIntersectionPoint_XX();
+    var _loc1_ = this.getCircleCenter();
     if(isNaN(_loc1_.mX) || isNaN(_loc1_.mY))
     {
-        return new Curve(this.mStart.mPosition,Arc.TOLERANCE,Arc.TOLERANCE,Arc.TOLERANCE);
+        return new Curve(this.mStart.mPosition, Arc.TOLERANCE, Arc.TOLERANCE, Arc.TOLERANCE);
     }
     var _loc2_ = this.mStart.mPosition.clone().sub(_loc1_).getAngle();
     var _loc3_ = this.mEnd.mPosition.clone().sub(_loc1_).getAngle();
@@ -121,12 +116,12 @@ Arc.prototype.isHasAndSaveOnCurve = function(param1)
 
 Arc.prototype.updateInfo = function(param1)
 {
-    var _loc2_ = this.getCurveFromController();
-    var _loc3_ = param1.mPosition.clone().sub(this.getInnerIntersectionPoint_XX()).getAngle();
+    var _loc2_ = this.getCurve();
+    var _loc3_ = param1.mPosition.clone().sub(this.getCircleCenter()).getAngle();
     var _loc4_ = _loc2_.getAngleRatio(_loc3_);
-    var _loc5_ = _loc2_.getSplitPosByRatio(_loc4_ * 0.33333333);
-    var _loc6_ = _loc2_.getSplitPosByRatio(_loc4_ + (1 - _loc4_) * 0.33333333);
-    var _loc7_ = wallCurveCornerHelper.getCornerByPos_XX(_loc2_.getSplitPosByRatio(1),[this.mStart, this.mEnd]);
+    var _loc5_ = _loc2_.getPointByRatio(_loc4_ * Arc.CONST_SPLIT);
+    var _loc6_ = _loc2_.getPointByRatio(_loc4_ + (1 - _loc4_) * Arc.CONST_SPLIT);
+    var _loc7_ = wallCurveCornerHelper.getCornerByPos_XX(_loc2_.getPointByRatio(1),[this.mStart, this.mEnd]);
     var _loc8_ = new Arc();
     
     _loc8_.updateStartCorner(param1);
@@ -142,7 +137,7 @@ Arc.prototype.updateInfo = function(param1)
         this.updateStartCorner(param1);
     }
     this.mCurvePoint = _loc5_;
-    this.mFloor.addSection(_loc8_);
+    this.mFloor.addElement(_loc8_);
     return _loc8_;
 }
 
@@ -167,24 +162,24 @@ Arc.prototype.wallDleleteSame = function(param1)
 Arc.prototype.updateStartCorner = function(param1) {
     if(this.mStart != null)
     {
-        this.mStart.removeSection(this);
+        this.mStart.removeElement(this);
     }
     this.mStart = param1;
     if(this.mStart != null)
     {
-        this.mStart.addSection(this);
+        this.mStart.addElement(this);
     }
 };
 
 Arc.prototype.updateEndCorner = function(param1) {
     if(this.mEnd != null)
     {
-        this.mEnd.removeSection(this);
+        this.mEnd.removeElement(this);
     }
     this.mEnd = param1;
     if(this.mEnd != null)
     {
-        this.mEnd.addSection(this);
+        this.mEnd.addElement(this);
     }
 };
 
@@ -211,7 +206,7 @@ Arc.prototype.resetCurve = function(param1)
     }
     var _loc2_ = Curve.createCurveByEdgeNumber(this.getTheStartEndEdge(),param1);
     
-    this.mCurvePoint.copy(_loc2_.getSplitPosByRatio(0.3333333));
+    this.mCurvePoint.copy(_loc2_.getPointByRatio(Arc.CONST_SPLIT));
 }
 
 Arc.prototype.adjustCurve = function(param1)
@@ -221,7 +216,7 @@ Arc.prototype.adjustCurve = function(param1)
         return;
     }
     var _loc2_ = Curve.createCurveByEdgeNumber2(this.getTheStartEndEdge(),param1);
-    this.mCurvePoint.copy(_loc2_.getSplitPosByRatio(0.3333333));
+    this.mCurvePoint.copy(_loc2_.getPointByRatio(Arc.CONST_SPLIT));
 }
 
 Arc.prototype.isStartOrEnd = function(param1)
@@ -253,7 +248,7 @@ Arc.prototype.isIntersectWith = function(param1, param2, param3, param4)
     if(param1 instanceof Arc)
     {
         _loc5_ = param1
-        _loc6_ = _loc5_.getCurveFromController();
+        _loc6_ = _loc5_.getCurve();
         return this.isCurveIntersectByAreaAndGetIntersectPoint(_loc6_,param2,param3,param4);
     }
     if(param1 instanceof Segment)
@@ -305,7 +300,7 @@ Arc.prototype.intersectSub = function(param1, param2, param3, param4)
     if (param4 == null || param4 == undefined) {
         param4 = 1.0E-6;
     }
-    var _loc5_ = this.getCurveFromController();
+    var _loc5_ = this.getCurve();
     var _loc6_ = ArcEdgeHelper.getValidIntersectionPointBetweenArcAndEdge(_loc5_,param1);
     if(!param3)
     {
@@ -331,7 +326,7 @@ Arc.prototype.dispose = function()
     for (var i = 0; i < _loc1_.length; i++) {
         _loc2_ = _loc1_[i];
         if (_loc2_) {
-            _loc2_.removeSection(this);
+            _loc2_.removeElement(this);
             if(_loc2_.mElements.length == 0)
             {
                 _loc2_.dispose();
@@ -341,12 +336,12 @@ Arc.prototype.dispose = function()
     
     for (var i = 0; i < this.mAreas.length; i++) {
         _loc3_ = this.mAreas[i];
-        _loc3_.removeSection(this);
+        _loc3_.removeElement(this);
     }
     
     if(this.mFloor != null)
     {
-        this.mFloor.removeSection(this);
+        this.mFloor.removeElement(this);
     }
 }
 Arc.prototype.isInsideMyArea = function(param1, param2, param3)
@@ -358,7 +353,7 @@ Arc.prototype.isInsideMyArea = function(param1, param2, param3)
         param3 = 1.0E-6;
     }
 
-    return !!param2 ? this.getCurveFromController().isInsideArcFan(param1,param3) : this.getCurveFromController().isInsideCurveAndNotOnCurve(param1,param3);
+    return !!param2 ? this.getCurve().isInsideArcFan(param1,param3) : this.getCurve().isInsideCurveAndNotOnCurve(param1,param3);
 }
 
 Arc.prototype.getTheCurveStartEndEdgeToPointDistance = function(param1, param2)
@@ -367,7 +362,7 @@ Arc.prototype.getTheCurveStartEndEdgeToPointDistance = function(param1, param2)
         param2 = true;
     }
 
-    return this.getCurveFromController().getDistance(param1,param2);
+    return this.getCurve().getDistance(param1,param2);
 }
 Arc.prototype.isCurveIntersectByEdgeAndGetIntersectPoint = function(param1, param2, param3, param4)
 {
@@ -381,7 +376,7 @@ Arc.prototype.isCurveIntersectByEdgeAndGetIntersectPoint = function(param1, para
         param4 = 1.0E-6;
     }
     
-    var _loc5_ = this.getCurveFromController();
+    var _loc5_ = this.getCurve();
     var _loc6_ = ArcEdgeHelper.getValidIntersectionPointBetweenArcAndEdge(_loc5_,param1);
     if(!param3)
     {
@@ -411,7 +406,7 @@ Arc.prototype.isCurveIntersectByAreaAndGetIntersectPoint = function(param1, para
         param4 = 1.0E-6;
     }
 
-    var _loc5_ = this.getCurveFromController();
+    var _loc5_ = this.getCurve();
     var _loc6_= ArcEdgeHelper.getCurveIntersectionPoints(_loc5_,param1,param4);
     if(!param3)
     {
@@ -431,12 +426,12 @@ Arc.prototype.isCurveIntersectByAreaAndGetIntersectPoint = function(param1, para
 
 Arc.prototype.getCenter = function()
 {
-    return this.getCurveFromController().getSplitPosByRatio(0.5);
+    return this.getCurve().getPointByRatio(0.5);
 }
 
 Arc.prototype.getClosestPoint = function(param1)
 {
-    return this.getCurveFromController().getClosestPoint(param1);
+    return this.getCurve().getClosestPoint(param1);
 }
 
 Arc.prototype.switchOrder = function(param1)
@@ -447,14 +442,14 @@ Arc.prototype.switchOrder = function(param1)
 
     if(!param1)
     {
-        return this.getCurveFromController().tessallation_NotUnderstand();
+        return this.getCurve().tessallation_NotUnderstand();
     }
-    return this.getCurveFromController().tessallation_NotUnderstand().reverse();
+    return this.getCurve().tessallation_NotUnderstand().reverse();
 }
 
 Arc.prototype.decideSide = function(param1)
 {
-    var _loc2_ = this.getCurveFromController().decideSide(param1);
+    var _loc2_ = this.getCurve().decideSide(param1);
     if(_loc2_ == ArcCurvePointSide.ON_RIGHT)
     {
         return DecoCurvePointSide.ON_LEFT;
@@ -469,7 +464,7 @@ Arc.prototype.decideSide = function(param1)
 
 Arc.prototype.getLength = function()
 {
-    return this.getCurveFromController().getLength();
+    return this.getCurve().getLength();
 }
 
 Arc.prototype.getAngle = function()

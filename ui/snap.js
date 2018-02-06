@@ -73,7 +73,7 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
                         break;
                     }
                 } else if(curve instanceof Arc) {
-                    var edge = curve.getCurveFromController();
+                    var edge = curve.getCurve();
                     if (edge.isInsideCurveAndNotOnCurve(this.mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
                         var point = edge.getIntersectionPointByPoint(this.mouseSnapped, true);
                         this.mouseSnapped.copy(point);
@@ -198,7 +198,7 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
                         break;
                     }
                 } else if(curve instanceof Arc) {
-                    var edge = curve.getCurveFromController();
+                    var edge = curve.getCurve();
                     if (edge.isInsideCurveAndNotOnCurve(this.mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
                         this.mFocus.controller = curve;
                         this.mFocus.geom = edge;
