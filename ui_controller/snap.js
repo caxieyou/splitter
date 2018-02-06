@@ -111,7 +111,6 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
                 continue;
             }
             
-            
             var edge2 = this.mFloor.mCurves[j].getTheStartEndEdge();
             var angle2 = edge2.getAngle();
             
@@ -220,7 +219,7 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
     } else {
         this.mIsInside = true;
     }
-    //console.log(this.mFocus.controller);
+    
     if (this.mFocus.controller != null) {
         if (this.mFocus.controller instanceof SegmentController) {
             var angle = this.mFocus.geom.getAngle();
