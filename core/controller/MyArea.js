@@ -93,7 +93,7 @@ MyArea.outputStructures = function(param1, param2) {
 MyArea.outputStructures2 = function(param1, param2) {
     var outline = param1.getPathPolygon();
     
-    res = new MyPolytree(outline);
+    res = new Polytree(outline);
     res.mHoles = [];
     if (param2.length == 0) {
         return res;
@@ -185,12 +185,12 @@ MyArea.prototype.clonePolygons = function()
       
 MyArea.prototype.generateElementDiscribeUnit = function()
 {
-    return new MyPolytree(this.getPolygonFunc_EH(),this.clonePolygons());
+    return new Polytree(this.getPolygonFunc_EH(),this.clonePolygons());
 }
 
 MyArea.prototype.generatePolyTree = function()
 {
-    return new MyPolytree(this.getPolygon(),this.clonePolygons());
+    return new Polytree(this.getPolygon(),this.clonePolygons());
 }
 
 

@@ -46,7 +46,7 @@ CurveController.isIntersectWith = function(param1, param2, param3, param4)
     var _loc6_ = null;
     var _loc7_ = null;
     var _loc8_ = null;
-    if(param1 instanceof MyCurve)
+    if(param1 instanceof Curve)
     {
         //_loc5_ = param1
         _loc6_ = param1;
@@ -85,13 +85,13 @@ CurveController.prototype.getCurveFromController = function()
     var _loc1_ = this.getInnerIntersectionPoint_XX();
     if(isNaN(_loc1_.mX) || isNaN(_loc1_.mY))
     {
-        return new MyCurve(this.mStart.mPosition,CurveController.TOLERANCE,CurveController.TOLERANCE,CurveController.TOLERANCE);
+        return new Curve(this.mStart.mPosition,CurveController.TOLERANCE,CurveController.TOLERANCE,CurveController.TOLERANCE);
     }
     var _loc2_ = this.mStart.mPosition.clone().sub(_loc1_).getAngle();
     var _loc3_ = this.mEnd.mPosition.clone().sub(_loc1_).getAngle();
     var _loc4_ = _loc3_ - _loc2_;
     var _loc5_ = _loc1_.distance(this.mStart.mPosition);
-    var _loc6_ = new MyCurve(_loc1_,_loc5_,_loc2_,_loc4_);
+    var _loc6_ = new Curve(_loc1_,_loc5_,_loc2_,_loc4_);
   
     if(!_loc6_.isInsideArcFan(this.mCurvePoint.clone()))
     {
@@ -209,7 +209,7 @@ CurveController.prototype.resetCurve = function(param1)
     {
         return;
     }
-    var _loc2_ = MyCurve.createCurveByEdgeNumber(this.getTheStartEndEdge(),param1);
+    var _loc2_ = Curve.createCurveByEdgeNumber(this.getTheStartEndEdge(),param1);
     
     this.mCurvePoint.copy(_loc2_.getSplitPosByRatio(0.3333333));
 }
@@ -220,7 +220,7 @@ CurveController.prototype.adjustCurve = function(param1)
     {
         return;
     }
-    var _loc2_ = MyCurve.createCurveByEdgeNumber2(this.getTheStartEndEdge(),param1);
+    var _loc2_ = Curve.createCurveByEdgeNumber2(this.getTheStartEndEdge(),param1);
     this.mCurvePoint.copy(_loc2_.getSplitPosByRatio(0.3333333));
 }
 
@@ -281,7 +281,7 @@ CurveController.prototype.isIntersectWithGeometry = function(param1, param2, par
     var _loc6_ = null;
     var _loc7_ = null;
     var _loc8_ = null;
-    if(param1 instanceof MyCurve)
+    if(param1 instanceof Curve)
     {
         _loc6_ = param1;
         return this.isCurveIntersectByAreaAndGetIntersectPoint(_loc6_,param2,param3,param4);

@@ -62,7 +62,7 @@ MyPath.getArea_0_Paths = function(param1)
 
 MyPath.prototype.initialize = function()
 {
-    this.mPolygon = new MyPolygon();
+    this.mPolygon = new Polygon();
     this.mCurves = [];
     this.mCorners = [];
 }

@@ -1,4 +1,4 @@
-function MyPolygon(param1) {
+function Polygon(param1) {
     if(param1 == null || param1 == undefined)
     {
         this.mVertices = [];
@@ -11,11 +11,11 @@ function MyPolygon(param1) {
 }
 
 
-MyPolygon.TOLERENCE = 1.0E-6;
-MyPolygon.const_ONE = 1;
-MyPolygon.CONST_0_01 = 0.01;
+Polygon.TOLERENCE = 1.0E-6;
+Polygon.const_ONE = 1;
+Polygon.CONST_0_01 = 0.01;
 
-MyPolygon.getX_Intersections1 = function(param1, param2, param3, param4)
+Polygon.getX_Intersections1 = function(param1, param2, param3, param4)
 {
     if (param4 == null || param4 == undefined) {
         param4 = 1.0E-6;
@@ -37,12 +37,12 @@ MyPolygon.getX_Intersections1 = function(param1, param2, param3, param4)
     return intersections;
 }
 
-MyPolygon.isSamePixel = function(param1, param2)
+Polygon.isSamePixel = function(param1, param2)
 {
     return param1.isClose(param2,1);
 }
 
-MyPolygon.getPolygonArea = function(param1)
+Polygon.getPolygonArea = function(param1)
 {
     var _loc2_ = 0;
     var _loc3_ = param1.length;
@@ -61,74 +61,74 @@ MyPolygon.getPolygonArea = function(param1)
     return 0.5 * _loc2_;
 }
 
-MyPolygon.isDegenerate = function(param1)
+Polygon.isDegenerate = function(param1)
 {
-    return MyPolygon.getPolygonArea(param1) == 0;
+    return Polygon.getPolygonArea(param1) == 0;
 }
 
-MyPolygon.isClockWise = function(param1)
+Polygon.isClockWise = function(param1)
 {
-    return MyPolygon.getPolygonArea(param1) < 0;
+    return Polygon.getPolygonArea(param1) < 0;
 }
 
-MyPolygon.isCountClockWise = function(param1)
+Polygon.isCountClockWise = function(param1)
 {
-    return MyPolygon.getPolygonArea(param1) > 0;
+    return Polygon.getPolygonArea(param1) > 0;
 }
 
-MyPolygon.prototype.isClockWise = function()
+Polygon.prototype.isClockWise = function()
 {
-    this.m_IsClockWise = MyPolygon.getPolygonArea(this.mVertices) < 0;
+    this.m_IsClockWise = Polygon.getPolygonArea(this.mVertices) < 0;
     return this.m_IsClockWise;
 }
 
-MyPolygon.prototype.isDegenerate = function()
+Polygon.prototype.isDegenerate = function()
 {
-    return MyPolygon.getPolygonArea(this.mVertices) == 0;
+    return Polygon.getPolygonArea(this.mVertices) == 0;
 }
 
-MyPolygon.prototype.clear = function()
+Polygon.prototype.clear = function()
 {
     this.mVertices = [];
     this.mVertices.length = 0;
 }
 
-MyPolygon.prototype.getSize = function()
+Polygon.prototype.getSize = function()
 {
     return this.mVertices.length;
 }
 
-MyPolygon.prototype.addVertex = function(param1)
+Polygon.prototype.addVertex = function(param1)
 {
     ArrayHelperClass.addItem(this.mVertices,param1);
     return this;
 }
 
-MyPolygon.prototype.addVertices = function(param1)
+Polygon.prototype.addVertices = function(param1)
 {
     ArrayHelperClass.addItems(this.mVertices,param1);
     return this;
 }
 
 
-MyPolygon.prototype.getBoundingBox = function()
+Polygon.prototype.getBoundingBox = function()
 {
     if(this.mVertices == null || this.getSize() == 0)
     {
         return null;
     }
-    var _loc1_ = new MyRect();
+    var _loc1_ = new Rect();
     _loc1_.includeValues(this.mVertices);
     return _loc1_;
 }
 
-MyPolygon.prototype.getGravity = function()
+Polygon.prototype.getGravity = function()
 {
     var _loc8_ = NaN;
     var _loc1_ = 0;
     var _loc2_ = 0;
     var _loc3_ = this.mVertices.concat();
-    var _loc4_ = MyPolygon.getPolygonArea(_loc3_);
+    var _loc4_ = Polygon.getPolygonArea(_loc3_);
     var _loc5_ = _loc3_.length;
     if(_loc5_ < 3)
     {
@@ -147,12 +147,12 @@ MyPolygon.prototype.getGravity = function()
     return new Vec2(_loc1_,_loc2_).mulBy(1 / (_loc4_ * 6));
 }
 
-MyPolygon.prototype.getPolyCenter = function()
+Polygon.prototype.getPolyCenter = function()
 {
     return edgePointHelperClass.getCenter(this.mVertices);
 }
 
-MyPolygon.prototype.getValidGravityCenter = function()
+Polygon.prototype.getValidGravityCenter = function()
 {
     var longestPart = null;
     var i = 0;
@@ -203,7 +203,7 @@ MyPolygon.prototype.getValidGravityCenter = function()
     return new Vec2(longestPart.getCenter(),gravity.mY);
 }
 
-MyPolygon.prototype.getX_Intersections1 = function(param1, param2, param3)
+Polygon.prototype.getX_Intersections1 = function(param1, param2, param3)
 {
     if (param3 == null || param3 == undefined) {
         param3 = 1.0E-6;
@@ -237,7 +237,7 @@ MyPolygon.prototype.getX_Intersections1 = function(param1, param2, param3)
     return intersections;
 }
 
-MyPolygon.prototype.getX_Intersections2 = function(param1, param2, param3)
+Polygon.prototype.getX_Intersections2 = function(param1, param2, param3)
 {
     if (param3 == null || param3 == undefined) {
         param3 = 1.0E-6;
@@ -280,12 +280,12 @@ MyPolygon.prototype.getX_Intersections2 = function(param1, param2, param3)
     return intersections;
 }
 
-MyPolygon.prototype.getSignedArea = function()
+Polygon.prototype.getSignedArea = function()
 {
-    return MyPolygon.getPolygonArea(this.mVertices);
+    return Polygon.getPolygonArea(this.mVertices);
 }
 
-MyPolygon.prototype.getEdges = function()
+Polygon.prototype.getEdges = function()
 {
     var _loc4_ = 0;
     var _loc1_ = [];
@@ -300,13 +300,13 @@ MyPolygon.prototype.getEdges = function()
     return _loc1_;
 }
 
-MyPolygon.prototype.polygonRemoveSame = function()
+Polygon.prototype.polygonRemoveSame = function()
 {
     edgePointHelperClass.removeSamePoint(this.mVertices, 1);
     return this;
 }
 
-MyPolygon.prototype.contains = function(param1)
+Polygon.prototype.contains = function(param1)
 {
     var _loc2_ = 0;
     var _loc3_ = 0;
@@ -326,7 +326,7 @@ MyPolygon.prototype.contains = function(param1)
     return _loc4_;
 }
 
-MyPolygon.prototype.containsInclusive = function(param1, param2)
+Polygon.prototype.containsInclusive = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6;
@@ -347,7 +347,7 @@ MyPolygon.prototype.containsInclusive = function(param1, param2)
     return this.contains(param1);
 }
 
-MyPolygon.prototype.containsExclusive = function(param1, param2)
+Polygon.prototype.containsExclusive = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6;
@@ -368,7 +368,7 @@ MyPolygon.prototype.containsExclusive = function(param1, param2)
     return this.contains(param1);
 }
 
-MyPolygon.prototype.isIncludedPolygon = function(param1)
+Polygon.prototype.isIncludedPolygon = function(param1)
 {
     var _loc2_ = null;
     var _loc3_ = 0;
@@ -410,7 +410,7 @@ MyPolygon.prototype.isIncludedPolygon = function(param1)
     return true;
 }
 
-MyPolygon.prototype.isIntersected = function(param1)
+Polygon.prototype.isIntersected = function(param1)
 {
     var _loc7_ = null;
     var _loc8_ = 0;
@@ -446,10 +446,10 @@ MyPolygon.prototype.isIntersected = function(param1)
     return false;
 }
 
-MyPolygon.prototype.clone = function()
+Polygon.prototype.clone = function()
 {
     var _loc2_ = null;
-    var _loc1_ = new MyPolygon();
+    var _loc1_ = new Polygon();
     for(var i = 0; i < this.mVertices.length; i++)
     {
         _loc1_.addVertex(this.mVertices[i].clone());
@@ -457,7 +457,7 @@ MyPolygon.prototype.clone = function()
     return _loc1_;
 }
 
-MyPolygon.prototype.equals = function(param1)
+Polygon.prototype.equals = function(param1)
 {
     var _loc6_ = 0;
     var _loc7_ = 0;
@@ -477,7 +477,7 @@ MyPolygon.prototype.equals = function(param1)
         _loc7_ = 0;
         while(_loc7_ < _loc3_)
         {
-            if(MyPolygon.isSamePixel(_loc4_[_loc6_],_loc5_[_loc7_]))
+            if(Polygon.isSamePixel(_loc4_[_loc6_],_loc5_[_loc7_]))
             {
                 _loc8_ = _loc6_;
                 _loc9_ = _loc7_;
@@ -495,7 +495,7 @@ MyPolygon.prototype.equals = function(param1)
     _loc7_ = (_loc9_ + 1) % _loc3_;
     while(!(_loc6_ == _loc8_ || _loc7_ == _loc9_))
     {
-        if(!MyPolygon.isSamePixel(_loc4_[_loc6_],_loc5_[_loc7_]))
+        if(!Polygon.isSamePixel(_loc4_[_loc6_],_loc5_[_loc7_]))
         {
             return false;
         }
@@ -505,7 +505,7 @@ MyPolygon.prototype.equals = function(param1)
     return true;
 }
 
-MyPolygon.prototype.move = function(param1)
+Polygon.prototype.move = function(param1)
 {
     var _loc4_ = null;
     var _loc2_ = this.getPolyCenter();
@@ -516,7 +516,7 @@ MyPolygon.prototype.move = function(param1)
     }
 }
 
-MyPolygon.prototype.translate = function(param1)
+Polygon.prototype.translate = function(param1)
 {
     var _loc2_ = null;
     for(var i = 0; i < this.mVertices.length; i++)
@@ -525,7 +525,7 @@ MyPolygon.prototype.translate = function(param1)
     }
 }
 
-MyPolygon.prototype.rotate = function(param1, param2)
+Polygon.prototype.rotate = function(param1, param2)
 {
     param2 = param2 || null;
     var _loc4_ = null;
@@ -536,7 +536,7 @@ MyPolygon.prototype.rotate = function(param1, param2)
     }
 }
 
-MyPolygon.prototype.getVertices = function()
+Polygon.prototype.getVertices = function()
 {
     return this.mVertices;
 }

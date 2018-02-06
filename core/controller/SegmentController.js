@@ -264,7 +264,7 @@ SegmentController.prototype.isIntersectWithGeometry = function(param1, param2, p
         _loc5_ = param1
         return this.intersectSub(_loc5_,param2,param3,param4);
     }
-    if(param1 instanceof MyCurve)
+    if(param1 instanceof Curve)
     {
         _loc8_ = _loc7_;
         return this.isCurveIntersectByAreaAndGetIntersectPoint(_loc8_,param2,param3,param4);

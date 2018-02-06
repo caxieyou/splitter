@@ -194,7 +194,7 @@ function _RectOp() {
 }
 
 _RectOp.prototype.create = function(p0, p1, curves) {
-    var rect = new MyRect(p0, p1);
+    var rect = new Rect(p0, p1);
     var polyEdges = rect.toMyPolygon().getEdges();
     for (var i = 0; i < polyEdges.length; i++) {
         for (var j = 0; j < curves.length; j++) {
@@ -245,7 +245,7 @@ function _CircleOp() {
 }
 
 _CircleOp.prototype.create = function(edge) {
-    return new MyCircle(edge.mStart.clone(), edge.getLength());
+    return new Circle(edge.mStart.clone(), edge.getLength());
 }
 
 function ElementDrawer(floor) {

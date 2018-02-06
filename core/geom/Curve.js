@@ -7,7 +7,7 @@ var ArcCurvePointSide = {
 };
 
 
-function MyCurve(center, radius, startAngle, arcAngle) {
+function Curve(center, radius, startAngle, arcAngle) {
     this.mCenter = center;
     this.mRadius = radius;
     this.mStartAngle = startAngle;
@@ -15,9 +15,9 @@ function MyCurve(center, radius, startAngle, arcAngle) {
     
 };
 
-MyCurve.TOLERANCE = 1.0E-6;
+Curve.TOLERANCE = 1.0E-6;
 
-MyCurve.createCurveByEdgeNumber = function(param1, param2)
+Curve.createCurveByEdgeNumber = function(param1, param2)
 {
     var _loc3_ = param1.mStart.clone();
     var _loc4_ = param1.mEnd.clone();
@@ -33,10 +33,10 @@ MyCurve.createCurveByEdgeNumber = function(param1, param2)
     var _loc13_ = _loc12_.distance(_loc3_);
     var _loc14_ = _loc3_.sub(_loc12_).getAngle();
     var _loc15_ = _loc6_ * _loc9_;
-    return new MyCurve(_loc12_,_loc13_,_loc14_,_loc15_);
+    return new Curve(_loc12_,_loc13_,_loc14_,_loc15_);
 }
 
-MyCurve.isSameCurve = function (curve0, curve1) {
+Curve.isSameCurve = function (curve0, curve1) {
     if (MyNumber.isEqual(curve0.mRadius, curve1.mRadius)         &&
         MyNumber.isEqual(curve0.mStartAngle, curve1.mStartAngle) &&
         MyNumber.isEqual(curve0.mArcAngle, curve1.mArcAngle) &&
@@ -48,7 +48,7 @@ MyCurve.isSameCurve = function (curve0, curve1) {
     }
 }
 
-MyCurve.createCurveByEdgeNumber2 = function(param1, param2)
+Curve.createCurveByEdgeNumber2 = function(param1, param2)
 {
     var _loc3_ = param1.mStart.clone();
     var _loc4_ = param1.mEnd.clone();
@@ -64,10 +64,10 @@ MyCurve.createCurveByEdgeNumber2 = function(param1, param2)
     var _loc13_ = _loc12_.distance(_loc3_);
     var _loc14_ = _loc3_.sub(_loc12_).getAngle();
     var _loc15_ = param2;
-    return new MyCurve(_loc12_,_loc13_,_loc14_,_loc15_);
+    return new Curve(_loc12_,_loc13_,_loc14_,_loc15_);
 }
 
-MyCurve.prototype.diagnose = function()
+Curve.prototype.diagnose = function()
 {
     if(isNaN(this.mStartAngle))
     {
@@ -87,12 +87,12 @@ MyCurve.prototype.diagnose = function()
     }
 }
 
-MyCurve.prototype.clone = function()
+Curve.prototype.clone = function()
 {
-    return new MyCurve(this.mCenter.clone(),this.mRadius,this.mStartAngle,this.mArcAngle);
+    return new Curve(this.mCenter.clone(),this.mRadius,this.mStartAngle,this.mArcAngle);
 }
 
-MyCurve.prototype.scale = function(s, oX, oY)
+Curve.prototype.scale = function(s, oX, oY)
 {
     var ret = this.clone();
     ret.mCenter = ret.mCenter.mul(s).add(new Vec2(oX, oY));
@@ -102,7 +102,7 @@ MyCurve.prototype.scale = function(s, oX, oY)
 }
 
 
-MyCurve.prototype.removePointsNotInsideCurve = function(param1, param2)
+Curve.prototype.removePointsNotInsideCurve = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = null;
@@ -123,7 +123,7 @@ MyCurve.prototype.removePointsNotInsideCurve = function(param1, param2)
     }
 }
 
-MyCurve.prototype.isInsideArcFan = function(param1, param2)
+Curve.prototype.isInsideArcFan = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6;
@@ -138,7 +138,7 @@ MyCurve.prototype.isInsideArcFan = function(param1, param2)
     return this.isBetweenArcAngleRange(_loc3_);
 }
 
-MyCurve.prototype.isInsideCurveAndNotOnCurve = function(param1, param2)
+Curve.prototype.isInsideCurveAndNotOnCurve = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = null;
@@ -149,7 +149,7 @@ MyCurve.prototype.isInsideCurveAndNotOnCurve = function(param1, param2)
     return this.isInsideArcFan(param1,param2) && !this.isPointOnCurve(param1,param2);
 }
 
-MyCurve.prototype.isInsideCurveAndOnCurve = function(param1, param2)
+Curve.prototype.isInsideCurveAndOnCurve = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = null;
@@ -160,7 +160,7 @@ MyCurve.prototype.isInsideCurveAndOnCurve = function(param1, param2)
     return this.isInsideArcFan(param1,param2);
 }
 
-MyCurve.prototype.isPointOnCurve = function(param1, param2)
+Curve.prototype.isPointOnCurve = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6;
@@ -170,7 +170,7 @@ MyCurve.prototype.isPointOnCurve = function(param1, param2)
 }
 
 
-MyCurve.prototype.isBetweenArcAngleRange = function(param1)
+Curve.prototype.isBetweenArcAngleRange = function(param1)
 {
     this.diagnose();
     var _loc2_ = Angle.normalize(param1);
@@ -188,12 +188,12 @@ MyCurve.prototype.isBetweenArcAngleRange = function(param1)
     return _loc2_ <= _loc5_ || _loc2_ >= _loc6_;
 }
 
-MyCurve.prototype.isClockWise = function()
+Curve.prototype.isClockWise = function()
 {
     return this.mArcAngle < 0;
 }
 
-MyCurve.prototype.getVectorByRatio = function(param1)
+Curve.prototype.getVectorByRatio = function(param1)
 {
     var _loc2_ = this.getSplitPosByRatio(param1).sub(this.mCenter).normalize();
     if(this.isClockWise())
@@ -203,7 +203,7 @@ MyCurve.prototype.getVectorByRatio = function(param1)
     return _loc2_;
 }
 
-MyCurve.prototype.getIntersectionPointByPoint = function(param1)
+Curve.prototype.getIntersectionPointByPoint = function(param1)
 {
     var _loc3_ = null;
     var _loc4_ = null;
@@ -226,7 +226,7 @@ MyCurve.prototype.getIntersectionPointByPoint = function(param1)
     return this.curvePosByRatio(_loc2_);
 }
 
-MyCurve.prototype.decideSide = function(param1)
+Curve.prototype.decideSide = function(param1)
 {
     this.diagnose();
     var _loc2_ = -1;
@@ -251,7 +251,7 @@ MyCurve.prototype.decideSide = function(param1)
     return ArcCurvePointSide.ON_RIGHT;
 }
 
-MyCurve.prototype.getDistance = function(param1, param2)
+Curve.prototype.getDistance = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = true;
@@ -261,7 +261,7 @@ MyCurve.prototype.getDistance = function(param1, param2)
     return Math.abs(this.distancePointToCurve(param1,param2));
 }
 
-MyCurve.prototype.distancePointToCurve = function(param1, param2)
+Curve.prototype.distancePointToCurve = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = true;
@@ -290,7 +290,7 @@ MyCurve.prototype.distancePointToCurve = function(param1, param2)
     return _loc4_;
 }
 
-MyCurve.prototype.curvePosByRatio = function(param1)
+Curve.prototype.curvePosByRatio = function(param1)
 {
     this.diagnose();
     var tmp = new Vec2(this.mRadius * Math.cos(param1),this.mRadius * Math.sin(param1));
@@ -298,26 +298,26 @@ MyCurve.prototype.curvePosByRatio = function(param1)
     return res;
 }
 
-MyCurve.prototype.curveAngleByRatio = function(param1)
+Curve.prototype.curveAngleByRatio = function(param1)
 {
     this.diagnose();
     return this.mStartAngle + param1 * this.mArcAngle;
 }
 
-MyCurve.prototype.getSplitPosByRatio = function(param1)
+Curve.prototype.getSplitPosByRatio = function(param1)
 {
     this.diagnose();
     return this.curvePosByRatio(this.curveAngleByRatio(param1));
 }
 
-MyCurve.prototype.enlarge_xx = function(param1)
+Curve.prototype.enlarge_xx = function(param1)
 {
     this.diagnose();
     var _loc2_ = Math.abs(this.mArcAngle) * param1;
     return this.mRadius * _loc2_;
 }
 
-MyCurve.prototype.getCenterIntersectAngle = function(param1)
+Curve.prototype.getCenterIntersectAngle = function(param1)
 {
     this.diagnose();
     var _loc2_ = this.createCircle_canvas().getCenterIntersectAngle(param1);
@@ -325,7 +325,7 @@ MyCurve.prototype.getCenterIntersectAngle = function(param1)
     return this.curveAngleByRatio(_loc3_);
 }
 
-MyCurve.prototype.getAngleRatio = function(param1)
+Curve.prototype.getAngleRatio = function(param1)
 {
     var _loc7_;
     this.diagnose();
@@ -346,7 +346,7 @@ MyCurve.prototype.getAngleRatio = function(param1)
     return (_loc2_ - _loc3_) / this.mArcAngle;
 }
 
-MyCurve.prototype.tessallation_NotUnderstand = function(param1)
+Curve.prototype.tessallation_NotUnderstand = function(param1)
 {
     if (param1 == null || param1 == undefined) {
         param1 = 0.3;
@@ -378,7 +378,7 @@ MyCurve.prototype.tessallation_NotUnderstand = function(param1)
 }
 
 
-MyCurve.prototype.tessallation = function(param1) 
+Curve.prototype.tessallation = function(param1) 
 {
     this.diagnose();
     if(param1 <= 0)
@@ -399,24 +399,24 @@ MyCurve.prototype.tessallation = function(param1)
     return _loc2_;
 }
 
-MyCurve.prototype.get1_4_Of_arc = function()
+Curve.prototype.get1_4_Of_arc = function()
 {
     this.diagnose();
     return Math.tan(this.mArcAngle / 4);
 }
 
-MyCurve.prototype.createCircle_canvas = function()
+Curve.prototype.createCircle_canvas = function()
 {
     this.diagnose();
-    return new MyCircle(this.mCenter,this.mRadius);
+    return new Circle(this.mCenter,this.mRadius);
 }
 
-MyCurve.prototype.getLength = function()
+Curve.prototype.getLength = function()
 {
     return this.enlarge_xx(1);
 }
 
-MyCurve.prototype.getValidPart = function(curve)
+Curve.prototype.getValidPart = function(curve)
 {
     if (!MyNumber.isEqual(this.mRadius, curve.mRadius) || !Vec2.isEqual(this.mCenter, curve.mCenter)) {
         return this;
@@ -455,23 +455,23 @@ MyCurve.prototype.getValidPart = function(curve)
         if (MyNumber.isEqual(min, 0)) {
             var startAngle = this.getCenterIntersectAngle(curve.getSplitPosByRatio(1));
             var deltaAngle = Angle.normalize(this.getCenterIntersectAngle(this.getSplitPosByRatio(1)) - startAngle);
-            return new MyCurve(this.mCenter.clone(), this.mRadius, startAngle, deltaAngle);
+            return new Curve(this.mCenter.clone(), this.mRadius, startAngle, deltaAngle);
         }
         
         if (MyNumber.isEqual(max, 1)) {
             var startAngle = this.getCenterIntersectAngle(this.getSplitPosByRatio(0));
             var deltaAngle = Angle.normalize(this.getCenterIntersectAngle(curve.getSplitPosByRatio(0)) - startAngle);
-            return new MyCurve(this.mCenter.clone(), this.mRadius, startAngle, deltaAngle);
+            return new Curve(this.mCenter.clone(), this.mRadius, startAngle, deltaAngle);
         }
         
         
         var startAngle = this.getCenterIntersectAngle(this.getSplitPosByRatio(0));
         var deltaAngle = Angle.normalize(this.getCenterIntersectAngle(curve.getSplitPosByRatio(0)) - startAngle);
-        var newCurve0 = new MyCurve(this.mCenter.clone(), this.mRadius, startAngle, deltaAngle);
+        var newCurve0 = new Curve(this.mCenter.clone(), this.mRadius, startAngle, deltaAngle);
         
         var startAngle = this.getCenterIntersectAngle(curve.getSplitPosByRatio(1));
         var deltaAngle = Angle.normalize(this.getCenterIntersectAngle(this.getSplitPosByRatio(1)) - startAngle);
-        var newCurve1 = new MyCurve(this.mCenter.clone(), this.mRadius, startAngle, deltaAngle);
+        var newCurve1 = new Curve(this.mCenter.clone(), this.mRadius, startAngle, deltaAngle);
         
         return [newCurve0, newCurve1];
     }
@@ -498,7 +498,7 @@ MyCurve.prototype.getValidPart = function(curve)
     }
     var startAngle = this.getCenterIntersectAngle(start);
     var deltaAngle = Angle.normalize(this.getCenterIntersectAngle(end) - startAngle);
-    return new MyCurve(this.mCenter.clone(), this.mRadius, startAngle, deltaAngle);
+    return new Curve(this.mCenter.clone(), this.mRadius, startAngle, deltaAngle);
 }
 
 

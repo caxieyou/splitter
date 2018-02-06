@@ -1,11 +1,11 @@
-function MyPolytree(param1, param2) {
+function Polytree(param1, param2) {
     this.mOutLines = param1;
     this.mHoles = param2;
 };
 
-MyPolytree.TOLERENCE = 1.0E-4;
+Polytree.TOLERENCE = 1.0E-4;
 
-MyPolytree.getX_Intersections1 = function(param1, param2, param3, param4)
+Polytree.getX_Intersections1 = function(param1, param2, param3, param4)
 {
     if (param4 == null || param4 == undefined) {
         param4 = 1.0E-4;
@@ -32,12 +32,12 @@ MyPolytree.getX_Intersections1 = function(param1, param2, param3, param4)
 
 
 
-MyPolytree.prototype.containsHole = function()
+Polytree.prototype.containsHole = function()
 {
     return this.mHoles != null && this.mHoles.length != 0;
 }
 
-MyPolytree.prototype.contains = function(param1)
+Polytree.prototype.contains = function(param1)
 {
     var _loc2_ = null;
     if(!this.mOutLines.contains(param1))
@@ -56,7 +56,7 @@ MyPolytree.prototype.contains = function(param1)
     return true;
 }
 
-MyPolytree.prototype.containsInclusive = function(param1, param2)
+Polytree.prototype.containsInclusive = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-4;
@@ -78,7 +78,7 @@ MyPolytree.prototype.containsInclusive = function(param1, param2)
     return true;
 }
 
-MyPolytree.prototype.containsExclusive = function(param1, param2)
+Polytree.prototype.containsExclusive = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-4;
@@ -102,7 +102,7 @@ MyPolytree.prototype.containsExclusive = function(param1, param2)
     return true;
 }
 
-MyPolytree.prototype.getValidGravityCenter = function()
+Polytree.prototype.getValidGravityCenter = function()
 {
 
     var xIntersections;
@@ -128,7 +128,7 @@ MyPolytree.prototype.getValidGravityCenter = function()
     var yVector   = [y,(y + yInterval.mMax) * 0.5,(y + yInterval.mMin) * 0.5];
     
     for(var j = 0; j < yVector.length; j++) {
-        xIntersections = MyPolytree.getX_Intersections1(tempPoly,yVector[j],true, MyPolytree.TOLERENCE);
+        xIntersections = Polytree.getX_Intersections1(tempPoly,yVector[j],true, Polytree.TOLERENCE);
         if(xIntersections.length < 2 || isNaN(xIntersections[0]) || isNaN(xIntersections[1]))
         {
             //console.error("xIntersections error!");
@@ -162,7 +162,7 @@ MyPolytree.prototype.getValidGravityCenter = function()
     return centriod;
 }
 
-MyPolytree.prototype.getProfilePoints = function()
+Polytree.prototype.getProfilePoints = function()
 {
     var _loc2_ = null;
     var _loc1_ = [];
@@ -182,7 +182,7 @@ MyPolytree.prototype.getProfilePoints = function()
     return _loc1_;
 }
 
-MyPolytree.prototype.getProfile = function()
+Polytree.prototype.getProfile = function()
 {
     var _loc2_ = null;
     var _loc1_ = [];
@@ -200,7 +200,7 @@ MyPolytree.prototype.getProfile = function()
     return _loc1_;
 }
 
-MyPolytree.prototype.getVertices = function()
+Polytree.prototype.getVertices = function()
 {
     var _loc2_ = null;
     var _loc1_ = [];
@@ -219,12 +219,12 @@ MyPolytree.prototype.getVertices = function()
     return _loc1_;
 }
 
-MyPolytree.prototype.getBoundingBox = function()
+Polytree.prototype.getBoundingBox = function()
 {
     return this.mOutLines.getBoundingBox();
 }
 
-MyPolytree.prototype.getOutline = function()
+Polytree.prototype.getOutline = function()
 {
     return this.mOutLines;
 }

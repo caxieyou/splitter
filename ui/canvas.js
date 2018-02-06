@@ -37,7 +37,7 @@ Canvas.prototype._initialize = function() {
     points.push(new Vec2(400, 400));
     points.push(new Vec2(400, 800));
     points.push(new Vec2(0, 800));
-    var poly = new MyPolygon(points);
+    var poly = new Polygon(points);
     
     this._mElmentDrawer.add(poly.getEdges());
     this._mFloor.setProfile(poly);
@@ -347,7 +347,7 @@ Canvas.prototype._renderFocusPrimitive = function() {
     if (this._mSnap.mFocus.geom instanceof Edge) {
         this._mRenderer.drawLine(this._mSnap.mFocus.geom, null, null, true);
         
-    } else if(this._mSnap.mFocus.geom instanceof MyCurve) {
+    } else if(this._mSnap.mFocus.geom instanceof Curve) {
         this._mRenderer.drawArc(this._mSnap.mFocus.geom, true);
         
     } else if(this._mSnap.mFocus.geom instanceof Vec2) {

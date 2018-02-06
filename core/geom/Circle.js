@@ -1,4 +1,4 @@
-function MyCircle(param1, param2) {
+function Circle(param1, param2) {
     if (param1 == null || param1 == undefined) {
         param1 = null;
     }
@@ -11,13 +11,13 @@ function MyCircle(param1, param2) {
     this.mRadius = param2;
 }
 
-MyCircle.prototype.getCenterIntersectAngle = function(param1)
+Circle.prototype.getCenterIntersectAngle = function(param1)
 {
     var p = new Vec2(param1.mX, param1.mY, param1.mW);
     return p.sub(this.mCenter).getAngle();
 }
 
-MyCircle.prototype.isInsideCircle = function(param1, param2)
+Circle.prototype.isInsideCircle = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6;

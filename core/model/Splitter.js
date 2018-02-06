@@ -27,11 +27,11 @@ Splitter.prototype.getSplitCurvesByEdgeCircle = function(param1, param2)
     var _loc9_ = _loc4_[1];
     _loc5_ = param1.getCenterIntersectAngle(_loc8_);
     _loc6_ = param1.getCenterIntersectAngle(_loc9_) - _loc5_;
-    _loc7_ = new MyCurve(param1.mCenter.clone(), param1.mRadius, _loc5_, _loc6_);
+    _loc7_ = new Curve(param1.mCenter.clone(), param1.mRadius, _loc5_, _loc6_);
     _loc3_[0] = _loc7_;
     _loc5_ = param1.getCenterIntersectAngle(_loc8_);
     _loc6_ = _loc5_ - param1.getCenterIntersectAngle(_loc9_);
-    _loc7_ = new MyCurve(param1.mCenter.clone(),param1.mRadius, _loc5_, _loc6_);
+    _loc7_ = new Curve(param1.mCenter.clone(),param1.mRadius, _loc5_, _loc6_);
     _loc3_[1] = _loc7_;
     return _loc3_;
 }
@@ -43,7 +43,7 @@ Splitter.prototype.getSubSegmentsSplitByCurves = function(param1, param2)
     var clippers = param2;
     
     var edges
-    if (param1 instanceof MyPolygon) {
+    if (param1 instanceof Polygon) {
         edges = subject.getEdges();
     } else {
         edges = param1;
@@ -183,7 +183,7 @@ Splitter.prototype.getSubCurvesCircleSplitByCurves = function(param1, param2)
             nextIntersection = intersections[(i + 1) % intersections.length];
             startAngle = subject.getCenterIntersectAngle(intersection);
             deltaAngle = Angle.normalize(subject.getCenterIntersectAngle(nextIntersection) - startAngle);
-            newArc.push(new MyCurve(subject.mCenter.clone(),subject.mRadius,startAngle,deltaAngle));
+            newArc.push(new Curve(subject.mCenter.clone(),subject.mRadius,startAngle,deltaAngle));
             
             i++;
         }
@@ -318,22 +318,22 @@ Splitter.prototype.execute = function() {
     }
     
     
-    if(this.mCircle instanceof MyCircle && MyNumber.isZeroOrOrigin(this.mCircle.mRadius))
+    if(this.mCircle instanceof Circle && MyNumber.isZeroOrOrigin(this.mCircle.mRadius))
     {
         return;
     }
     
     var _loc1_, _loc2_ = [];
     
-    if (this.mCircle instanceof MyCircle) {
+    if (this.mCircle instanceof Circle) {
         _loc1_ = this.getSubCurvesCircleSplitByCurves(this.mCircle,this.mWall.mCurves);
-    } else if (this.mCircle instanceof MyPolygon || this.mCircle instanceof Array) {
+    } else if (this.mCircle instanceof Polygon || this.mCircle instanceof Array) {
         _loc1_ = this.getSubSegmentsSplitByCurves(this.mCircle,this.mWall.mCurves);
     } //else if (this.mCircle instanceof Array) {
     //    _loc1_ = this.getSubSegmentsSplitByCurves(this.mCircle,this.mWall.mCurves);
     //}
     
-    if (_loc1_[0] instanceof MyCurve) {
+    if (_loc1_[0] instanceof Curve) {
         _loc2_ = this.splitCurvesIntoOneThirdCurves(_loc1_);
     } else if (_loc1_[0] instanceof Edge) {
         _loc2_ = this.splitMyEdgeIntoSegment(_loc1_);

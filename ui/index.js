@@ -94,7 +94,7 @@ $(function() {
                 }
                 $('#props_wrap').css('left', left).css('top', top);
 
-                if(elementType instanceof MyCurve) {
+                if(elementType instanceof Curve) {
                     $('#props_wrap .props.line .iconfont.straight').removeClass('none').siblings('.curve').addClass('none');
                     $('#props_wrap').find('.props.line').data('type', 'curve');
                     $('#props_wrap').find('.props.line').find('.pup').html('转为直线<i></i>');

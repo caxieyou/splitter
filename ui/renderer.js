@@ -334,7 +334,7 @@ Renderer = function () {
                 prevEP = prev.mEnd,                
                 p = undefined;
 
-            if (next.constructor == MyCurve) {
+            if (next.constructor == Curve) {
                 nextSP = this._rotatePoint({
                     x: next.mCenter.mX + next.mRadius,
                     y: next.mCenter.mY
@@ -345,7 +345,7 @@ Renderer = function () {
                 }, next.mCenter, next.mStartAngle + next.mArcAngle);
             }
 
-            if (prev.constructor == MyCurve) {
+            if (prev.constructor == Curve) {
                 prevSP = this._rotatePoint({
                     x: prev.mCenter.mX + prev.mRadius,
                     y: prev.mCenter.mY
@@ -386,7 +386,7 @@ Renderer = function () {
                         ctx.lineTo(p.mX, p.mY);
                 }
             } 
-            else if (edge.constructor == MyCurve) {
+            else if (edge.constructor == Curve) {
                 
                 var sp = this._rotatePoint({
                         x: edge.mCenter.mX + edge.mRadius,
@@ -447,7 +447,7 @@ Renderer = function () {
 	                    prevSP = prev.mStart,
 	                    prevEP = prev.mEnd;
 
-                    if (next.constructor == MyCurve) {
+                    if (next.constructor == Curve) {
                         nextSP = this._rotatePoint({
                             x: next.mCenter.mX + next.mRadius,
                             y: next.mCenter.mY
@@ -458,7 +458,7 @@ Renderer = function () {
                         }, next.mCenter, next.mStartAngle + next.mArcAngle);
                     }
                     
-                    if (prev.constructor == MyCurve) {
+                    if (prev.constructor == Curve) {
                         prevSP = this._rotatePoint({
                             x: prev.mCenter.mX + prev.mRadius,
                             y: prev.mCenter.mY
@@ -499,7 +499,7 @@ Renderer = function () {
 		                        ctx.lineTo(p.mX, p.mY);
 		                }                        
                         
-                    } else if (hedge.constructor == MyCurve) {
+                    } else if (hedge.constructor == Curve) {
                         var sp = this._rotatePoint({
                                 x: hedge.mCenter.mX + hedge.mRadius,
                                 y: hedge.mCenter.mY

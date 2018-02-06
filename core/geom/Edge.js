@@ -514,7 +514,7 @@ Edge.prototype.toVector = function()
 
 Edge.prototype.getBoundingBox = function()
 {
-    var ret = new MyRect();
+    var ret = new Rect();
     ret.includeValues(this.toVector());
     return ret;
 }

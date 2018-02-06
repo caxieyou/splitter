@@ -40,7 +40,7 @@ Floor.prototype.initialize = function() {
 }
 
 Floor.prototype.setProfile = function(rect) {
-    this.mProfile = new MyPolytree();
+    this.mProfile = new Polytree();
     this.mProfile.mOutLines = rect;
     this.mProfile.mHoles = [];
     this.mOutput = null;
@@ -52,13 +52,13 @@ Floor.prototype.generatePolyTree = function()
     //var _loc5_ = null;
     //var _loc1_ = this.getTheBiggestAreaPath();
     
-    //var _loc2_ = _loc1_ != null?_loc1_.polygon : new MyPolygon();
+    //var _loc2_ = _loc1_ != null?_loc1_.polygon : new Polygon();
     //var _loc3_ = []; //new Vector.<my_polygon>();
     //for (var i = 0; i < this.mHoles.length; i++)
     //{
     //    _loc3_.push(this.mHoles[i].getPolygon());
     //}
-    //_loc5_ = new MyPolytree(_loc2_,_loc3_);
+    //_loc5_ = new Polytree(_loc2_,_loc3_);
     //return _loc5_;
     return this.mProfile;
 }
@@ -667,7 +667,7 @@ Floor.prototype._seperateType = function() {
                 var cur = this.mCurves[i].getCurveFromController();
                 for (var j = 0; j < pickedArea.mOutline.edges.length; j++) {
                     var edge = pickedArea.mOutline.edges[j];
-                    if (edge instanceof MyCurve && MyCurve.isSameCurve(cur, edge)) {
+                    if (edge instanceof Curve && Curve.isSameCurve(cur, edge)) {
                         validCurveIndex.push(curves.length - 1);
                     }
                 }
@@ -677,7 +677,7 @@ Floor.prototype._seperateType = function() {
                     var poly = pickedArea.mHoles[k];
                     for (var j = 0; j < poly.edges.length; j++) {
                         var edge = poly.edges[j];
-                        if (edge instanceof MyCurve && MyCurve.isSameCurve(cur, edge)) {
+                        if (edge instanceof Curve && Curve.isSameCurve(cur, edge)) {
                             validCurveIndex.push(curves.length - 1);
                         }
                     }
