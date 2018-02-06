@@ -68,7 +68,7 @@ Floor.prototype.getTheBiggestAreaPath = function()
 {
     var pathFinder = new curveCornerHelperClass(this.mCurves);
     var paths = pathFinder.getPaths_eh();
-    var counterClockPaths = MyPath.getCountClockWisePath(paths);
+    var counterClockPaths = path.getCountClockWisePath(paths);
     //从大到小排序
     counterClockPaths.sort(function(param1, param2)
     {

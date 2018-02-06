@@ -1,6 +1,6 @@
 function curveCornerHelperClass(param1) {
     this.mMap1 = null;
-    this.mMap2 = new MyMap();
+    this.mMap2 = new Map();
     
     for (var i = 0; i < param1.length; i++)
     {
@@ -85,7 +85,7 @@ curveCornerHelperClass.prototype.getRightOrder = function()
         _loc1_ = _loc2_[i];
         this.orderCurves(_loc1_);
     }
-    this.mMap1 = new MyMap();
+    this.mMap1 = new Map();
 }
       
 curveCornerHelperClass.prototype.addOne_to_map = function(param1, param2)
@@ -140,7 +140,7 @@ curveCornerHelperClass.prototype.getPaths_eh = function()
         for (var j = 0; j < _loc4_.length; j++)
         //for(_loc5_ in _loc4_)
         {
-            _loc6_ = new MyPath();
+            _loc6_ = new path();
             _loc6_.mStart = _loc1_;
             this.getPathByCornerCurve(_loc1_,_loc4_[j],_loc6_);
             if(_loc6_.getSize() > 1)

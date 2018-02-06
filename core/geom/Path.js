@@ -1,4 +1,4 @@
-function MyPath() {
+function path() {
     this.mStart;
     this.mCurves;
     this.mPolygon;
@@ -7,7 +7,7 @@ function MyPath() {
     this.initialize();
 }
 
-MyPath.getArea_Not_0_Paths = function(param1)
+path.getArea_Not_0_Paths = function(param1)
 {
     var _loc2_ = [];
     for(var i = 0; i < param1.length; i++)
@@ -20,7 +20,7 @@ MyPath.getArea_Not_0_Paths = function(param1)
     return _loc2_;
 }
 
-MyPath.getClockWisePaths = function(param1)
+path.getClockWisePaths = function(param1)
 {
     var _loc2_ = [];
     for(var i = 0; i < param1.length; i++)
@@ -33,7 +33,7 @@ MyPath.getClockWisePaths = function(param1)
     return _loc2_;
 }
 
-MyPath.getCountClockWisePath = function(param1)
+path.getCountClockWisePath = function(param1)
 {
     var _loc3_ = null;
     var _loc2_ = [];
@@ -47,7 +47,7 @@ MyPath.getCountClockWisePath = function(param1)
     return _loc2_;
 }
 
-MyPath.getArea_0_Paths = function(param1)
+path.getArea_0_Paths = function(param1)
 {
     var _loc2_ = [];
     for(var i = 0; i < param1.length; i++)
@@ -60,20 +60,20 @@ MyPath.getArea_0_Paths = function(param1)
     return _loc2_;
 }
 
-MyPath.prototype.initialize = function()
+path.prototype.initialize = function()
 {
     this.mPolygon = new Polygon();
     this.mCurves = [];
     this.mCorners = [];
 }
 
-MyPath.prototype.buildCurveAndCorner = function()
+path.prototype.buildCurveAndCorner = function()
 {
     this.buildCorners();
     this.buildPolygon();
 }
 
-MyPath.prototype.buildCorners = function()
+path.prototype.buildCorners = function()
 {
     var _loc1_ = this.getSize();
     var _loc2_ = this.mStart;
@@ -87,7 +87,7 @@ MyPath.prototype.buildCorners = function()
     }
 }
 
-MyPath.prototype.buildPolygon = function()
+path.prototype.buildPolygon = function()
 {
     var _loc4_ = null;
     var _loc5_ = NaN;
@@ -108,27 +108,27 @@ MyPath.prototype.buildPolygon = function()
     this.mArea = this.mPolygon.getSignedArea();
 }
 
-MyPath.prototype.addSection = function(param1)
+path.prototype.addSection = function(param1)
 {
     this.mCurves.push(param1);
 }
 
-MyPath.prototype.isClockWise = function()
+path.prototype.isClockWise = function()
 {
     return this.mArea > 0;
 }
 
-MyPath.prototype.isCountClockWise = function()
+path.prototype.isCountClockWise = function()
 {
     return this.mArea < 0;
 }
 
-MyPath.prototype.isIsolated = function()
+path.prototype.isIsolated = function()
 {
     return MyNumber.isEqual(this.mArea,0);
 }
 
-MyPath.prototype.isCurveInPath_not_sure = function(param1)
+path.prototype.isCurveInPath_not_sure = function(param1)
 {
     var _loc2_ = this.mCurves.indexOf(param1);
     var _loc3_ = this.mCurves.lastIndexOf(param1);
@@ -140,26 +140,26 @@ MyPath.prototype.isCurveInPath_not_sure = function(param1)
     return _loc4_ == _loc2_;
 }
 
-MyPath.prototype.getCurveByIndex = function(param1)
+path.prototype.getCurveByIndex = function(param1)
 {
     return this.mCurves[param1];
 }
 
-MyPath.prototype.getCornerByIndex = function(param1)
+path.prototype.getCornerByIndex = function(param1)
 {
     return this.mCorners[param1];
 }
 
-MyPath.prototype.getSize = function()
+path.prototype.getSize = function()
 {
     return this.mCurves.length;
 }
 
-MyPath.prototype.getPolygon = function() {
+path.prototype.getPolygon = function() {
     return this.mPolygon;
 }
 
-MyPath.prototype.getArea = function()
+path.prototype.getArea = function()
 {
     return this.mArea;
 }

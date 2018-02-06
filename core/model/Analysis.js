@@ -153,7 +153,7 @@ Analysis.prototype.seperateAreasInClip = function()
     var polygonWithHole = null;
 
     var paths = this.mCurveCornerHelper.getPaths_eh();
-    var clockwisePaths = MyPath.getClockWisePaths(paths);
+    var clockwisePaths = path.getClockWisePaths(paths);
     var areas = this.mAreas;
     //??????area
     for (var j = 0; j < clockwisePaths.length; j++)

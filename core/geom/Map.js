@@ -1,11 +1,11 @@
-function MyMap() {
+function Map() {
     this._stringMap = {};
     this._keys = {};
     this._items = {};
     this._size = 0;   
 }
 
-MyMap.prototype.removeAll = function(param1)
+Map.prototype.removeAll = function(param1)
 {
     var _loc2_ = 0;
     
@@ -32,12 +32,12 @@ MyMap.prototype.removeAll = function(param1)
     return _loc2_;
 }
 
-MyMap.prototype.getSize = function()
+Map.prototype.getSize = function()
 {
     return this._size;
 }
 
-MyMap.prototype.keysToArray = function()
+Map.prototype.keysToArray = function()
 {
     var _loc1_ = [];
     for (var _loc2_ in this._stringMap)
@@ -52,7 +52,7 @@ MyMap.prototype.keysToArray = function()
     return _loc1_;
 }
 
-MyMap.prototype.clear = function()
+Map.prototype.clear = function()
 {
     if(!this._size)
     {
@@ -65,7 +65,7 @@ MyMap.prototype.clear = function()
     return true;
 }
 
-MyMap.prototype.count = function(param1)
+Map.prototype.count = function(param1)
 {
     var _loc2_ = 0;
     for (var _loc3_ in this._stringMap)
@@ -85,7 +85,7 @@ MyMap.prototype.count = function(param1)
     return _loc2_;
 }
 
-MyMap.prototype.has = function(param1)
+Map.prototype.has = function(param1)
 {
     for (var _loc2_ in this._stringMap)
     {
@@ -105,7 +105,7 @@ MyMap.prototype.has = function(param1)
     return false;
 }
 
-MyMap.prototype.remove = function(param1)
+Map.prototype.remove = function(param1)
 {
     for(var _loc2_ in this._stringMap)
     {
@@ -129,7 +129,7 @@ MyMap.prototype.remove = function(param1)
     return false;
 }
 
-MyMap.prototype.add = function(param1, param2)
+Map.prototype.add = function(param1, param2)
 {
     if(param1 instanceof String)
     {
@@ -152,7 +152,7 @@ MyMap.prototype.add = function(param1, param2)
     return true;
 }
 
-MyMap.prototype.hasKey = function(param1)
+Map.prototype.hasKey = function(param1)
 {
     if (param1 instanceof String) {
         return this._stringMap[param1] !== undefined;
@@ -166,7 +166,7 @@ MyMap.prototype.hasKey = function(param1)
     return false;
 }
 
-MyMap.prototype.replaceFor = function(param1, param2)
+Map.prototype.replaceFor = function(param1, param2)
 {
     if(param1 instanceof String)
     {
@@ -201,7 +201,7 @@ MyMap.prototype.replaceFor = function(param1, param2)
     return true;
 }
 
-MyMap.prototype.removeKey = function(param1)
+Map.prototype.removeKey = function(param1)
 {
     var _loc2_ = undefined;
     if(param1 instanceof String)
@@ -233,7 +233,7 @@ MyMap.prototype.removeKey = function(param1)
     return _loc2_;
 }
 
-MyMap.prototype.itemFor = function(param1)
+Map.prototype.itemFor = function(param1)
 {
     if(param1 instanceof String)
     {

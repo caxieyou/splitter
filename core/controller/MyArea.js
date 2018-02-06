@@ -79,7 +79,7 @@ MyArea.outputStructures = function(param1, param2) {
         var helper = new curveCornerHelperClass(curves);
         var paths = helper.getPaths_eh();
         
-        var clockwisePaths = MyPath.getClockWisePaths(paths);
+        var clockwisePaths = path.getClockWisePaths(paths);
         
         for (var i = 0; i < clockwisePaths.length; i++) {
             res.mHoles.push(MyArea.outputStructure(clockwisePaths[i].mCurves));
@@ -130,7 +130,7 @@ MyArea.prototype.initialize = function()
 
     this.mOffset = 0;
 
-    this.mMap = new MyMap();
+    this.mMap = new Map();
     this.IsNotGetPolygonOnce = true;
     this.mPatternOffset = new Vec2();
 }
