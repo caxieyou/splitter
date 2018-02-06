@@ -318,7 +318,7 @@ Splitter.prototype.execute = function() {
     }
     
     
-    if(this.mCircle instanceof Circle && MyNumber.isZeroOrOrigin(this.mCircle.mRadius))
+    if(this.mCircle instanceof Circle && MyNumber.isZero(this.mCircle.mRadius))
     {
         return;
     }

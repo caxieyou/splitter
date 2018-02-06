@@ -24,7 +24,7 @@ LineRelationHelper.isInterSectHarsh = function(param1, param2, param3, param4)
     var _loc5_ = LineRelationHelper.createEdgeCollider(param1,param2,param4);
     if(_loc5_.status == Line2DIntersectionStatus.SEGMENTS_INTERSECT)
     {
-        return param3 || !(MyNumber.isZeroOrOrigin(_loc5_.mRatio1.mX) || MyNumber.isZeroOrOrigin(_loc5_.mRatio2.mX));
+        return param3 || !(MyNumber.isZero(_loc5_.mRatio1.mX) || MyNumber.isZero(_loc5_.mRatio2.mX));
     }
     return false;
 }
@@ -72,9 +72,9 @@ LineRelationHelper.createEdgeCollider = function(param1, param2, param3)
     var _loc12_ = Vec2.cross(Vec2.sub(_loc5_,_loc4_),_loc9_);
     var _loc13_ = new MyEdgeCollide();
     
-    if(MyNumber.isZeroOrOrigin(_loc10_,param3))
+    if(MyNumber.isZero(_loc10_,param3))
     {
-        if(MyNumber.isZeroOrOrigin(_loc12_,param3) && MyNumber.isZeroOrOrigin(_loc11_,param3))
+        if(MyNumber.isZero(_loc12_,param3) && MyNumber.isZero(_loc11_,param3))
         {
            _loc14_ = Vec2.dot(Vec2.sub(_loc5_,_loc4_),_loc8_);
            _loc15_ = Vec2.dot(Vec2.sub(_loc7_,_loc4_),_loc8_);
@@ -162,12 +162,12 @@ LineRelationHelper.isInterSect = function(param1, param2, param3, param4)
             if (_loc5_.mRatio1.mX == 0 && _loc5_.mRatio2.mX == 1) {
                 return false;
             }
-            return !(MyNumber.isZeroOrOrigin(_loc5_.mRatio1.mX) || MyNumber.isZeroOrOrigin(_loc5_.mRatio2.mX));
+            return !(MyNumber.isZero(_loc5_.mRatio1.mX) || MyNumber.isZero(_loc5_.mRatio2.mX));
         case Line2DIntersectionStatus.OVERLAPPING:
             if (_loc5_.mRatio1.mX == 1 && _loc5_.mRatio1.mY == 1) {
                 return false;
             }
-            return param3 || !MyNumber.isEqual(_loc5_.mRatio1.mX,_loc5_.mRatio1.mY) || !MyNumber.isZeroOrOrigin(_loc5_.mRatio1.mX);
+            return param3 || !MyNumber.isEqual(_loc5_.mRatio1.mX,_loc5_.mRatio1.mY) || !MyNumber.isZero(_loc5_.mRatio1.mX);
         default:
             return false;
     }
@@ -193,7 +193,7 @@ LineRelationHelper.isOverLapping = function(param1, param2, param3, param4)
             && MyNumber.isEqual(_loc5_.mRatio2.mX, 1) && MyNumber.isEqual(_loc5_.mRatio2.mY, 1)) {
                 return false;
             }
-        return param3 || !MyNumber.isEqual(_loc5_.mRatio1.mX,_loc5_.mRatio1.mY,0.01) || !MyNumber.isZeroOrOrigin(_loc5_.mRatio1.mX,0.01);
+        return param3 || !MyNumber.isEqual(_loc5_.mRatio1.mX,_loc5_.mRatio1.mY,0.01) || !MyNumber.isZero(_loc5_.mRatio1.mX,0.01);
     }
     return false;
 }

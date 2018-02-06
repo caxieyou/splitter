@@ -272,7 +272,7 @@ Edge.prototype.removePointsNotInside = function(param1, param2)
 
 Edge.prototype.pointOnLineButNoNeedToBeWithin = function(param1)
 {
-    return MyNumber.isZeroOrOrigin(Vec2.crossByPoint(this.mStart,this.mEnd,param1));
+    return MyNumber.isZero(Vec2.crossByPoint(this.mStart,this.mEnd,param1));
 }
 
 Edge.prototype.distanceSmallThan = function(param1, param2)
@@ -332,7 +332,7 @@ Edge.prototype.project = function(param1, param2)
         param2 = false;
     }
     //param2 = param2 || false;
-    if(MyNumber.isZeroOrOrigin(this.getLength()))
+    if(MyNumber.isZero(this.getLength()))
     {
         return null;
     }
@@ -352,7 +352,7 @@ Edge.prototype.getIntersectionPointByPoint = function(param1, param2)
         param2 = false;
     }
     //param2 = param2 || false;
-    if(MyNumber.isZeroOrOrigin(this.getLength()))
+    if(MyNumber.isZero(this.getLength()))
     {
         return this.mStart;
     }
@@ -405,7 +405,7 @@ Edge.prototype.verticalDistanceSquare = function(param1, param2)
         param2 = false;
     }
 
-    if(MyNumber.isZeroOrOrigin(this.getLength()))
+    if(MyNumber.isZero(this.getLength()))
     {
         return Vec2.distance(param1,this.mStart);
     }

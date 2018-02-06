@@ -95,7 +95,6 @@ Rect.prototype.getHeightRange = function()
     return new Interval(this.mMin.mY,this.mMax.mY);
 }
 
-
 Rect.prototype.isValid = function()
 {
     return this.mMin.mX <= this.mMax.mX && this.mMin.mY <= this.mMax.mY;
@@ -142,7 +141,6 @@ Rect.prototype.getClosestPoint = function(param1)
 {
     return Vec2.min(Vec2.max(this.mMin,param1),this.mMax);
 }
-//getExtent
 
 Rect.prototype.getRange = function()
 {
@@ -180,11 +178,11 @@ Rect.prototype.getEdges = function()
     loc2.push(new Edge(loc1[3], loc1[0]));
     return loc2;
 }
+
 Rect.prototype.toMyPolygon = function()
 {
     return new Polygon(this.getPoints());
 }
-
 
 Rect.prototype.clone = function()
 {

@@ -8,7 +8,7 @@ circleEdgeHelper.getEdgeCircleIntersectionPoints = function(param1, param2)
     var _loc8_ = null;
     var _loc9_ = NaN;
     var _loc3_ = [];
-    if(MyNumber.isZeroOrOrigin(param2.length))
+    if(MyNumber.isZero(param2.length))
     {
         return _loc3_;
     }

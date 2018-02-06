@@ -17,7 +17,7 @@ MyNumber.isEqual = function(param1, param2, param3)
     }
     return Math.abs(param1 - param2) < param3;
 }
-MyNumber.isZeroOrOrigin = function(param1, param2)
+MyNumber.isZero = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6;

@@ -421,7 +421,7 @@ SegmentController.prototype.isHasAndSaveOnCurve = function(param1)
 
 SegmentController.prototype.getClosestPoint = function(param1)
 {
-    if(MyNumber.isZeroOrOrigin(this.length))
+    if(MyNumber.isZero(this.length))
     {
         return mStart.position.clone();
     }
