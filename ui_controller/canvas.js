@@ -3,18 +3,19 @@ var ScaleMouse = function(x, y) {
 }
 
 function Canvas(name) {
-    this._canvas              = document.getElementById(name);
-    this._mFloor              = new Floor();
-    this._renderer            = new Renderer();
-    this._mElmentDrawer       = new ElementDrawer(this._mFloor);
-    this._mWallCurveOperation = new ElementProcessor(this._mFloor);
-    this._mSnap               = new Snap(this._mFloor);
-    this._mEdge               = new Edge(new Vec2(), new Vec2());
-    this._hintPoints          = [];
-    this._updateElment        = null;
-    this._operationCurve      = null;
-    this._type                = null;
-    this.toggleHeightUI       = null;
+    this._canvas                = document.getElementById(name);
+    this._mFloor                = new Floor();
+    this._mRenderer             = new Renderer();
+    this._mElmentDrawer         = new ElementDrawer(this._mFloor);    //处理UI绘制的图元
+    this._mElementProcessor     = new ElementProcessor(this._mFloor); //处理图元的分裂，删除，性质改变
+    this._mSnap                 = new Snap(this._mFloor);
+    this._mEdge                 = new Edge(new Vec2(), new Vec2());
+    this._mHintPoints           = [];
+    this._mUpdateElment         = null;     //需要调整位置，移动的图元
+    this._mProcessElement       = null;     //需要改变性质的图元（直线变曲线，分裂等）
+    this._mType                 = null;
+    
+    this.toggleHeightUICallback = null;
     
     this._flags = {
        isRelativeDistanceEnabled : false,
@@ -23,7 +24,7 @@ function Canvas(name) {
        isCrownHeightEnabled      : false
     };
     
-    this._renderer.init(this._canvas);
+    this._mRenderer.init(this._canvas);
     this.resize(this._canvas.width, this._canvas.height);
     this._initialize();
 }
@@ -38,49 +39,52 @@ Canvas.prototype._initialize = function() {
     points.push(new Vec2(0, 800));
     var poly = new MyPolygon(points);
     
-    this._mElmentDrawer.split(poly.getEdges());
+    this._mElmentDrawer.add(poly.getEdges());
     this._mFloor.setProfile(poly);
     this._mFloor.Analysis();
     this.render();
 }
+
 Canvas.prototype.snapMouse = function(x, y, isSnap){
     [x, y] = ScaleMouse(x, y);
-    this._mSnap.snap(x, y, this._type, isSnap, this._mElmentDrawer.getSnapLines());
+    this._mSnap.snap(x, y, this._mType, isSnap, this._mElmentDrawer.getSnapLines());
 }
 
-Canvas.prototype._renderCurrentObject = function() {
+//绘制当前正在滑动的圆，直线，Rect等
+Canvas.prototype._renderCurrentPrimitive = function() {
     if (!this._mElmentDrawer.isDrawable()) {
         return;
     }
     
-    switch(this._type) {
+    switch(this._mType) {
         case TYPE.RECTANGLE:
         {
             var edges = this._mEdge.toRectEdges();
             var intersects = this._mFloor.getIntersectPoints(edges);
-            this._hintPoints = this._hintPoints.concat(intersects);
-            this._renderer.drawRect(this._mEdge);
+            this._mHintPoints = this._mHintPoints.concat(intersects);
+            this._mRenderer.drawRect(this._mEdge);
         }
         break;
         case TYPE.CIRCLE:
-            this._renderer.drawCircle(this._mEdge);
+            this._mRenderer.drawCircle(this._mEdge);
         break;
         case TYPE.LINE:
         {
             [edges, eLine] = this._mElmentDrawer.getDrawableLines();
             
             for (var i = 0; i < edges.length; i++) {
-                this._renderer.drawLine(edges[i]);
+                this._mRenderer.drawLine(edges[i]);
             }
             
             if (eLine) {
-                this._renderer.drawLine(eLine, Style.OverLine.isDash, Style.OverLine.color);
+                this._mRenderer.drawLine(eLine, Style.OverLine.isDash, Style.OverLine.color);
             }
         }
         break;
     }
 }
 
+//改变页面尺寸
 Canvas.prototype.resize = function(width, height) {
     this._canvas.width = width;
     this._canvas.height = height;
@@ -105,50 +109,51 @@ Canvas.prototype.resize = function(width, height) {
     Globals.Offset.mY = cY - nH / 2;
 }
 
-Canvas.prototype.createRect = function(pnt0, pnt1) {
-    pnt0 = pnt0 || this._mEdge.mStart;
-    pnt1 = pnt1 || this._mEdge.mEnd;
-    console.log(this._mEdge);
-    this._mElmentDrawer.creatRect(pnt0, pnt1);
+Canvas.prototype.createRect = function(p0, p1) {
+    p0 = p0 || this._mEdge.mStart;
+    p1 = p1 || this._mEdge.mEnd;
+    this._mElmentDrawer.creatRect(p0, p1);
 }
 
 Canvas.prototype.createCircle = function() {
     this._mElmentDrawer.createCircle(this._mEdge);
 }
 
-Canvas.prototype.isMovable = function() {
-    if (this._type != null || this._mSnap.mFocus.controller != null) {
+//页面是否可拖动
+Canvas.prototype.isDraggable = function() {
+    if (this._mSnap.mFocus.controller == null) {
+        return true;
+    } else {
         return false;
     }
-    
-    return true;
 }
 
 Canvas.prototype.setType = function(type) {
-    if (this._type == type) {
+    if (this._mType == type) {
         return;
     }
-    this._mElmentDrawer.finish();
-    this._type = type;
+    //停止正在绘制的过程
+    this._mElmentDrawer.stop();
+    this._mType = type;
     
-    if (this._type == TYPE.LINE) {
+    if (this._mType == TYPE.LINE) {
         this._mElmentDrawer.setStatus(STATUS.LINE_START);
     } else {
         this._mElmentDrawer.setStatus(STATUS.NOT_STARTED);
     }
-    if (this._type == null) {
+    if (this._mType == null) {
         document.body.style.cursor = "default";
     } else {
         document.body.style.cursor = "crosshair";
     }
     this._mFloor.clearPickedArea();
-    this._operationCurve = null;
-    this.toggleHeightUI("", 0, false);
+    this._mProcessElement = null;
+    this.toggleHeightUICallback("", 0, false);
     this.render();
 }
 
 Canvas.prototype.setStartPoint = function() {
-    if (this._type == null) {
+    if (this._mType == null) {
         return false;
     }
     
@@ -164,14 +169,14 @@ Canvas.prototype.setStartPoint = function() {
 }
 
 Canvas.prototype.setEndPoint = function() {
-    if (this._type == null) {
+    if (this._mType == null) {
         return false;
     }
     if (this._mSnap.mFocus.hintpoint) {
-        this._hintPoints.push(this._mSnap.mFocus.hintpoint.clone());
+        this._mHintPoints.push(this._mSnap.mFocus.hintpoint.clone());
     }
 
-    if (this._mElmentDrawer.lineOperationEnd(this._mSnap.mouseSnapped, this._hintPoints)) {
+    if (this._mElmentDrawer.lineOperationEnd(this._mSnap.mouseSnapped, this._mHintPoints)) {
         this._mEdge.mEnd.copy(this._mSnap.mouseSnapped);
         
         if (this._mEdge.getLength() < 0.0001) {
@@ -190,28 +195,20 @@ Canvas.prototype.resetType = function() {
     }
     this._mSnap.clearFocus();
     this._mFloor.clearPickedArea();
-    this._operationCurve = null;
+    this._mProcessElement = null;
     this.render();
 }
 
-Canvas.prototype.getDrawType = function() {
-    return this._type;
+Canvas.prototype.getType = function() {
+    return this._mType;
 }
 
 Canvas.prototype.getFocusElement = function() {
-    //console.log(this._mSnap.mFocus.geom);
     if (this._mSnap.mFocus.geom) {
         return this._mSnap.mFocus.geom;
     } else {
         return null;
     }
-}
-
-Canvas.prototype.checkStatus = function() {
-    if (this._type == null) {
-        return false;
-    }
-    return this._mElmentDrawer.checkStatus();
 }
 
 Canvas.prototype.setAreaHeight = function(sign, val) {
@@ -224,7 +221,7 @@ Canvas.prototype.setAreaName = function(name){
 }
 
 Canvas.prototype.renderAreaPicked = function(x, y) {
-    if (Globals.IsMovable) {
+    if (Globals.IsDragging) {
         return;
     }
     [x, y] = ScaleMouse(x, y);
@@ -234,12 +231,12 @@ Canvas.prototype.renderAreaPicked = function(x, y) {
     }
     if (this._mFloor.getPickedArea(x, y)) {
         this.render();
-        this._operationCurve = null;
-        this.toggleHeightUI(this._mFloor.getAreaName(), this._mFloor.getAreaHeight(), true);
+        this._mProcessElement = null;
+        this.toggleHeightUICallback(this._mFloor.getAreaName(), this._mFloor.getAreaHeight(), true);
     }
 }
 
-Canvas.prototype.isMoved = function(x, y) {
+Canvas.prototype.isMouseMoved = function(x, y) {
     [x, y] = ScaleMouse(x, y);
     var p = new Vec2(x, y);
     if (p.distance(this._mSnap.mouseSnapped) > Globals.DISTANCE_THRESHOLD ) {
@@ -256,65 +253,65 @@ Canvas.prototype.recordMouseUp = function(x, y) {
         //this._focus = null;
         this._mSnap.clearFocus();
     }
-    this._updateElment = null;
+    this._mUpdateElment = null;
 }
 
 Canvas.prototype.onSplitCurve = function() {
-    this._mWallCurveOperation.onSplitCurve(this._operationCurve);
-    this._operationCurve = null;
+    this._mElementProcessor.onSplitCurve(this._mProcessElement);
+    this._mProcessElement = null;
     this.render();
 }
 
 Canvas.prototype.onToLine = function() {
-    this._mWallCurveOperation.onToLine(this._operationCurve);
-    this._operationCurve = null;
+    this._mElementProcessor.onToLine(this._mProcessElement);
+    this._mProcessElement = null;
     this.render();
 }
 
 Canvas.prototype.onToArc = function() {
-    this._mWallCurveOperation.onToArc(this._operationCurve);
-    this._operationCurve = null;
+    this._mElementProcessor.onToArc(this._mProcessElement);
+    this._mProcessElement = null;
     this.render();
 }
 
 Canvas.prototype.onDelete = function() {
-    this._mWallCurveOperation.onDelete(this._operationCurve);
-    this._operationCurve = null;
+    this._mElementProcessor.onDelete(this._mProcessElement);
+    this._mProcessElement = null;
     this.render();
 }
 
 Canvas.prototype.setOperationCurve = function() {
-    this._operationCurve = this._mSnap.mFocus.controller;
+    this._mProcessElement = this._mSnap.mFocus.controller;
     this._mFloor.clearPickedArea();
     this.render();
 }
 
 Canvas.prototype.updateElement = function(x, y){
     [x, y] = ScaleMouse(x, y);
-    if (!this._updateElment && this._mSnap.mFocus.controller) {
-        this._updateElment = this._mSnap.mFocus.controller;
-        this._operationCurve = null;
+    if (!this._mUpdateElment && this._mSnap.mFocus.controller) {
+        this._mUpdateElment = this._mSnap.mFocus.controller;
+        this._mProcessElement = null;
     }
     
-    if (this._updateElment) {
-        this.toggleHeightUI("", 0, false);
-        var overlapped = this._mFloor.updatePosition(this._updateElment, new Vec2(x, y));
+    if (this._mUpdateElment) {
+        this.toggleHeightUICallback("", 0, false);
+        var overlapped = this._mFloor.updatePosition(this._mUpdateElment, new Vec2(x, y));
         
-        if (this._updateElment instanceof SegmentController) {
-            this._mSnap.mFocus.geom = this._updateElment.getTheStartEndEdge();
-        } else if(this._updateElment instanceof CurveController) {
-            this._mSnap.mFocus.geom =  this._updateElment.getCurveFromController();
+        if (this._mUpdateElment instanceof SegmentController) {
+            this._mSnap.mFocus.geom = this._mUpdateElment.getTheStartEndEdge();
+        } else if(this._mUpdateElment instanceof CurveController) {
+            this._mSnap.mFocus.geom =  this._mUpdateElment.getCurveFromController();
         } else {
-            this._mSnap.mFocus.geom = this._updateElment.mPosition.clone();
+            this._mSnap.mFocus.geom = this._mUpdateElment.mPosition.clone();
         }
         this._mSnap.mFocus.keypoint = null;
         this.render();
         if (overlapped) {
-            if (this._updateElment instanceof MyCorner) {
-                var last = this._updateElment.getLast();
-                this._renderer.drawLine(new Edge(last, new Vec2(x, y)), Style.OverLine.isDash, Style.OverLine.color)
-                this._renderer.drawCorner(last, Style.UpdateCorner.radius, Style.UpdateCorner.color);
-                this._renderer.drawCorner(new Vec2(x, y), Style.ErrorCorner.radius, Style.ErrorCorner.color);
+            if (this._mUpdateElment instanceof MyCorner) {
+                var last = this._mUpdateElment.getLast();
+                this._mRenderer.drawLine(new Edge(last, new Vec2(x, y)), Style.OverLine.isDash, Style.OverLine.color)
+                this._mRenderer.drawCorner(last, Style.UpdateCorner.radius, Style.UpdateCorner.color);
+                this._mRenderer.drawCorner(new Vec2(x, y), Style.ErrorCorner.radius, Style.ErrorCorner.color);
             }
             return;
         }
@@ -322,7 +319,12 @@ Canvas.prototype.updateElement = function(x, y){
 }
 
 Canvas.prototype.createElement = function() {
-    switch(this._type) {
+    
+    if (!this._mElmentDrawer.checkStatus()) {
+        return;
+    }
+    
+    switch(this._mType) {
         case TYPE.RECTANGLE:
             this.createRect();
         break;
@@ -337,57 +339,57 @@ Canvas.prototype.createElement = function() {
     }
 }
 
-Canvas.prototype._renderFocusObject = function() {
-    if (this._type != null) {
+Canvas.prototype._renderFocusPrimitive = function() {
+    if (this._mType != null) {
         return;
     }
     
     if (this._mSnap.mFocus.geom instanceof Edge) {
-        this._renderer.drawLine(this._mSnap.mFocus.geom, null, null, true);
+        this._mRenderer.drawLine(this._mSnap.mFocus.geom, null, null, true);
         
     } else if(this._mSnap.mFocus.geom instanceof MyCurve) {
-        this._renderer.drawArc(this._mSnap.mFocus.geom, true);
+        this._mRenderer.drawArc(this._mSnap.mFocus.geom, true);
         
     } else if(this._mSnap.mFocus.geom instanceof Vec2) {
-        this._renderer.drawCorner(this._mSnap.mFocus.geom, Style.FocusCorner.radius, Style.FocusCorner.color);
+        this._mRenderer.drawCorner(this._mSnap.mFocus.geom, Style.FocusCorner.radius, Style.FocusCorner.color);
     }
     
-    if (this._operationCurve) {
-        if (this._operationCurve instanceof SegmentController) {
-            this._renderer.drawLine(this._operationCurve.getTheStartEndEdge(), null, null, true);
+    if (this._mProcessElement) {
+        if (this._mProcessElement instanceof SegmentController) {
+            this._mRenderer.drawLine(this._mProcessElement.getTheStartEndEdge(), null, null, true);
             
-        } else if(this._operationCurve instanceof CurveController) {
-            this._renderer.drawArc(this._operationCurve.getCurveFromController(), true);
+        } else if(this._mProcessElement instanceof CurveController) {
+            this._mRenderer.drawArc(this._mProcessElement.getCurveFromController(), true);
             
         }
     }
 }
 
 Canvas.prototype._renderMarkerLines = function() {
-    this._mFloor.renderMarkerLines(this._flags, this._renderer, this);
+    this._mFloor.renderMarkerLines(this._flags, this._mRenderer, this);
 }
 
 Canvas.prototype._renderMouseLines = function() {
-    if (this._type == null || !this._mSnap.mIsInside) {
+    if (this._mType == null || !this._mSnap.mIsInside) {
         return;
     }
     
     for (var i = 0; i < this._mSnap.mFocus.snapXEdge.length; i++) {
         var edge = this._mSnap.mFocus.snapXEdge[i];
-        this._renderer.drawDimensions({x: edge.mStart.mX,y: edge.mStart.mY}, {x: edge.mEnd.mX,y: edge.mEnd.mY}, this._mSnap.mFocus.snapX ? Style.RulerSnap.color : null);
+        this._mRenderer.drawDimensions({x: edge.mStart.mX,y: edge.mStart.mY}, {x: edge.mEnd.mX,y: edge.mEnd.mY}, this._mSnap.mFocus.snapX ? Style.RulerSnap.color : null);
     }
 
     for (var i = 0; i < this._mSnap.mFocus.snapYEdge.length; i++) {
         var edge = this._mSnap.mFocus.snapYEdge[i];
-        this._renderer.drawDimensions({x: edge.mStart.mX,y: edge.mStart.mY}, {x: edge.mEnd.mX,y: edge.mEnd.mY}, this._mSnap.mFocus.snapY ? Style.RulerSnap.color : null);
+        this._mRenderer.drawDimensions({x: edge.mStart.mX,y: edge.mStart.mY}, {x: edge.mEnd.mX,y: edge.mEnd.mY}, this._mSnap.mFocus.snapY ? Style.RulerSnap.color : null);
     }
 }
 
 Canvas.prototype._renderHintKeyPoints = function() {
-    for (var i = 0; i < this._hintPoints.length; i++) {
+    for (var i = 0; i < this._mHintPoints.length; i++) {
         var isClose = false;
         for (var j = 0; j < this._mFloor.mCorners.length; j++) {
-            if (this._mFloor.mCorners[j].mPosition.isClose(this._hintPoints[i])) {
+            if (this._mFloor.mCorners[j].mPosition.isClose(this._mHintPoints[i])) {
                 isClose = true;
                 break;
             }
@@ -396,23 +398,23 @@ Canvas.prototype._renderHintKeyPoints = function() {
         //2 和重心，中点比
         if (!isClose) {
             for (var j = 0; j < this._mFloor.mKeyPoints.length; j++) {
-                if (this._mFloor.mKeyPoints[j].isClose(this._hintPoints[i])) {
+                if (this._mFloor.mKeyPoints[j].isClose(this._mHintPoints[i])) {
                     isClose = true;
                     break;
                 }
             }
         }
         if (isClose) {
-            this._renderer.drawCorner(this._hintPoints[i], Style.OverlapCorner.radius, Style.OverlapCorner.color);
+            this._mRenderer.drawCorner(this._mHintPoints[i], Style.OverlapCorner.radius, Style.OverlapCorner.color);
         } else {
-            this._renderer.drawIntersectCorner(this._hintPoints[i], Style.IntersectCorner.color);
+            this._mRenderer.drawIntersectCorner(this._mHintPoints[i], Style.IntersectCorner.color);
         }
         
     }
-    this._hintPoints = [];
+    this._mHintPoints = [];
     
     if (this._mSnap.mFocus.keypoint) {
-        this._renderer.drawCorner(this._mSnap.mFocus.keypoint, Style.FocusCorner.radius, Style.FocusCorner.color);
+        this._mRenderer.drawCorner(this._mSnap.mFocus.keypoint, Style.FocusCorner.radius, Style.FocusCorner.color);
     }
 }
 
@@ -438,44 +440,47 @@ Canvas.prototype.setCrownHeight = function(enabled) {
 
 Canvas.prototype.render = function() {
     //清空canvas
-    this._renderer.clear();
+    this._mRenderer.clear();
     
     //绘制已经分析完的图元
-    this._mFloor.renderOutput(this._renderer);
+    this._mFloor.renderOutput(this._mRenderer);
     
     //长方形，圆，线段等正在绘制的图元
-    this._renderCurrentObject();
+    this._renderCurrentPrimitive();
     
+    //画鼠标线
     this._renderMouseLines();
     
-    this._mFloor.renderPickedArea(this._renderer);
+    //画选中区域
+    this._mFloor.renderPickedArea(this._mRenderer);
     
+    //画区域标记线
     this._renderMarkerLines();
     
     //绘制鼠标移动中经过的图元
-    this._renderFocusObject();
+    this._renderFocusPrimitive();
     
     //渲染那些几何中点，边界点，中心位置
     this._renderHintKeyPoints();
     
     //画选中点的边界的长度
-    this._renderer.drawCornerDimentions(this._updateElment);
+    this._mRenderer.drawCornerDimentions(this._mUpdateElment);
     
 }
 
 Canvas.prototype.clear = function() {
-    this._renderer.removeAllTextInputs();
-    this._mFloor              = new Floor();
-    this._mWallCurveOperation = new ElementProcessor(this._mFloor);
-    this._mElmentDrawer    = new ElementDrawer(this._mFloor);
-    this._renderer            = new Renderer();
-    this._mEdge               = new Edge(new Vec2(), new Vec2());
-    this._mSnap               = new Snap(this._mFloor);
-    this._type                = null;
-    this._updateElment        = null;
-    this._operationCurve      = null; 
-    this._hintPoints          = [];
+    this._mRenderer.removeAllTextInputs();
+    this._mFloor            = new Floor();
+    this._mElementProcessor = new ElementProcessor(this._mFloor);
+    this._mElmentDrawer     = new ElementDrawer(this._mFloor);
+    this._mRenderer         = new Renderer();
+    this._mEdge             = new Edge(new Vec2(), new Vec2());
+    this._mSnap             = new Snap(this._mFloor);
+    this._mType             = null;
+    this._mUpdateElment     = null;
+    this._mProcessElement   = null; 
+    this._mHintPoints       = [];
     
-    this._renderer.init(this._canvas);
+    this._mRenderer.init(this._canvas);
     this._initialize();
 }

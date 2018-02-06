@@ -193,8 +193,8 @@ function _RectOp() {
     
 }
 
-_RectOp.prototype.create = function(pnt0, pnt1, curves) {
-    var rect = new MyRect(pnt0, pnt1);
+_RectOp.prototype.create = function(p0, p1, curves) {
+    var rect = new MyRect(p0, p1);
     var polyEdges = rect.toMyPolygon().getEdges();
     for (var i = 0; i < polyEdges.length; i++) {
         for (var j = 0; j < curves.length; j++) {
@@ -256,7 +256,7 @@ function ElementDrawer(floor) {
     this.mCircle = new _CircleOp();
 }
 
-ElementDrawer.prototype.split = function (polygon) {
+ElementDrawer.prototype.add = function (polygon) {
     var splitter = new Splitter(polygon, this.mFloor, this.mFloor.generatePolyTree());
     splitter.execute();
     this.mFloor.Analysis();
@@ -272,7 +272,7 @@ ElementDrawer.prototype.isStart = function() {
 
 ElementDrawer.prototype.creatRect = function(pt0, pt1) {
     var res = this.mRect.create(pt0, pt1, this.mFloor.mCurves);
-    this.split(res);
+    this.add(res);
 }
 
 ElementDrawer.prototype.isDrawable = function() {
@@ -305,7 +305,7 @@ ElementDrawer.prototype.getSnapLines = function() {
 
 ElementDrawer.prototype.createCircle = function(edge) {
     var res = this.mCircle.create(edge);
-    this.split(res);
+    this.add(res);
 }
 
 ElementDrawer.prototype.setStatus = function(status) {
@@ -434,7 +434,7 @@ ElementDrawer.prototype.reset = function() {
     } else if (this.mStatus  == STATUS.LINE_START) {
         this.mStatus = STATUS.NOT_STARTED;
         var lines = this.mLine.extractValidLines(curves);
-        this.split(lines);
+        this.add(lines);
         this.mLine.reset();
         
         console.log("right 1");
@@ -445,7 +445,7 @@ ElementDrawer.prototype.reset = function() {
     }
 }
 
-ElementDrawer.prototype.finish = function() {
+ElementDrawer.prototype.stop = function() {
     this.reset();
     this.reset();
 }

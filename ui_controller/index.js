@@ -32,7 +32,7 @@ $(function() {
     var moveEnd = new Vec2(0, 0);
     var savedOffset = new Vec2(0, 0);
     savedOffset.copy(Globals.Offset);
-    Globals.IsMovable = false;
+    Globals.IsDragging = false;
     
     $(document).on('mousedown', '#canvas', function(event) {
         event = event || window.event;
@@ -40,12 +40,10 @@ $(function() {
         $('#props_wrap').hide();
         if(btnNum == 0) {
             //左键
-            if (canvas.isMovable()) {
+            if (canvas.isDraggable()) {
                 moveStart.set(event.offsetX, event.offsetY);
-                Globals.IsMovable = true;
-            } else {
-                canvas.setStartPoint();
-            }
+            } 
+            canvas.setStartPoint();
         } else if(btnNum == 2) {
             //右键
             canvas.resetType();
@@ -55,7 +53,7 @@ $(function() {
     $(document).on('mouseup', '#canvas', function(event) {
         event = event || window.event;
         
-        if (Globals.IsMovable) {
+        if (Globals.IsDragging) {
             var isMoved = true;
             if (Vec2.distance(moveStart, new Vec2(event.offsetX, event.offsetY)) < 4) {
                 isMoved = false;
@@ -64,14 +62,14 @@ $(function() {
             moveStart.set(0, 0);
             moveEnd.set(0, 0);
             savedOffset.copy(Globals.Offset);
-            Globals.IsMovable = false;
+            Globals.IsDragging = false;
             document.body.style.cursor = "default";
             if (isMoved) {
                 return;
             }
         } 
         
-        if(canvas.getDrawType() == null) {
+        if(canvas.getType() == null) {
             var elementType = canvas.getFocusElement();
             if(elementType == null) {
                 $('#props_wrap').hide();
@@ -106,17 +104,18 @@ $(function() {
                     $('#props_wrap').find('.props.line').data('type', 'straight');
                     $('#props_wrap').find('.props.line').find('.pup').html('转为曲线<i></i>');
                 }
-                if (!canvas.isMoved(event.offsetX, event.offsetY) && event.button == 0) {
+                if (!canvas.isMouseMoved(event.offsetX, event.offsetY) && event.button == 0) {
                     $('#props_wrap').show();
                     canvas.setOperationCurve();
                 } else {
                     $('#props_wrap').hide();
                 }
             }
-        } else if(canvas.checkStatus()) {
+        } else {
             canvas.createElement();
             canvas.render();
         }
+        
         canvas.recordMouseUp(event.offsetX, event.offsetY);
         
     });
@@ -125,7 +124,8 @@ $(function() {
         event = event || window.event;
         if(event.which == 1) {
             //按住拖动
-            if (Globals.IsMovable) {
+            if (canvas.isDraggable()) {
+                Globals.IsDragging = true;
                 moveEnd.set(event.offsetX, event.offsetY);
                 
                 Globals.Offset.copy(moveEnd);
@@ -276,7 +276,7 @@ $(function() {
         }
         $('#bottom_props .bottom-props-depth-input').val(Math.abs(value));
     };
-    canvas.toggleHeightUI = refreshAreaData;
+    canvas.toggleHeightUICallback = refreshAreaData;
     
     /**
      * 设置提示框的信息
