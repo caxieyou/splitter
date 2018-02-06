@@ -44,7 +44,7 @@ _LineOp.prototype.intersect = function(intersects) {
     for (var i = 0; i < this._lineRecords.length; i++) {
         var edges = this._lineRecords[i]._lineEdges;
         for (var j = 0; j < edges.length; j++) {
-            SegmentController.intersectSub(edges[j], this._currentLine, intersects);
+            Segment.intersectSub(edges[j], this._currentLine, intersects);
         }
     }
     
@@ -199,7 +199,7 @@ _RectOp.prototype.create = function(p0, p1, curves) {
     for (var i = 0; i < polyEdges.length; i++) {
         for (var j = 0; j < curves.length; j++) {
             var curve = curves[j];
-            if (curve instanceof CurveController) {
+            if (curve instanceof Arc) {
                 continue;
             }
             curve = curve.getTheStartEndEdge();
@@ -326,7 +326,7 @@ ElementDrawer.prototype.lineOperationStart = function(point) {
         }
         
         for (var i = 0; i < curves.length; i++) {
-            if (curves[i] instanceof SegmentController) {
+            if (curves[i] instanceof Segment) {
                 var edge = curves[i].getTheStartEndEdge();
                 if (LineRelationHelper.isOverLapping(edge, this.mLine._currentLine)) {
                     return;

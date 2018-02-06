@@ -61,7 +61,7 @@ CurveSplitClass.prototype.execute = function()
                 this.invalidate();
                 return;
             }
-            if(_loc4_ instanceof SegmentController && _loc1_ instanceof SegmentController)
+            if(_loc4_ instanceof Segment && _loc1_ instanceof Segment)
              {
                 _loc6_ = _loc4_.getTheStartEndEdge();
                 _loc7_ = _loc1_.getTheStartEndEdge();

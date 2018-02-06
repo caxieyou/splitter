@@ -994,7 +994,7 @@ Renderer = function () {
         
         for (var i = 0; i < output.length; i++) {
             var seg = output[i];
-            if (seg instanceof SegmentController) {
+            if (seg instanceof Segment) {
                 var edge = seg.getTheStartEndEdge();
                 if (seg.isBoundry) {
                     this.drawLine(edge, null, isFocus ? Style.FocusLine.color : Style.BoundryLine.color );
@@ -1003,7 +1003,7 @@ Renderer = function () {
                 }
             }
             
-            if (seg instanceof CurveController) {
+            if (seg instanceof Arc) {
                 var edge = seg.getCurveFromController();
                 this.drawArc(edge, isFocus);
             }
@@ -1013,7 +1013,7 @@ Renderer = function () {
     this.drawCornerDimentions = function(corner) {
         if (corner && corner instanceof MyCorner) {
             for (var i = 0; i < corner.mCurves.length; i++) {
-                if (corner.mCurves[i] instanceof SegmentController) {
+                if (corner.mCurves[i] instanceof Segment) {
                     var curve = corner.mCurves[i];
                     var edge = curve.getTheStartEndEdge();
                     var start = edge.mStart.clone();

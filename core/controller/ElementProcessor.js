@@ -23,7 +23,7 @@ ElementProcessor.prototype.onToLine = function(param1)
     var _loc7_ = param1.mStart;
     var _loc8_ = param1.mEnd
 
-    _loc6_ = new SegmentController();
+    _loc6_ = new Segment();
     _loc6_.mStart = _loc7_;
     _loc6_.mEnd = _loc8_;
     
@@ -62,7 +62,7 @@ ElementProcessor.prototype.onToLine = function(param1)
 
 ElementProcessor.prototype.onToArc = function(param1)
 {
-    var _loc7_ = new CurveController();
+    var _loc7_ = new Arc();
     _loc7_.mStart = param1.mStart;
     _loc7_.mEnd = param1.mEnd;
     
@@ -121,7 +121,7 @@ ElementProcessor.prototype.onDelete = function(param1) {
             {
                _loc2_ = _loc1_[0];
                _loc3_ = _loc1_[1];
-               if(_loc2_ instanceof SegmentController && _loc3_ instanceof SegmentController)
+               if(_loc2_ instanceof Segment && _loc3_ instanceof Segment)
                {
                   _loc4_ = _loc2_;
                   _loc5_ = _loc3_;

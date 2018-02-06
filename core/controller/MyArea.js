@@ -21,21 +21,21 @@ MyArea.outputStructure = function(param1) {
     
     if (param1 instanceof MyArea) {
         for (var i = 0; i < param1.mCurves.length; i++) {
-            if (param1.mCurves[i] instanceof CurveController) {
+            if (param1.mCurves[i] instanceof Arc) {
                 var curve = param1.mCurves[i].getCurveFromController();
                 res.edges.push(curve);
-            } else if (param1.mCurves[i] instanceof SegmentController) {
+            } else if (param1.mCurves[i] instanceof Segment) {
                 var edge = param1.mCurves[i].getTheStartEndEdge();
                 res.edges.push(edge);
             }
         }
     } else if (param1 instanceof Array) {
         for (var i = 0; i < param1.length; i++) {
-            if (param1[i] instanceof CurveController) {
+            if (param1[i] instanceof Arc) {
                 var curve = param1[i].getCurveFromController();
                 res.edges.push(curve);
             }
-            if (param1[i] instanceof SegmentController) {
+            if (param1[i] instanceof Segment) {
                 var edge = param1[i].getTheStartEndEdge();
                 res.edges.push(edge);
             }

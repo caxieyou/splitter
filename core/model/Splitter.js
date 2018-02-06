@@ -190,7 +190,7 @@ Splitter.prototype.getSubCurvesCircleSplitByCurves = function(param1, param2)
         
         for (var i = 0; i < newArc.length; i++ ) {
             for (var j = 0; j < clippers.length; j++) {
-                if (clippers[j] instanceof CurveController) {
+                if (clippers[j] instanceof Arc) {
                     var c = clippers[j].getCurveFromController();
                     
                     if (newArc[i] instanceof Array) {
@@ -273,7 +273,7 @@ Splitter.prototype.splitCurvesIntoOneThirdCurves = function(param1)
     var _loc3_ = null;
     for (var i = 0; i < param1.length; i++)
     {
-        _loc3_ = CurveController.getSplitOneThirdCurve(param1[i]);
+        _loc3_ = Arc.getSplitOneThirdCurve(param1[i]);
         _loc2_.push(_loc3_);
     }
     return _loc2_;
@@ -291,7 +291,7 @@ Splitter.prototype.splitMyEdgeIntoSegment = function(param1)
     */
     for (var i = 0; i < param1.length; i++)
     {
-        _loc3_ = SegmentController.createSegmentByMyEdge(param1[i]);
+        _loc3_ = Segment.createSegmentByMyEdge(param1[i]);
         /*
         if (!this.mPolytree) {
             _loc3_.isBoundry = true;
@@ -354,7 +354,7 @@ Splitter.prototype.execute = function() {
     
     for (var i = 0; i < this.mWall.mCurves.length; i++) {
         var seg = this.mWall.mCurves[i];
-        if (seg instanceof SegmentController) {
+        if (seg instanceof Segment) {
             if (!this.mPolytree) {
                 seg.isBoundry = true;
             } else {

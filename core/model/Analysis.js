@@ -11,7 +11,7 @@ Analysis.prototype.calculateAreaAndCurves = function()
 {
     //this.mAreas = MyArea.cloneAreas(this.mWall.mAreas);
     this.mAreas = this.mWall.mAreas;
-    //this.mCurves = CurveController.cloneAreas(this.mWall.curves);
+    //this.mCurves = Arc.cloneAreas(this.mWall.curves);
     this.mCurves = this.mWall.mCurves;
 }
 

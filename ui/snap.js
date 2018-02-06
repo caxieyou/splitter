@@ -64,7 +64,7 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
             for (var i = 0; i < this.mFloor.mCurves.length; i++) {
                 var curve = this.mFloor.mCurves[i];
                 var edge;
-                if (curve instanceof SegmentController) {
+                if (curve instanceof Segment) {
                     var edge = curve.getTheStartEndEdge();
                     if (edge.pointInEdgeOrOnEdge(this.mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
                         var point = edge.getIntersectionPointByPoint(this.mouseSnapped, true);
@@ -72,7 +72,7 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
                         this.mFocus.hintpoint = point.clone();
                         break;
                     }
-                } else if(curve instanceof CurveController) {
+                } else if(curve instanceof Arc) {
                     var edge = curve.getCurveFromController();
                     if (edge.isInsideCurveAndNotOnCurve(this.mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
                         var point = edge.getIntersectionPointByPoint(this.mouseSnapped, true);
@@ -190,14 +190,14 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
             for (var i = 0; i < this.mFloor.mCurves.length; i++) {
                 var curve = this.mFloor.mCurves[i];
                 var edge;
-                if (curve instanceof SegmentController && !curve.isBoundry) {
+                if (curve instanceof Segment && !curve.isBoundry) {
                     var edge = curve.getTheStartEndEdge();
                     if (edge.pointInEdgeOrOnEdge(this.mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
                         this.mFocus.controller = curve;
                         this.mFocus.geom = edge;
                         break;
                     }
-                } else if(curve instanceof CurveController) {
+                } else if(curve instanceof Arc) {
                     var edge = curve.getCurveFromController();
                     if (edge.isInsideCurveAndNotOnCurve(this.mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
                         this.mFocus.controller = curve;
@@ -221,14 +221,14 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
     }
     
     if (this.mFocus.controller != null) {
-        if (this.mFocus.controller instanceof SegmentController) {
+        if (this.mFocus.controller instanceof Segment) {
             var angle = this.mFocus.geom.getAngle();
             if (Math.abs(angle) > Math.PI / 4 && Math.abs(angle) < 3 * Math.PI / 4) {
                 document.body.style.cursor = "e-resize";
             } else {
                 document.body.style.cursor = "n-resize";
             }
-        } else if (this.mFocus.controller instanceof CurveController) {
+        } else if (this.mFocus.controller instanceof Arc) {
             document.body.style.cursor = "n-resize";
         } else {
             document.body.style.cursor = "move";

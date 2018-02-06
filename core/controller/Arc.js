@@ -1,4 +1,4 @@
-function CurveController(param1) {
+function Arc(param1) {
     if (param1 == null || param1 == undefined) {
         param1 = null;
     }
@@ -10,14 +10,14 @@ function CurveController(param1) {
     this.mId = ID.assignUniqueId();
 }
 
-CurveController.CONST_SPLIT = 0.3333333;
-CurveController.TOLERANCE   = 1.0E-6;
+Arc.CONST_SPLIT = 0.3333333;
+Arc.TOLERANCE   = 1.0E-6;
 
 
-CurveController.getSplitOneThirdCurve = function(param1)
+Arc.getSplitOneThirdCurve = function(param1)
 {
     var _loc2_ = null;
-    var _loc3_ = new CurveController();
+    var _loc3_ = new Arc();
     _loc2_ = new MyCorner();
     _loc2_.mPosition = param1.getSplitPosByRatio(0);
     _loc3_.updateStartCorner(_loc2_);
@@ -26,11 +26,11 @@ CurveController.getSplitOneThirdCurve = function(param1)
     
     _loc3_.updateEndCorner(_loc2_);
 
-    _loc3_.mCurvePoint = param1.getSplitPosByRatio(CurveController.CONST_SPLIT);
+    _loc3_.mCurvePoint = param1.getSplitPosByRatio(Arc.CONST_SPLIT);
     return _loc3_;
 }
 
-CurveController.isIntersectWith = function(param1, param2, param3, param4)
+Arc.isIntersectWith = function(param1, param2, param3, param4)
 {
     if (param2 == null || param2 == undefined) {
         param2 = null;
@@ -62,7 +62,7 @@ CurveController.isIntersectWith = function(param1, param2, param3, param4)
 }
 
 //求圆心
-CurveController.prototype.getInnerIntersectionPoint_XX = function()
+Arc.prototype.getInnerIntersectionPoint_XX = function()
 {
     var _loc1_ = new Edge(this.mStart.mPosition.clone(),this.mEnd.mPosition.clone());
     var _loc2_ = new Edge(this.mStart.mPosition.clone(),this.mCurvePoint.clone());
@@ -75,17 +75,17 @@ CurveController.prototype.getInnerIntersectionPoint_XX = function()
     return Edge.getIntersection(_loc7_,_loc8_,0);
 }
 
-CurveController.prototype.containsPoint = function(param1)
+Arc.prototype.containsPoint = function(param1)
 {
     return this.getCurveFromController().isInsideCurveAndOnCurve(param1);
 }
 
-CurveController.prototype.getCurveFromController = function()
+Arc.prototype.getCurveFromController = function()
 {
     var _loc1_ = this.getInnerIntersectionPoint_XX();
     if(isNaN(_loc1_.mX) || isNaN(_loc1_.mY))
     {
-        return new Curve(this.mStart.mPosition,CurveController.TOLERANCE,CurveController.TOLERANCE,CurveController.TOLERANCE);
+        return new Curve(this.mStart.mPosition,Arc.TOLERANCE,Arc.TOLERANCE,Arc.TOLERANCE);
     }
     var _loc2_ = this.mStart.mPosition.clone().sub(_loc1_).getAngle();
     var _loc3_ = this.mEnd.mPosition.clone().sub(_loc1_).getAngle();
@@ -101,7 +101,7 @@ CurveController.prototype.getCurveFromController = function()
 }
 
 
-CurveController.prototype.setCornerStartAndEndButHasToBeSame = function(param1, param2)
+Arc.prototype.setCornerStartAndEndButHasToBeSame = function(param1, param2)
 {
     if(param1 == this.mStart)
     {
@@ -113,13 +113,13 @@ CurveController.prototype.setCornerStartAndEndButHasToBeSame = function(param1, 
     }
 }
       
-CurveController.prototype.isHasAndSaveOnCurve = function(param1)
+Arc.prototype.isHasAndSaveOnCurve = function(param1)
 {
     var _loc2_ = ArrayHelperClass.ifHasAndSave(this.mAreas, param1);
     return _loc2_;
 }
 
-CurveController.prototype.updateInfo = function(param1)
+Arc.prototype.updateInfo = function(param1)
 {
     var _loc2_ = this.getCurveFromController();
     var _loc3_ = param1.mPosition.clone().sub(this.getInnerIntersectionPoint_XX()).getAngle();
@@ -127,7 +127,7 @@ CurveController.prototype.updateInfo = function(param1)
     var _loc5_ = _loc2_.getSplitPosByRatio(_loc4_ * 0.33333333);
     var _loc6_ = _loc2_.getSplitPosByRatio(_loc4_ + (1 - _loc4_) * 0.33333333);
     var _loc7_ = wallCurveCornerHelper.getCornerByPos_XX(_loc2_.getSplitPosByRatio(1),[this.mStart, this.mEnd]);
-    var _loc8_ = new CurveController();
+    var _loc8_ = new Arc();
     
     _loc8_.updateStartCorner(param1);
     
@@ -146,7 +146,7 @@ CurveController.prototype.updateInfo = function(param1)
     return _loc8_;
 }
 
-CurveController.prototype.getStartOrEndOrNull = function(param1)
+Arc.prototype.getStartOrEndOrNull = function(param1)
 {
     if(param1 == this.mStart)
     {
@@ -159,12 +159,12 @@ CurveController.prototype.getStartOrEndOrNull = function(param1)
     return null;
 }
 
-CurveController.prototype.wallDleleteSame = function(param1)
+Arc.prototype.wallDleleteSame = function(param1)
 {
     return ArrayHelperClass.removeItem(this.mAreas,param1);
 }
 
-CurveController.prototype.updateStartCorner = function(param1) {
+Arc.prototype.updateStartCorner = function(param1) {
     if(this.mStart != null)
     {
         this.mStart.removeSection(this);
@@ -176,7 +176,7 @@ CurveController.prototype.updateStartCorner = function(param1) {
     }
 };
 
-CurveController.prototype.updateEndCorner = function(param1) {
+Arc.prototype.updateEndCorner = function(param1) {
     if(this.mEnd != null)
     {
         this.mEnd.removeSection(this);
@@ -188,22 +188,22 @@ CurveController.prototype.updateEndCorner = function(param1) {
     }
 };
 
-CurveController.prototype.isStart = function(param1)
+Arc.prototype.isStart = function(param1)
 {
     return this.mStart == param1;
 }
 
-CurveController.prototype.isEnd = function(param1)
+Arc.prototype.isEnd = function(param1)
 {
     return this.mEnd == param1;
 }
 
-CurveController.prototype.getTheStartEndEdge = function()
+Arc.prototype.getTheStartEndEdge = function()
 {
     return new Edge(this.mStart.mPosition,this.mEnd.mPosition);
 }
 
-CurveController.prototype.resetCurve = function(param1)
+Arc.prototype.resetCurve = function(param1)
 {
     if(this.mStart == null || this.mEnd == null || isNaN(param1))
     {
@@ -214,7 +214,7 @@ CurveController.prototype.resetCurve = function(param1)
     this.mCurvePoint.copy(_loc2_.getSplitPosByRatio(0.3333333));
 }
 
-CurveController.prototype.adjustCurve = function(param1)
+Arc.prototype.adjustCurve = function(param1)
 {
     if(this.mStart == null || this.mEnd == null || isNaN(param1))
     {
@@ -224,17 +224,17 @@ CurveController.prototype.adjustCurve = function(param1)
     this.mCurvePoint.copy(_loc2_.getSplitPosByRatio(0.3333333));
 }
 
-CurveController.prototype.isStartOrEnd = function(param1)
+Arc.prototype.isStartOrEnd = function(param1)
 {
     return param1 == this.mStart || param1 == this.mEnd;
 }
 
-CurveController.prototype.toCorners = function(param1)
+Arc.prototype.toCorners = function(param1)
 {
     return [this.mStart, this.mEnd];
 }
 
-CurveController.prototype.isIntersectWith = function(param1, param2, param3, param4)
+Arc.prototype.isIntersectWith = function(param1, param2, param3, param4)
 {
     if (param2 == null || param2 == undefined) {
         param2 = null;
@@ -250,13 +250,13 @@ CurveController.prototype.isIntersectWith = function(param1, param2, param3, par
     var _loc6_ = null;
     var _loc7_ = null;
     var _loc8_ = null;
-    if(param1 instanceof CurveController)
+    if(param1 instanceof Arc)
     {
         _loc5_ = param1
         _loc6_ = _loc5_.getCurveFromController();
         return this.isCurveIntersectByAreaAndGetIntersectPoint(_loc6_,param2,param3,param4);
     }
-    if(param1 instanceof SegmentController)
+    if(param1 instanceof Segment)
     {
         _loc7_ = param1;
         _loc8_ = _loc7_.getTheStartEndEdge();
@@ -265,7 +265,7 @@ CurveController.prototype.isIntersectWith = function(param1, param2, param3, par
     return false;                   
 }
 
-CurveController.prototype.isIntersectWithGeometry = function(param1, param2, param3, param4)
+Arc.prototype.isIntersectWithGeometry = function(param1, param2, param3, param4)
 {
     if (param2 == null || param2 == undefined) {
         param2 = null;
@@ -294,7 +294,7 @@ CurveController.prototype.isIntersectWithGeometry = function(param1, param2, par
     return false;                   
 }
 
-CurveController.prototype.intersectSub = function(param1, param2, param3, param4)
+Arc.prototype.intersectSub = function(param1, param2, param3, param4)
 {
     if (param2 == null || param2 == undefined) {
         param2 = null;
@@ -323,7 +323,7 @@ CurveController.prototype.intersectSub = function(param1, param2, param3, param4
     return true;
 }
 
-CurveController.prototype.dispose = function()
+Arc.prototype.dispose = function()
 {
     var _loc2_ = null;
     var _loc3_ = null;
@@ -349,7 +349,7 @@ CurveController.prototype.dispose = function()
         this.mWall.removeSection(this);
     }
 }
-CurveController.prototype.isInsideMyArea = function(param1, param2, param3)
+Arc.prototype.isInsideMyArea = function(param1, param2, param3)
 {
     if (param2 == null || param2 == undefined) {
         param2 = false;
@@ -361,7 +361,7 @@ CurveController.prototype.isInsideMyArea = function(param1, param2, param3)
     return !!param2 ? this.getCurveFromController().isInsideArcFan(param1,param3) : this.getCurveFromController().isInsideCurveAndNotOnCurve(param1,param3);
 }
 
-CurveController.prototype.getTheCurveStartEndEdgeToPointDistance = function(param1, param2)
+Arc.prototype.getTheCurveStartEndEdgeToPointDistance = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = true;
@@ -369,7 +369,7 @@ CurveController.prototype.getTheCurveStartEndEdgeToPointDistance = function(para
 
     return this.getCurveFromController().getDistance(param1,param2);
 }
-CurveController.prototype.isCurveIntersectByEdgeAndGetIntersectPoint = function(param1, param2, param3, param4)
+Arc.prototype.isCurveIntersectByEdgeAndGetIntersectPoint = function(param1, param2, param3, param4)
 {
     if (param2 == null || param2 == undefined) {
         param2 = null;
@@ -399,7 +399,7 @@ CurveController.prototype.isCurveIntersectByEdgeAndGetIntersectPoint = function(
     return true;
 }
 
-CurveController.prototype.isCurveIntersectByAreaAndGetIntersectPoint = function(param1, param2, param3, param4)
+Arc.prototype.isCurveIntersectByAreaAndGetIntersectPoint = function(param1, param2, param3, param4)
 {
     if (param2 == null || param2 == undefined) {
         param2 = null;
@@ -429,17 +429,17 @@ CurveController.prototype.isCurveIntersectByAreaAndGetIntersectPoint = function(
     return true;
 }
 
-CurveController.prototype.getCenter = function()
+Arc.prototype.getCenter = function()
 {
     return this.getCurveFromController().getSplitPosByRatio(0.5);
 }
 
-CurveController.prototype.getClosestPoint = function(param1)
+Arc.prototype.getClosestPoint = function(param1)
 {
     return this.getCurveFromController().getClosestPoint(param1);
 }
 
-CurveController.prototype.switchOrder = function(param1)
+Arc.prototype.switchOrder = function(param1)
 {
     if (param1 == null || param1 == undefined) {
         param1 = false;
@@ -452,7 +452,7 @@ CurveController.prototype.switchOrder = function(param1)
     return this.getCurveFromController().tessallation_NotUnderstand().reverse();
 }
 
-CurveController.prototype.decideSide = function(param1)
+Arc.prototype.decideSide = function(param1)
 {
     var _loc2_ = this.getCurveFromController().decideSide(param1);
     if(_loc2_ == ArcCurvePointSide.ON_RIGHT)
@@ -467,26 +467,26 @@ CurveController.prototype.decideSide = function(param1)
 }
 
 
-CurveController.prototype.getLength = function()
+Arc.prototype.getLength = function()
 {
     return this.getCurveFromController().getLength();
 }
 
-CurveController.prototype.getAngle = function()
+Arc.prototype.getAngle = function()
 {
     var _loc1_ = new Edge(this.mStart.mPosition.clone(),this.mEnd.mPosition.clone());
     return _loc1_.getAngle();
 }
 
-CurveController.prototype.updatePosition = function(x, y) {
+Arc.prototype.updatePosition = function(x, y) {
     this.mCurvePoint.set(x, y);
 }
 
-CurveController.prototype.getLast = function(){
+Arc.prototype.getLast = function(){
     return this.mCurvePoint.clone();
 }
 
-CurveController.prototype.revertUpdatePosition = function(last) {
+Arc.prototype.revertUpdatePosition = function(last) {
     this.updatePosition(last.mX, last.mY);
 }
 

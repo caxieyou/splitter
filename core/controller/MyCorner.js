@@ -49,7 +49,7 @@ MyCorner.prototype.updatePosition = function(x, y)
 {
     var arc = [];
     for (var i = 0; i < this.mCurves.length; i++) {
-        if (this.mCurves[i] instanceof CurveController) {
+        if (this.mCurves[i] instanceof Arc) {
             arc.push(this.mCurves[i].getCurveFromController().mArcAngle);
         }
     }
@@ -70,14 +70,14 @@ MyCorner.prototype.updatePosition = function(x, y)
             }
 
             if (!same) {
-                if (curve instanceof SegmentController) {
+                if (curve instanceof Segment) {
                     var edge = curve.getTheStartEndEdge();
                     if (edge.distanceSmallThan(new Vec2(x, y), 5)) {
                         return true;
                     }
                 }
 
-                if (curve instanceof CurveController) {
+                if (curve instanceof Arc) {
                     var edge = curve.getCurveFromController(); 
                     if (edge.getDistance(new Vec2(x, y) < 5)) {
                         return true;
@@ -91,7 +91,7 @@ MyCorner.prototype.updatePosition = function(x, y)
     this.mPosition.set(x, y);
     var idx = 0;
     for (var i = 0; i < this.mCurves.length; i++) {
-        if (this.mCurves[i] instanceof CurveController) {
+        if (this.mCurves[i] instanceof Arc) {
             this.mCurves[i].adjustCurve(arc[idx]);
             idx++;
         }
