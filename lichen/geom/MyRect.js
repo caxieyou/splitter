@@ -174,10 +174,10 @@ MyRect.prototype.getEdges = function()
 {
     var loc1 = this.getPoints();
     loc2 = [];
-    loc2.push(new MyEdge(loc1[0], loc1[1]));
-    loc2.push(new MyEdge(loc1[1], loc1[2]));
-    loc2.push(new MyEdge(loc1[2], loc1[3]));
-    loc2.push(new MyEdge(loc1[3], loc1[0]));
+    loc2.push(new Edge(loc1[0], loc1[1]));
+    loc2.push(new Edge(loc1[1], loc1[2]));
+    loc2.push(new Edge(loc1[2], loc1[3]));
+    loc2.push(new Edge(loc1[3], loc1[0]));
     return loc2;
 }
 MyRect.prototype.toMyPolygon = function()

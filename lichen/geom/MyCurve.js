@@ -363,7 +363,7 @@ MyCurve.prototype.tessallation_NotUnderstand = function(param1)
     {
         _loc4_ = _loc3_.pop();
         _loc5_ = (_loc4_.mX + _loc4_.mY) * 0.5;
-        _loc6_ = MyEdge.distancePointToCurve(this.getSplitPosByRatio(_loc4_.mX),this.getSplitPosByRatio(_loc4_.mY),this.getSplitPosByRatio(_loc5_));
+        _loc6_ = Edge.distancePointToCurve(this.getSplitPosByRatio(_loc4_.mX),this.getSplitPosByRatio(_loc4_.mY),this.getSplitPosByRatio(_loc5_));
         if(Math.abs(_loc6_) < param1)
         {
             _loc2_.push(this.getSplitPosByRatio(_loc4_.mX));

@@ -28,9 +28,9 @@ _LineOp.prototype.addEdge = function(edge) {
     var currentRecord = this._lineRecords[this._lineRecords.length - 1];
     
     if (edge) {
-        currentRecord._lineEdges.push(new MyEdge(edge.mStart.clone(), edge.mEnd.clone()));
+        currentRecord._lineEdges.push(new Edge(edge.mStart.clone(), edge.mEnd.clone()));
     } else {
-        currentRecord._lineEdges.push(new MyEdge(this._curentLineValidPart.mStart.clone(), this._curentLineValidPart.mEnd.clone()));
+        currentRecord._lineEdges.push(new Edge(this._curentLineValidPart.mStart.clone(), this._curentLineValidPart.mEnd.clone()));
     }
     
 }
@@ -81,11 +81,11 @@ _LineOp.prototype.getLastEdge = function() {
         return null;
     }
     
-    return new MyEdge(edges[edges.length-1].mEnd.clone(), edges[0].mStart.clone());
+    return new Edge(edges[edges.length-1].mEnd.clone(), edges[0].mStart.clone());
 }
 
 _LineOp.prototype.reset = function() {
-    this._currentLine             = new MyEdge(new Vec2(), new Vec2());
+    this._currentLine             = new Edge(new Vec2(), new Vec2());
     this._curentLineValidPart     = null;
     this._curentLineInvalidPart   = null;
     this._lineRecords = [];
@@ -178,11 +178,11 @@ _LineOp.prototype.extractValidLines = function(curves) {
         if (record[i].length == 0) {
             linesSplit.push(lines[i]);
         } else {
-            linesSplit.push(new MyEdge(lines[i].mStart.clone(), record[i][0].clone()));
+            linesSplit.push(new Edge(lines[i].mStart.clone(), record[i][0].clone()));
             for (var j = 0; j < record[i].length - 1; j++) {
-                linesSplit.push(new MyEdge(record[i][j].clone(), record[i][j+1].clone()));
+                linesSplit.push(new Edge(record[i][j].clone(), record[i][j+1].clone()));
             }
-            linesSplit.push(new MyEdge(record[i][record[i].length - 1].clone(), lines[i].mEnd.clone()));
+            linesSplit.push(new Edge(record[i][record[i].length - 1].clone(), lines[i].mEnd.clone()));
         }
     }
     
@@ -208,7 +208,7 @@ _RectOp.prototype.create = function(pnt0, pnt1, curves) {
                 var total = [];
                 for (var m = 0; m < polyEdges[i].length; m++) {
                     
-                    var result = MyEdge.getDiff(polyEdges[i][m], curve);
+                    var result = Edge.getDiff(polyEdges[i][m], curve);
 
                     if (result == null) {
                         // do nothing
@@ -221,7 +221,7 @@ _RectOp.prototype.create = function(pnt0, pnt1, curves) {
                 }
                 polyEdges[i] = total;
             } else if (polyEdges[i] != null){
-                polyEdges[i] = MyEdge.getDiff(polyEdges[i], curve);
+                polyEdges[i] = Edge.getDiff(polyEdges[i], curve);
             }
         }
     }
@@ -248,7 +248,7 @@ _CircleOp.prototype.create = function(edge) {
     return new MyCircle(edge.mStart.clone(), edge.getLength());
 }
 
-function ElementOperation(floor) {
+function ElementDrawer(floor) {
     this.mFloor = floor;
     this.mStatus = STATUS.NOT_STARTED;
     this.mLine = new _LineOp();
@@ -256,13 +256,13 @@ function ElementOperation(floor) {
     this.mCircle = new _CircleOp();
 }
 
-ElementOperation.prototype.split = function (polygon) {
+ElementDrawer.prototype.split = function (polygon) {
     var splitter = new Splitter(polygon, this.mFloor, this.mFloor.generatePolyTree());
     splitter.execute();
     this.mFloor.Analysis();
 }
 
-ElementOperation.prototype.isStart = function() {
+ElementDrawer.prototype.isStart = function() {
     if (this.mStatus == STATUS.NOT_STARTED || this.mStatus == STATUS.LINE_START) {
         return true;
     } else {
@@ -270,12 +270,12 @@ ElementOperation.prototype.isStart = function() {
     }
 }
 
-ElementOperation.prototype.creatRect = function(pt0, pt1) {
+ElementDrawer.prototype.creatRect = function(pt0, pt1) {
     var res = this.mRect.create(pt0, pt1, this.mFloor.mCurves);
     this.split(res);
 }
 
-ElementOperation.prototype.isDrawable = function() {
+ElementDrawer.prototype.isDrawable = function() {
     if (this.mStatus == STATUS.DRAWING || 
         this.mStatus == STATUS.LINE_START || 
         this.mStatus == STATUS.LINE_DRAWING) {
@@ -285,7 +285,7 @@ ElementOperation.prototype.isDrawable = function() {
     }
 }
 
-ElementOperation.prototype.getDrawableLines = function() {
+ElementDrawer.prototype.getDrawableLines = function() {
     var edges =  this.mLine.getDrawableLines();
     var errorLine = null;
     if (this.mStatus == STATUS.LINE_DRAWING) {
@@ -299,20 +299,20 @@ ElementOperation.prototype.getDrawableLines = function() {
     return [edges, errorLine];
 }
 
-ElementOperation.prototype.getSnapLines = function() {
+ElementDrawer.prototype.getSnapLines = function() {
     return this.mLine.getDrawableLines();
 }
 
-ElementOperation.prototype.createCircle = function(edge) {
+ElementDrawer.prototype.createCircle = function(edge) {
     var res = this.mCircle.create(edge);
     this.split(res);
 }
 
-ElementOperation.prototype.setStatus = function(status) {
+ElementDrawer.prototype.setStatus = function(status) {
     this.mStatus = status;
 }
 
-ElementOperation.prototype.lineOperationStart = function(point) {
+ElementDrawer.prototype.lineOperationStart = function(point) {
     var curves = this.mFloor.mCurves;
     if (this.mStatus == STATUS.LINE_START) {
         this.mLine._currentLine.mStart.copy(point);
@@ -350,7 +350,7 @@ ElementOperation.prototype.lineOperationStart = function(point) {
     }
 }
 
-ElementOperation.prototype.lineOperationEnd = function(point, hintPoints) {
+ElementDrawer.prototype.lineOperationEnd = function(point, hintPoints) {
     var curves = this.mFloor.mCurves;
     if (this.mStatus ==  STATUS.NOT_STARTED || this.mStatus ==  STATUS.LINE_START) {
         return false;
@@ -383,9 +383,9 @@ ElementOperation.prototype.lineOperationEnd = function(point, hintPoints) {
                 }
             }
             
-            this.mLine._curentLineValidPart = new MyEdge(this.mLine._currentLine.mStart.clone(), intersects[idx]);
+            this.mLine._curentLineValidPart = new Edge(this.mLine._currentLine.mStart.clone(), intersects[idx]);
             hintPoints.push(intersects[idx].clone());
-            this.mLine._curentLineInvalidPart = new MyEdge(intersects[idx], this.mLine._currentLine.mEnd.clone());
+            this.mLine._curentLineInvalidPart = new Edge(intersects[idx], this.mLine._currentLine.mEnd.clone());
         } else {
             this.mLine._curentLineValidPart = this.mLine._currentLine;
             this.mLine._curentLineInvalidPart = null;
@@ -397,7 +397,7 @@ ElementOperation.prototype.lineOperationEnd = function(point, hintPoints) {
     return true;
 }
 
-ElementOperation.prototype.reset = function() {
+ElementDrawer.prototype.reset = function() {
     var curves = this.mFloor.mCurves;
     if (this.mStatus  == STATUS.LINE_DRAWING) {
         this.mStatus = STATUS.LINE_START;
@@ -445,12 +445,12 @@ ElementOperation.prototype.reset = function() {
     }
 }
 
-ElementOperation.prototype.finish = function() {
+ElementDrawer.prototype.finish = function() {
     this.reset();
     this.reset();
 }
 
-ElementOperation.prototype.checkStatus = function() {
+ElementDrawer.prototype.checkStatus = function() {
     if (this.mStatus == STATUS.SET_START) {
         return false;
     } else if (this.mStatus == STATUS.DRAWING){

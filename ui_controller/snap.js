@@ -154,11 +154,11 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
             
             var angle2 = edge2.getAngle();
             
-            if (Angle.isHorizontal(angle2) && MyEdge.isPointWithinHorizontal(x, edge2)) {
-                this.mFocus.snapXEdge.push(new MyEdge(this.mouseSnapped.clone(), new Vec2(this.mouseSnapped.mX, edge2.mStart.mY)));
+            if (Angle.isHorizontal(angle2) && Edge.isPointWithinHorizontal(x, edge2)) {
+                this.mFocus.snapXEdge.push(new Edge(this.mouseSnapped.clone(), new Vec2(this.mouseSnapped.mX, edge2.mStart.mY)));
             }
-            if (Angle.isVertical(angle2) && MyEdge.isPointWithinVertical(y, edge2)) {
-                this.mFocus.snapYEdge.push(new MyEdge(this.mouseSnapped.clone(), new Vec2(edge2.mStart.mX, this.mouseSnapped.mY)));
+            if (Angle.isVertical(angle2) && Edge.isPointWithinVertical(y, edge2)) {
+                this.mFocus.snapYEdge.push(new Edge(this.mouseSnapped.clone(), new Vec2(edge2.mStart.mX, this.mouseSnapped.mY)));
             }
         }
         

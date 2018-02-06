@@ -1,9 +1,9 @@
 
-function WallCurveOperation(param1) {
+function ElementProcessor(param1) {
     this.mFloor = param1;
 }
 
-WallCurveOperation.prototype.onSplitCurve = function(param1)
+ElementProcessor.prototype.onSplitCurve = function(param1)
 {
     var _loc1_ = new MyCorner();
     _loc1_.mPosition = param1.getCenter();
@@ -16,7 +16,7 @@ WallCurveOperation.prototype.onSplitCurve = function(param1)
     //this.mFloor._updateGeoStructure();
 }
 
-WallCurveOperation.prototype.onToLine = function(param1)
+ElementProcessor.prototype.onToLine = function(param1)
 {
     
     var _loc6_ = null;
@@ -60,7 +60,7 @@ WallCurveOperation.prototype.onToLine = function(param1)
     //analysis.execute();
 }
 
-WallCurveOperation.prototype.onToArc = function(param1)
+ElementProcessor.prototype.onToArc = function(param1)
 {
     var _loc7_ = new CurveController();
     _loc7_.mStart = param1.mStart;
@@ -100,7 +100,7 @@ WallCurveOperation.prototype.onToArc = function(param1)
 }
 
 
-WallCurveOperation.prototype.onDelete = function(param1) {
+ElementProcessor.prototype.onDelete = function(param1) {
     var adjacentAreas = param1.mAreas;
     
     param1.dispose();

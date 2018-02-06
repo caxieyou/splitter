@@ -9,7 +9,7 @@ Splitter.DISTANCE_TOLERANCE = 1.0E-5;
 Splitter.prototype.getLineCrossLine = function(param1)
 {
     var _loc2_ = param1.mCenter;
-    return new MyEdge(_loc2_,_loc2_.add(new Vec2(1,0)));
+    return new Edge(_loc2_,_loc2_.add(new Vec2(1,0)));
 }
 
 Splitter.prototype.getSplitCurvesByEdgeCircle = function(param1, param2)
@@ -86,20 +86,20 @@ Splitter.prototype.getSubSegmentsSplitByCurves = function(param1, param2)
 
             res.push(edges[i]);
         } else if (record[i].length == 1){
-            res.push(new MyEdge(edges[i].mStart, record[i][0].point));
-            res.push(new MyEdge(record[i][0].point, edges[i].mEnd));
+            res.push(new Edge(edges[i].mStart, record[i][0].point));
+            res.push(new Edge(record[i][0].point, edges[i].mEnd));
         } else {
             record[i].sort(function(param1, param2)
             {
                 return MyMath.sign(param1.dis - param2.dis);
             });
             
-            res.push(new MyEdge(edges[i].mStart, record[i][0].point));
+            res.push(new Edge(edges[i].mStart, record[i][0].point));
             
             for (var j = 0; j < record[i].length - 1; j++) {
-                res.push(new MyEdge(record[i][j].point, record[i][j+1].point));
+                res.push(new Edge(record[i][j].point, record[i][j+1].point));
             }
-            res.push(new MyEdge(record[i][record[i].length - 1].point, edges[i].mEnd));
+            res.push(new Edge(record[i][record[i].length - 1].point, edges[i].mEnd));
         }
     }
     
@@ -163,7 +163,7 @@ Splitter.prototype.getSubCurvesCircleSplitByCurves = function(param1, param2)
     else if(intersections.length == 1)
     {
         intersection = intersections[0];
-        cuttingLine = new MyEdge(subject.mCenter,intersection);
+        cuttingLine = new Edge(subject.mCenter,intersection);
         res = this.getSplitCurvesByEdgeCircle(subject,cuttingLine);
     }
     else if(intersections.length > 1)
@@ -335,7 +335,7 @@ Splitter.prototype.execute = function() {
     
     if (_loc1_[0] instanceof MyCurve) {
         _loc2_ = this.splitCurvesIntoOneThirdCurves(_loc1_);
-    } else if (_loc1_[0] instanceof MyEdge) {
+    } else if (_loc1_[0] instanceof Edge) {
         _loc2_ = this.splitMyEdgeIntoSegment(_loc1_);
     }
 

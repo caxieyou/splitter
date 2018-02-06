@@ -52,7 +52,7 @@ CurveController.isIntersectWith = function(param1, param2, param3, param4)
         _loc6_ = param1;
         return this.isCurveIntersectByAreaAndGetIntersectPoint(_loc6_,param2,param3,param4);
     }
-    if(param1 instanceof MyEdge)
+    if(param1 instanceof Edge)
     {
         //_loc7_ = param1;
         _loc8_ = param1;
@@ -64,15 +64,15 @@ CurveController.isIntersectWith = function(param1, param2, param3, param4)
 //求圆心
 CurveController.prototype.getInnerIntersectionPoint_XX = function()
 {
-    var _loc1_ = new MyEdge(this.mStart.mPosition.clone(),this.mEnd.mPosition.clone());
-    var _loc2_ = new MyEdge(this.mStart.mPosition.clone(),this.mCurvePoint.clone());
+    var _loc1_ = new Edge(this.mStart.mPosition.clone(),this.mEnd.mPosition.clone());
+    var _loc2_ = new Edge(this.mStart.mPosition.clone(),this.mCurvePoint.clone());
     var _loc3_ = _loc1_.interpolate(0.5);
     var _loc4_ = _loc2_.interpolate(0.5);
     var _loc5_ = _loc1_.rotate_90_degree();
     var _loc6_ = _loc2_.rotate_90_degree();
-    var _loc7_ = MyEdge.getPointVectorEdge(_loc3_,_loc5_);
-    var _loc8_ = MyEdge.getPointVectorEdge(_loc4_,_loc6_);
-    return MyEdge.getIntersection(_loc7_,_loc8_,0);
+    var _loc7_ = Edge.getPointVectorEdge(_loc3_,_loc5_);
+    var _loc8_ = Edge.getPointVectorEdge(_loc4_,_loc6_);
+    return Edge.getIntersection(_loc7_,_loc8_,0);
 }
 
 CurveController.prototype.containsPoint = function(param1)
@@ -200,7 +200,7 @@ CurveController.prototype.isEnd = function(param1)
 
 CurveController.prototype.getTheStartEndEdge = function()
 {
-    return new MyEdge(this.mStart.mPosition,this.mEnd.mPosition);
+    return new Edge(this.mStart.mPosition,this.mEnd.mPosition);
 }
 
 CurveController.prototype.resetCurve = function(param1)
@@ -286,7 +286,7 @@ CurveController.prototype.isIntersectWithGeometry = function(param1, param2, par
         _loc6_ = param1;
         return this.isCurveIntersectByAreaAndGetIntersectPoint(_loc6_,param2,param3,param4);
     }
-    if(param1 instanceof MyEdge)
+    if(param1 instanceof Edge)
     {
         _loc8_ = param1;
         return this.intersectSub(_loc8_,param2,param3,param4);
@@ -474,7 +474,7 @@ CurveController.prototype.getLength = function()
 
 CurveController.prototype.getAngle = function()
 {
-    var _loc1_ = new MyEdge(this.mStart.mPosition.clone(),this.mEnd.mPosition.clone());
+    var _loc1_ = new Edge(this.mStart.mPosition.clone(),this.mEnd.mPosition.clone());
     return _loc1_.getAngle();
 }
 

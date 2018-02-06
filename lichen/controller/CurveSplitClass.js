@@ -65,9 +65,9 @@ CurveSplitClass.prototype.execute = function()
              {
                 _loc6_ = _loc4_.getTheStartEndEdge();
                 _loc7_ = _loc1_.getTheStartEndEdge();
-                _loc8_ = new MyEdge(_loc6_.project(_loc7_.mStart),_loc6_.project(_loc7_.mEnd));
+                _loc8_ = new Edge(_loc6_.project(_loc7_.mStart),_loc6_.project(_loc7_.mEnd));
                 
-                if(LineRelationHelper.isOverLapping(_loc6_,_loc8_) && MyEdge.isValidAngleDiff(_loc6_,_loc7_))
+                if(LineRelationHelper.isOverLapping(_loc6_,_loc8_) && Edge.isValidAngleDiff(_loc6_,_loc7_))
                 {
                    _loc9_ = _loc6_.getDistance(_loc7_.mStart);
                    if(_loc9_ < DISTANCE_TOLERANCE)

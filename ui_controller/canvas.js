@@ -4,42 +4,31 @@ var ScaleMouse = function(x, y) {
 
 function Canvas(name) {
     this._canvas              = document.getElementById(name);
-    this._mFloor              = new MyFloor();
-    this._mWallCurveOperation = new WallCurveOperation(this._mFloor);
+    this._mFloor              = new Floor();
     this._renderer            = new Renderer();
-    this.mElmentOperation     = new ElementOperation(this._mFloor);
-    
-    this._type                = null;
-    this._mEdge               = new MyEdge(new Vec2(), new Vec2());
-    this._updateElment        = null;
-    this._operationCurve      = null; 
+    this._mElmentDrawer       = new ElementDrawer(this._mFloor);
+    this._mWallCurveOperation = new ElementProcessor(this._mFloor);
+    this._mSnap               = new Snap(this._mFloor);
+    this._mEdge               = new Edge(new Vec2(), new Vec2());
     this._hintPoints          = [];
-    this.mSnap                = new Snap(this._mFloor);
+    this._updateElment        = null;
+    this._operationCurve      = null;
+    this._type                = null;
     this.toggleHeightUI       = null;
     
     this._flags = {
        isRelativeDistanceEnabled : false,
-       isAbosoluteMarginEnabled : true,
-       isZoneSizeEnabled : true,
-       isCrownHeightEnabled : false
+       isAbosoluteMarginEnabled  : true,
+       isZoneSizeEnabled         : true,
+       isCrownHeightEnabled      : false
     };
+    
     this._renderer.init(this._canvas);
     this.resize(this._canvas.width, this._canvas.height);
-    
     this._initialize();
 }
 
 Canvas.prototype._initialize = function() {
-    
-    /*
-    //创建最外边框
-    this.mElmentOperation.creatRect(new Vec2(0, 0), Globals.Size);
-    //赋值最外轮廓线
-    var rect = new MyRect(new Vec2(0, 0), Globals.Size);
-    rect = rect.toMyPolygon();
-    this._mFloor.setProfile(rect);
-    */
-    
     var points = [];
     points.push(new Vec2(0, 0));
     points.push(new Vec2(800, 0));
@@ -47,25 +36,20 @@ Canvas.prototype._initialize = function() {
     points.push(new Vec2(400, 400));
     points.push(new Vec2(400, 800));
     points.push(new Vec2(0, 800));
-    
     var poly = new MyPolygon(points);
     
-    var splitter = new Splitter(poly.getEdges(), this._mFloor, this._mFloor.generatePolyTree());
-    splitter.execute();
-    this._mFloor.Analysis();
-    
+    this._mElmentDrawer.split(poly.getEdges());
     this._mFloor.setProfile(poly);
-    
     this._mFloor.Analysis();
     this.render();
 }
 Canvas.prototype.snapMouse = function(x, y, isSnap){
     [x, y] = ScaleMouse(x, y);
-    this.mSnap.snap(x, y, this._type, isSnap, this.mElmentOperation.getSnapLines());
+    this._mSnap.snap(x, y, this._type, isSnap, this._mElmentDrawer.getSnapLines());
 }
 
 Canvas.prototype._renderCurrentObject = function() {
-    if (!this.mElmentOperation.isDrawable()) {
+    if (!this._mElmentDrawer.isDrawable()) {
         return;
     }
     
@@ -83,7 +67,7 @@ Canvas.prototype._renderCurrentObject = function() {
         break;
         case TYPE.LINE:
         {
-            [edges, eLine] = this.mElmentOperation.getDrawableLines();
+            [edges, eLine] = this._mElmentDrawer.getDrawableLines();
             
             for (var i = 0; i < edges.length; i++) {
                 this._renderer.drawLine(edges[i]);
@@ -125,15 +109,15 @@ Canvas.prototype.createRect = function(pnt0, pnt1) {
     pnt0 = pnt0 || this._mEdge.mStart;
     pnt1 = pnt1 || this._mEdge.mEnd;
     console.log(this._mEdge);
-    this.mElmentOperation.creatRect(pnt0, pnt1);
+    this._mElmentDrawer.creatRect(pnt0, pnt1);
 }
 
 Canvas.prototype.createCircle = function() {
-    this.mElmentOperation.createCircle(this._mEdge);
+    this._mElmentDrawer.createCircle(this._mEdge);
 }
 
 Canvas.prototype.isMovable = function() {
-    if (this._type != null || this.mSnap.mFocus.controller != null) {
+    if (this._type != null || this._mSnap.mFocus.controller != null) {
         return false;
     }
     
@@ -144,13 +128,13 @@ Canvas.prototype.setType = function(type) {
     if (this._type == type) {
         return;
     }
-    this.mElmentOperation.finish();
+    this._mElmentDrawer.finish();
     this._type = type;
     
     if (this._type == TYPE.LINE) {
-        this.mElmentOperation.setStatus(STATUS.LINE_START);
+        this._mElmentDrawer.setStatus(STATUS.LINE_START);
     } else {
-        this.mElmentOperation.setStatus(STATUS.NOT_STARTED);
+        this._mElmentDrawer.setStatus(STATUS.NOT_STARTED);
     }
     if (this._type == null) {
         document.body.style.cursor = "default";
@@ -168,13 +152,13 @@ Canvas.prototype.setStartPoint = function() {
         return false;
     }
     
-    if (this.mElmentOperation.isStart() && !this._mFloor.mProfile.mOutLines.containsInclusive(this.mSnap.mouseSnapped)) {
+    if (this._mElmentDrawer.isStart() && !this._mFloor.mProfile.mOutLines.containsInclusive(this._mSnap.mouseSnapped)) {
         console.log("START POINT OUTSIDE OF ROOM!");
         return;
     }
     
-    if (this.mElmentOperation.lineOperationStart(this.mSnap.mouseSnapped)) {
-        this._mEdge.mStart.copy(this.mSnap.mouseSnapped);
+    if (this._mElmentDrawer.lineOperationStart(this._mSnap.mouseSnapped)) {
+        this._mEdge.mStart.copy(this._mSnap.mouseSnapped);
     }
     this.render();
 }
@@ -183,12 +167,12 @@ Canvas.prototype.setEndPoint = function() {
     if (this._type == null) {
         return false;
     }
-    if (this.mSnap.mFocus.hintpoint) {
-        this._hintPoints.push(this.mSnap.mFocus.hintpoint.clone());
+    if (this._mSnap.mFocus.hintpoint) {
+        this._hintPoints.push(this._mSnap.mFocus.hintpoint.clone());
     }
 
-    if (this.mElmentOperation.lineOperationEnd(this.mSnap.mouseSnapped, this._hintPoints)) {
-        this._mEdge.mEnd.copy(this.mSnap.mouseSnapped);
+    if (this._mElmentDrawer.lineOperationEnd(this._mSnap.mouseSnapped, this._hintPoints)) {
+        this._mEdge.mEnd.copy(this._mSnap.mouseSnapped);
         
         if (this._mEdge.getLength() < 0.0001) {
             return false;
@@ -201,10 +185,10 @@ Canvas.prototype.setEndPoint = function() {
 }
 
 Canvas.prototype.resetType = function() {
-    if (this.mElmentOperation.reset()) {
+    if (this._mElmentDrawer.reset()) {
         this.setType(null);
     }
-    this.mSnap.clearFocus();
+    this._mSnap.clearFocus();
     this._mFloor.clearPickedArea();
     this._operationCurve = null;
     this.render();
@@ -215,9 +199,9 @@ Canvas.prototype.getDrawType = function() {
 }
 
 Canvas.prototype.getFocusElement = function() {
-    //console.log(this.mSnap.mFocus.geom);
-    if (this.mSnap.mFocus.geom) {
-        return this.mSnap.mFocus.geom;
+    //console.log(this._mSnap.mFocus.geom);
+    if (this._mSnap.mFocus.geom) {
+        return this._mSnap.mFocus.geom;
     } else {
         return null;
     }
@@ -227,7 +211,7 @@ Canvas.prototype.checkStatus = function() {
     if (this._type == null) {
         return false;
     }
-    return this.mElmentOperation.checkStatus();
+    return this._mElmentDrawer.checkStatus();
 }
 
 Canvas.prototype.setAreaHeight = function(sign, val) {
@@ -244,7 +228,7 @@ Canvas.prototype.renderAreaPicked = function(x, y) {
         return;
     }
     [x, y] = ScaleMouse(x, y);
-    if (!this._mFloor.mProfile.mOutLines.contains(this.mSnap.mouseSnapped)) {
+    if (!this._mFloor.mProfile.mOutLines.contains(this._mSnap.mouseSnapped)) {
         console.log("START POINT OUTSIDE OF ROOM!");
         return;
     }
@@ -258,7 +242,7 @@ Canvas.prototype.renderAreaPicked = function(x, y) {
 Canvas.prototype.isMoved = function(x, y) {
     [x, y] = ScaleMouse(x, y);
     var p = new Vec2(x, y);
-    if (p.distance(this.mSnap.mouseSnapped) > Globals.DISTANCE_THRESHOLD ) {
+    if (p.distance(this._mSnap.mouseSnapped) > Globals.DISTANCE_THRESHOLD ) {
         return true;
     } else {
         return false;
@@ -268,9 +252,9 @@ Canvas.prototype.isMoved = function(x, y) {
 Canvas.prototype.recordMouseUp = function(x, y) {
     [x, y] = ScaleMouse(x, y);
     var p = new Vec2(x, y);
-    if (p.distance(this.mSnap.mouseSnapped) > Globals.DISTANCE_THRESHOLD ) {
+    if (p.distance(this._mSnap.mouseSnapped) > Globals.DISTANCE_THRESHOLD ) {
         //this._focus = null;
-        this.mSnap.clearFocus();
+        this._mSnap.clearFocus();
     }
     this._updateElment = null;
 }
@@ -300,15 +284,15 @@ Canvas.prototype.onDelete = function() {
 }
 
 Canvas.prototype.setOperationCurve = function() {
-    this._operationCurve = this.mSnap.mFocus.controller;
+    this._operationCurve = this._mSnap.mFocus.controller;
     this._mFloor.clearPickedArea();
     this.render();
 }
 
 Canvas.prototype.updateElement = function(x, y){
     [x, y] = ScaleMouse(x, y);
-    if (!this._updateElment && this.mSnap.mFocus.controller) {
-        this._updateElment = this.mSnap.mFocus.controller;
+    if (!this._updateElment && this._mSnap.mFocus.controller) {
+        this._updateElment = this._mSnap.mFocus.controller;
         this._operationCurve = null;
     }
     
@@ -317,18 +301,18 @@ Canvas.prototype.updateElement = function(x, y){
         var overlapped = this._mFloor.updatePosition(this._updateElment, new Vec2(x, y));
         
         if (this._updateElment instanceof SegmentController) {
-            this.mSnap.mFocus.geom = this._updateElment.getTheStartEndEdge();
+            this._mSnap.mFocus.geom = this._updateElment.getTheStartEndEdge();
         } else if(this._updateElment instanceof CurveController) {
-            this.mSnap.mFocus.geom =  this._updateElment.getCurveFromController();
+            this._mSnap.mFocus.geom =  this._updateElment.getCurveFromController();
         } else {
-            this.mSnap.mFocus.geom = this._updateElment.mPosition.clone();
+            this._mSnap.mFocus.geom = this._updateElment.mPosition.clone();
         }
-        this.mSnap.mFocus.keypoint = null;
+        this._mSnap.mFocus.keypoint = null;
         this.render();
         if (overlapped) {
             if (this._updateElment instanceof MyCorner) {
                 var last = this._updateElment.getLast();
-                this._renderer.drawLine(new MyEdge(last, new Vec2(x, y)), Style.OverLine.isDash, Style.OverLine.color)
+                this._renderer.drawLine(new Edge(last, new Vec2(x, y)), Style.OverLine.isDash, Style.OverLine.color)
                 this._renderer.drawCorner(last, Style.UpdateCorner.radius, Style.UpdateCorner.color);
                 this._renderer.drawCorner(new Vec2(x, y), Style.ErrorCorner.radius, Style.ErrorCorner.color);
             }
@@ -358,14 +342,14 @@ Canvas.prototype._renderFocusObject = function() {
         return;
     }
     
-    if (this.mSnap.mFocus.geom instanceof MyEdge) {
-        this._renderer.drawLine(this.mSnap.mFocus.geom, null, null, true);
+    if (this._mSnap.mFocus.geom instanceof Edge) {
+        this._renderer.drawLine(this._mSnap.mFocus.geom, null, null, true);
         
-    } else if(this.mSnap.mFocus.geom instanceof MyCurve) {
-        this._renderer.drawArc(this.mSnap.mFocus.geom, true);
+    } else if(this._mSnap.mFocus.geom instanceof MyCurve) {
+        this._renderer.drawArc(this._mSnap.mFocus.geom, true);
         
-    } else if(this.mSnap.mFocus.geom instanceof Vec2) {
-        this._renderer.drawCorner(this.mSnap.mFocus.geom, Style.FocusCorner.radius, Style.FocusCorner.color);
+    } else if(this._mSnap.mFocus.geom instanceof Vec2) {
+        this._renderer.drawCorner(this._mSnap.mFocus.geom, Style.FocusCorner.radius, Style.FocusCorner.color);
     }
     
     if (this._operationCurve) {
@@ -384,18 +368,18 @@ Canvas.prototype._renderMarkerLines = function() {
 }
 
 Canvas.prototype._renderMouseLines = function() {
-    if (this._type == null || !this.mSnap.mIsInside) {
+    if (this._type == null || !this._mSnap.mIsInside) {
         return;
     }
     
-    for (var i = 0; i < this.mSnap.mFocus.snapXEdge.length; i++) {
-        var edge = this.mSnap.mFocus.snapXEdge[i];
-        this._renderer.drawDimensions({x: edge.mStart.mX,y: edge.mStart.mY}, {x: edge.mEnd.mX,y: edge.mEnd.mY}, this.mSnap.mFocus.snapX ? Style.RulerSnap.color : null);
+    for (var i = 0; i < this._mSnap.mFocus.snapXEdge.length; i++) {
+        var edge = this._mSnap.mFocus.snapXEdge[i];
+        this._renderer.drawDimensions({x: edge.mStart.mX,y: edge.mStart.mY}, {x: edge.mEnd.mX,y: edge.mEnd.mY}, this._mSnap.mFocus.snapX ? Style.RulerSnap.color : null);
     }
 
-    for (var i = 0; i < this.mSnap.mFocus.snapYEdge.length; i++) {
-        var edge = this.mSnap.mFocus.snapYEdge[i];
-        this._renderer.drawDimensions({x: edge.mStart.mX,y: edge.mStart.mY}, {x: edge.mEnd.mX,y: edge.mEnd.mY}, this.mSnap.mFocus.snapY ? Style.RulerSnap.color : null);
+    for (var i = 0; i < this._mSnap.mFocus.snapYEdge.length; i++) {
+        var edge = this._mSnap.mFocus.snapYEdge[i];
+        this._renderer.drawDimensions({x: edge.mStart.mX,y: edge.mStart.mY}, {x: edge.mEnd.mX,y: edge.mEnd.mY}, this._mSnap.mFocus.snapY ? Style.RulerSnap.color : null);
     }
 }
 
@@ -427,8 +411,8 @@ Canvas.prototype._renderHintKeyPoints = function() {
     }
     this._hintPoints = [];
     
-    if (this.mSnap.mFocus.keypoint) {
-        this._renderer.drawCorner(this.mSnap.mFocus.keypoint, Style.FocusCorner.radius, Style.FocusCorner.color);
+    if (this._mSnap.mFocus.keypoint) {
+        this._renderer.drawCorner(this._mSnap.mFocus.keypoint, Style.FocusCorner.radius, Style.FocusCorner.color);
     }
 }
 
@@ -481,17 +465,17 @@ Canvas.prototype.render = function() {
 
 Canvas.prototype.clear = function() {
     this._renderer.removeAllTextInputs();
-    this._mFloor              = new MyFloor();
-    this._mWallCurveOperation = new WallCurveOperation(this._mFloor);
+    this._mFloor              = new Floor();
+    this._mWallCurveOperation = new ElementProcessor(this._mFloor);
+    this._mElmentDrawer    = new ElementDrawer(this._mFloor);
     this._renderer            = new Renderer();
-    this.mElmentOperation     = new ElementOperation(this._mFloor);
-    
+    this._mEdge               = new Edge(new Vec2(), new Vec2());
+    this._mSnap               = new Snap(this._mFloor);
     this._type                = null;
-    this._mEdge               = new MyEdge(new Vec2(), new Vec2());
     this._updateElment        = null;
     this._operationCurve      = null; 
     this._hintPoints          = [];
-    this.mSnap                = new Snap(this._mFloor);
+    
     this._renderer.init(this._canvas);
     this._initialize();
 }

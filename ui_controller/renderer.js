@@ -357,7 +357,7 @@ Renderer = function () {
             }
             
             //过滤不相连的线段
-            if (edge.constructor == MyEdge) {
+            if (edge.constructor == Edge) {
 //				if((!this._isClose(edge.mStart,nextSP) && !this._isClose(edge.mEnd,nextSP) && !this._isClose(edge.mStart,nextEP) && !this._isClose(edge.mEnd,nextEP)) && (!this._isClose(edge.mStart,prevSP) && !this._isClose(edge.mEnd,prevSP) && !this._isClose(edge.mStart,prevEP) && !this._isClose(edge.mEnd,prevEP)))
 //           		continue;              	
 //				if((!this._isClose(edge.mStart,nextSP) && !this._isClose(edge.mStart,nextEP) && !this._isClose(edge.mStart,prevSP) && !this._isClose(edge.mStart,prevEP)) || (!this._isClose(edge.mEnd,nextSP) && !this._isClose(edge.mEnd,nextEP) && !this._isClose(edge.mEnd,prevSP) && !this._isClose(edge.mEnd,prevEP)))
@@ -469,7 +469,7 @@ Renderer = function () {
                         }, prev.mCenter, prev.mStartAngle + prev.mArcAngle);
                     }
 
-                    if (hedge.constructor == MyEdge) {
+                    if (hedge.constructor == Edge) {
                     	//过滤不相连的线段
 //						if((!this._isClose(hedge.mStart,nextSP) && !this._isClose(hedge.mEnd,nextSP) && !this._isClose(hedge.mStart,nextEP) && !this._isClose(hedge.mEnd,nextEP)) && (!this._isClose(hedge.mStart,prevSP) && !this._isClose(hedge.mEnd,prevSP) && !this._isClose(hedge.mStart,prevEP) && !this._isClose(hedge.mEnd,prevEP)))
 //                   		continue;

@@ -1,12 +1,12 @@
-function MyEdge(param1, param2) {
+function Edge(param1, param2) {
     this.mStart = param1;
     this.mEnd = param2;
 };
 
-MyEdge.THRESHOLD = 1.0E-6;
-MyEdge.CONST_1 = 1;
+Edge.THRESHOLD = 1.0E-6;
+Edge.CONST_1 = 1;
 
-MyEdge.getValidHorizontalSection = function(edge0, edge1, markLine) {
+Edge.getValidHorizontalSection = function(edge0, edge1, markLine) {
     var a = [edge0.mStart.mX, edge0.mEnd.mX, edge1.mStart.mX, edge1.mEnd.mX];
     a.sort(function(a, b) {
         return a - b;
@@ -24,7 +24,7 @@ MyEdge.getValidHorizontalSection = function(edge0, edge1, markLine) {
     }
 }
 
-MyEdge.getValidVerticalSection = function(edge0, edge1, markLine) {
+Edge.getValidVerticalSection = function(edge0, edge1, markLine) {
     var a = [edge0.mStart.mY, edge0.mEnd.mY, edge1.mStart.mY, edge1.mEnd.mY];
     
     a.sort(function(a, b) {
@@ -44,7 +44,7 @@ MyEdge.getValidVerticalSection = function(edge0, edge1, markLine) {
     }
 }
 
-MyEdge.isPointWithinHorizontal = function(x, edge) {
+Edge.isPointWithinHorizontal = function(x, edge) {
     var min = Math.min(edge.mStart.mX, edge.mEnd.mX);
     var max = Math.max(edge.mStart.mX, edge.mEnd.mX);
     
@@ -55,7 +55,7 @@ MyEdge.isPointWithinHorizontal = function(x, edge) {
     }
 }
 
-MyEdge.isPointWithinVertical = function(y, edge) {
+Edge.isPointWithinVertical = function(y, edge) {
     var min = Math.min(edge.mStart.mY, edge.mEnd.mY);
     var max = Math.max(edge.mStart.mY, edge.mEnd.mY);
     
@@ -66,7 +66,7 @@ MyEdge.isPointWithinVertical = function(y, edge) {
     }
 }
 
-MyEdge.isValidAngleDiff = function(param1, param2, param3)
+Edge.isValidAngleDiff = function(param1, param2, param3)
 {
     if (param3 == null || param3 == undefined) {
         param3 = 1;
@@ -79,7 +79,7 @@ MyEdge.isValidAngleDiff = function(param1, param2, param3)
     return _loc7_ < param3 || 180 - _loc7_ < param3;
 }
 
-MyEdge.isWithinPI = function(param1, param2, param3)
+Edge.isWithinPI = function(param1, param2, param3)
 {
     if (param3 == null || param3 == undefined) {
         param3 = 1;
@@ -92,13 +92,13 @@ MyEdge.isWithinPI = function(param1, param2, param3)
     return Math.abs(90 - _loc7_) < param3;
 }
 
-MyEdge.getIntersection = function(param1, param2, param3)
+Edge.getIntersection = function(param1, param2, param3)
 {
     if (param3 == null || param3 == undefined) {
         param3 = 1;
     }
     
-    if(MyEdge.isValidAngleDiff(param1,param2,param3))
+    if(Edge.isValidAngleDiff(param1,param2,param3))
     {
         return null;
     }
@@ -114,7 +114,7 @@ MyEdge.getIntersection = function(param1, param2, param3)
     return _loc8_;
 }
 
-MyEdge.getDiff = function(param1, param2, param3) {
+Edge.getDiff = function(param1, param2, param3) {
     if (param3 == null || param3 == undefined) {
         param3 = 1;
     }
@@ -122,7 +122,7 @@ MyEdge.getDiff = function(param1, param2, param3) {
     var angle1 = param1.getAngle();
     var angle2 = param2.getAngle();
     
-    if(!MyEdge.isValidAngleDiff(param1,param2,param3))
+    if(!Edge.isValidAngleDiff(param1,param2,param3))
     {
         return param1;
     }
@@ -143,11 +143,11 @@ MyEdge.getDiff = function(param1, param2, param3) {
         var isEndInterSect2 = param1.distanceSmallThan(param2.mEnd);
         if (isStartInterSect2 && isEndInterSect2) {
             if (Vec2.distance(param1.mStart, param2.mStart) < Vec2.distance(param1.mStart, param2.mEnd)) {
-                return [new MyEdge(param1.mStart.clone(), param2.mStart.clone()),
-                        new MyEdge(param2.mEnd.clone(), param1.mEnd.clone())];
+                return [new Edge(param1.mStart.clone(), param2.mStart.clone()),
+                        new Edge(param2.mEnd.clone(), param1.mEnd.clone())];
             } else {
-                return [new MyEdge(param1.mStart.clone(), param2.mEnd.clone()),
-                    new MyEdge(param2.mStart.clone(), param1.mEnd.clone())];
+                return [new Edge(param1.mStart.clone(), param2.mEnd.clone()),
+                    new Edge(param2.mStart.clone(), param1.mEnd.clone())];
             }
         } else {
             return param1;
@@ -158,61 +158,61 @@ MyEdge.getDiff = function(param1, param2, param3) {
     //
     if (isStartInterSect) {
         if (Vec2.distance(param1.mEnd, param2.mStart) < Vec2.distance(param1.mEnd, param2.mEnd)) {
-            return new MyEdge(param1.mEnd.clone(), param2.mStart.clone());
+            return new Edge(param1.mEnd.clone(), param2.mStart.clone());
         } else {
-            return new MyEdge(param1.mEnd.clone(), param2.mEnd.clone());
+            return new Edge(param1.mEnd.clone(), param2.mEnd.clone());
         }
     }
     
     if (isEndInterSect) {
         if (Vec2.distance(param1.mStart, param2.mStart) < Vec2.distance(param1.mStart, param2.mEnd)) {
-            return new MyEdge(param1.mStart.clone(), param2.mStart.clone());
+            return new Edge(param1.mStart.clone(), param2.mStart.clone());
         } else {
-            return new MyEdge(param1.mStart.clone(), param2.mEnd.clone());
+            return new Edge(param1.mStart.clone(), param2.mEnd.clone());
         }
     }
 } 
 
 
-MyEdge.getDistanceBy2Points = function(param1, param2, param3, param4)
+Edge.getDistanceBy2Points = function(param1, param2, param3, param4)
 {
-    var _loc5_ = new MyEdge(param1,param2);
+    var _loc5_ = new Edge(param1,param2);
     return _loc5_.getDistance(param3,param4);
 }
 
-MyEdge.distancePointToCurve = function(param1, param2, param3)
+Edge.distancePointToCurve = function(param1, param2, param3)
 {
     return Vec2.dot(Vec2.sub(param3,param1),new Vec2(param1.mY - param2.mY,param2.mX - param1.mX).normalize());
 }
 
-MyEdge.distanceSmallThan = function(param1, param2, param3, param4)
+Edge.distanceSmallThan = function(param1, param2, param3, param4)
 {
     if (param4 == null || param4 == undefined) {
         param4 = 1.0E-6;
     }
     
-    var _loc5_ = MyEdge.getDistanceBy2Points(param1,param2,param3,true);
+    var _loc5_ = Edge.getDistanceBy2Points(param1,param2,param3,true);
     return _loc5_ < param4;
 }
 
-MyEdge.pointInEdgeOrOnEdge = function(param1, param2, param3, param4)
+Edge.pointInEdgeOrOnEdge = function(param1, param2, param3, param4)
 {
     if (param4 == null || param4 == undefined) {
         param4 = 1.0E-6;
     }
     
-    return      MyEdge.distanceSmallThan(param1,param2,param3,param4) 
+    return      Edge.distanceSmallThan(param1,param2,param3,param4) 
             && !param3.isClose(param1,param4) 
             && !param3.isClose(param2,param4);
 }
 
 
-MyEdge.getPointVectorEdge = function(param1, param2)
+Edge.getPointVectorEdge = function(param1, param2)
 {
-    return new MyEdge(param1,param1.add(param2));
+    return new Edge(param1,param1.add(param2));
 }
 
-MyEdge.getXFromY = function(param1, param2, param3, param4, param5)
+Edge.getXFromY = function(param1, param2, param3, param4, param5)
 {
     if (param4 == null || param4 == undefined) {
         param4 = false;
@@ -235,7 +235,7 @@ MyEdge.getXFromY = function(param1, param2, param3, param4, param5)
     return NaN;
 }
 
-MyEdge.prototype.contains = function(param1, param2)
+Edge.prototype.contains = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6;
@@ -249,7 +249,7 @@ MyEdge.prototype.contains = function(param1, param2)
 }
 
 //removePointsNotInsideCurve
-MyEdge.prototype.removePointsNotInside = function(param1, param2)
+Edge.prototype.removePointsNotInside = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6;
@@ -270,12 +270,12 @@ MyEdge.prototype.removePointsNotInside = function(param1, param2)
     }
 }
 
-MyEdge.prototype.pointOnLineButNoNeedToBeWithin = function(param1)
+Edge.prototype.pointOnLineButNoNeedToBeWithin = function(param1)
 {
     return MyNumber.isZeroOrOrigin(Vec2.crossByPoint(this.mStart,this.mEnd,param1));
 }
 
-MyEdge.prototype.distanceSmallThan = function(param1, param2)
+Edge.prototype.distanceSmallThan = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6;
@@ -285,7 +285,7 @@ MyEdge.prototype.distanceSmallThan = function(param1, param2)
     return _loc3_ < param2;
 }
 
-MyEdge.prototype.pointInEdgeOrOnEdge = function(param1, param2)
+Edge.prototype.pointInEdgeOrOnEdge = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6;
@@ -294,7 +294,7 @@ MyEdge.prototype.pointInEdgeOrOnEdge = function(param1, param2)
     return res;
 }
 
-MyEdge.prototype.pointInEdge = function(param1, param2)
+Edge.prototype.pointInEdge = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6;
@@ -303,7 +303,7 @@ MyEdge.prototype.pointInEdge = function(param1, param2)
     return res;
 }
 
-MyEdge.prototype.isSameAsEdgeStartOrEnd = function(param1, param2)
+Edge.prototype.isSameAsEdgeStartOrEnd = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6;
@@ -312,7 +312,7 @@ MyEdge.prototype.isSameAsEdgeStartOrEnd = function(param1, param2)
     return param1.isClose(this.mStart,param2) || param1.isClose(this.mEnd,param2);
 }
 
-MyEdge.prototype.decideSide = function(param1)
+Edge.prototype.decideSide = function(param1)
 {
     var _loc2_ = Vec2.crossByPoint(this.mStart,this.mEnd,param1);
     if(_loc2_ > 0)
@@ -326,7 +326,7 @@ MyEdge.prototype.decideSide = function(param1)
     return 0; //Line2DPointSide.ON_LINE;
 }
 
-MyEdge.prototype.project = function(param1, param2)
+Edge.prototype.project = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = false;
@@ -346,7 +346,7 @@ MyEdge.prototype.project = function(param1, param2)
     return this.interpolate(_loc5_);
 }
 
-MyEdge.prototype.getIntersectionPointByPoint = function(param1, param2)
+Edge.prototype.getIntersectionPointByPoint = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = false;
@@ -373,22 +373,22 @@ MyEdge.prototype.getIntersectionPointByPoint = function(param1, param2)
     return this.interpolate(_loc5_);
 }
 
-MyEdge.prototype.enlarge_xx = function(param1)
+Edge.prototype.enlarge_xx = function(param1)
 {
     return this.mStart.distance(this.mEnd) * param1;
 }
 
-MyEdge.prototype.getSplitPosByRatio = function(param1)
+Edge.prototype.getSplitPosByRatio = function(param1)
 {
     return this.mEnd.sub(this.mStart).mulBy(param1).add(this.mStart);
 }
 
-MyEdge.prototype.getPointByDistanceOnEdge = function(param1)
+Edge.prototype.getPointByDistanceOnEdge = function(param1)
 {
     return this.interpolate(param1 / this.mStart.distance(this.mEnd));
 }
 
-MyEdge.prototype.interpolate = function(param1)
+Edge.prototype.interpolate = function(param1)
 {
     if (param1 == null || param1 == undefined) {
         param1 = 0.5;
@@ -399,7 +399,7 @@ MyEdge.prototype.interpolate = function(param1)
 }
 
 //垂直距离的平方,bool值代表要不要考虑在线段外面的情况
-MyEdge.prototype.verticalDistanceSquare = function(param1, param2)
+Edge.prototype.verticalDistanceSquare = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = false;
@@ -425,7 +425,7 @@ MyEdge.prototype.verticalDistanceSquare = function(param1, param2)
     return param1.distanceSquare(_loc4_);
 }
 
-MyEdge.prototype.getDistance = function(param1, param2)
+Edge.prototype.getDistance = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = false;
@@ -435,17 +435,17 @@ MyEdge.prototype.getDistance = function(param1, param2)
     return Math.sqrt(_loc3_);
 }
 
-MyEdge.prototype.distancePointToCurve = function(param1)
+Edge.prototype.distancePointToCurve = function(param1)
 {
     return Vec2.dot(Vec2.sub(param1,this.mStart),this.rotate_minus_90_degree().normalize());
 }
 
-MyEdge.prototype.translate = function(param1)
+Edge.prototype.translate = function(param1)
 {
-    return new MyEdge(Vec2.add(this.mStart,param1),Vec2.add(this.mEnd,param1));
+    return new Edge(Vec2.add(this.mStart,param1),Vec2.add(this.mEnd,param1));
 }
 
-MyEdge.prototype.reverse = function()
+Edge.prototype.reverse = function()
 {
     var _loc1_ = this.mEnd;
     this.mEnd = this.mStart;
@@ -453,22 +453,22 @@ MyEdge.prototype.reverse = function()
     return this;
 }
 
-MyEdge.prototype.isWithinPI = function()
+Edge.prototype.isWithinPI = function()
 {
     return Angle.isWithinPI(this.getAngle());
 }
 
-MyEdge.prototype.isHorizontal = function()
+Edge.prototype.isHorizontal = function()
 {
     return Angle.isHorizontal(this.getAngle());
 }
 
-MyEdge.prototype.isVertical = function()
+Edge.prototype.isVertical = function()
 {
     return Angle.isVertical(this.getAngle());
 }
 
-MyEdge.prototype.getXFromY = function(param1)
+Edge.prototype.getXFromY = function(param1)
 {
     if(this.mStart.mY == this.mEnd.mY)
     {
@@ -483,27 +483,27 @@ MyEdge.prototype.getXFromY = function(param1)
     return NaN;
 }
 
-MyEdge.prototype.getCenter = function()
+Edge.prototype.getCenter = function()
 {
     return this.interpolate(0.5);
 }
 
-MyEdge.prototype.getVecEndMinusStart = function()
+Edge.prototype.getVecEndMinusStart = function()
 {
     return Vec2.sub(this.mEnd,this.mStart);
 }
 
-MyEdge.prototype.rotate_90_degree = function()
+Edge.prototype.rotate_90_degree = function()
 {
     return this.mEnd.sub(this.mStart).rotate_90_degree();
 }
 
-MyEdge.prototype.rotate_minus_90_degree = function()
+Edge.prototype.rotate_minus_90_degree = function()
 {
     return this.mEnd.sub(this.mStart).rotate_minus_90_degree();
 }
 
-MyEdge.prototype.toVector = function()
+Edge.prototype.toVector = function()
 {
     var ret = [];
     ret.push(this.mStart);
@@ -512,54 +512,54 @@ MyEdge.prototype.toVector = function()
 }
 
 
-MyEdge.prototype.getBoundingBox = function()
+Edge.prototype.getBoundingBox = function()
 {
     var ret = new MyRect();
     ret.includeValues(this.toVector());
     return ret;
 }
 
-MyEdge.prototype.scale = function(s, oX, oY)
+Edge.prototype.scale = function(s, oX, oY)
 {
-    return new MyEdge(this.mStart.clone().mul(s).add(new Vec2(oX, oY)), this.mEnd.clone().mul(s).add(new Vec2(oX, oY)));
+    return new Edge(this.mStart.clone().mul(s).add(new Vec2(oX, oY)), this.mEnd.clone().mul(s).add(new Vec2(oX, oY)));
 }
 
-MyEdge.prototype.getExpanded = function(param1, param2)
+Edge.prototype.getExpanded = function(param1, param2)
 {
-    return new MyEdge(this.interpolate(param1),this.interpolate(param2));
+    return new Edge(this.interpolate(param1),this.interpolate(param2));
 }
 
-MyEdge.prototype.clone = function()
+Edge.prototype.clone = function()
 {
-    return new MyEdge(this.mStart.clone(),this.mEnd.clone());
+    return new Edge(this.mStart.clone(),this.mEnd.clone());
 }
 
-MyEdge.prototype.equals = function(param1)
+Edge.prototype.equals = function(param1)
 {
     return this.mStart.equals(param1.mStart) && this.mEnd.equals(param1.mEnd);
 }
 
-MyEdge.prototype.getLength = function()
+Edge.prototype.getLength = function()
 {
     return Vec2.distance(this.mStart,this.mEnd);
 }
 
-MyEdge.prototype.distanceSquareFunc = function()
+Edge.prototype.distanceSquareFunc = function()
 {
     return Vec2.distanceSquare(this.mStart,this.mEnd);
 }
 
-MyEdge.prototype.getAngle = function()
+Edge.prototype.getAngle = function()
 {
     return Math.atan2(this.mEnd.mY - this.mStart.mY, this.mEnd.mX - this.mStart.mX);
 }
 
-MyEdge.prototype.toRectEdges = function()
+Edge.prototype.toRectEdges = function()
 {
     var edges = [];
-    edges.push(new MyEdge(new Vec2(this.mStart.mX, this.mStart.mY), new Vec2(this.mEnd.mX,   this.mStart.mY)));
-    edges.push(new MyEdge(new Vec2(this.mEnd.mX,   this.mStart.mY), new Vec2(this.mEnd.mX,   this.mEnd.mY)));
-    edges.push(new MyEdge(new Vec2(this.mEnd.mX,   this.mEnd.mY),   new Vec2(this.mStart.mX, this.mEnd.mY)));
-    edges.push(new MyEdge(new Vec2(this.mStart.mX, this.mEnd.mY),   new Vec2(this.mStart.mX, this.mStart.mY)));
+    edges.push(new Edge(new Vec2(this.mStart.mX, this.mStart.mY), new Vec2(this.mEnd.mX,   this.mStart.mY)));
+    edges.push(new Edge(new Vec2(this.mEnd.mX,   this.mStart.mY), new Vec2(this.mEnd.mX,   this.mEnd.mY)));
+    edges.push(new Edge(new Vec2(this.mEnd.mX,   this.mEnd.mY),   new Vec2(this.mStart.mX, this.mEnd.mY)));
+    edges.push(new Edge(new Vec2(this.mStart.mX, this.mEnd.mY),   new Vec2(this.mStart.mX, this.mStart.mY)));
     return edges;
 }

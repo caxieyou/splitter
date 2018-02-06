@@ -5,7 +5,7 @@ function AreaHeightRecord() {
     this.sign = 0;
 }
 
-function MyFloor() {
+function Floor() {
     this.mAreas;
     this.mCurves;
     this.mCorners;
@@ -24,7 +24,7 @@ function MyFloor() {
     this.initialize();
 }
 
-MyFloor.prototype.initialize = function() {
+Floor.prototype.initialize = function() {
     this.mAreas = [];
     this.mCurves = [];
     this.mCorners = [];
@@ -39,14 +39,14 @@ MyFloor.prototype.initialize = function() {
     this.mKeyPoints = [];
 }
 
-MyFloor.prototype.setProfile = function(rect) {
+Floor.prototype.setProfile = function(rect) {
     this.mProfile = new MyPolytree();
     this.mProfile.mOutLines = rect;
     this.mProfile.mHoles = [];
     this.mOutput = null;
 }
 
-MyFloor.prototype.generatePolyTree = function()
+Floor.prototype.generatePolyTree = function()
 {
     //var _loc4_ = null;
     //var _loc5_ = null;
@@ -64,7 +64,7 @@ MyFloor.prototype.generatePolyTree = function()
 }
 
 
-MyFloor.prototype.getTheBiggestAreaPath = function()
+Floor.prototype.getTheBiggestAreaPath = function()
 {
     var pathFinder = new curveCornerHelperClass(this.mCurves);
     var paths = pathFinder.getPaths_eh();
@@ -82,7 +82,7 @@ MyFloor.prototype.getTheBiggestAreaPath = function()
     return null;
 }
    
-MyFloor.prototype.correctAreas = function()
+Floor.prototype.correctAreas = function()
 {
     var _loc2_ = null;
     var _loc3_ = null;
@@ -102,7 +102,7 @@ MyFloor.prototype.correctAreas = function()
     ArrayHelperClass.deleteSameValues(this.mAreas,_loc1_);
 }
 
-MyFloor.prototype.addSection = function(param1)
+Floor.prototype.addSection = function(param1)
 {
     var _loc2_ = ArrayHelperClass.ifHasAndSave(this.mCurves,param1);
     if(_loc2_)
@@ -112,7 +112,7 @@ MyFloor.prototype.addSection = function(param1)
     return _loc2_;
 }
 
-MyFloor.prototype.addCorner = function(param1)
+Floor.prototype.addCorner = function(param1)
 {
     if(param1 == null)
     {
@@ -126,21 +126,21 @@ MyFloor.prototype.addCorner = function(param1)
     return _loc2_;
 }
 
-MyFloor.prototype.removeCorner = function(param1)
+Floor.prototype.removeCorner = function(param1)
 {
     return ArrayHelperClass.removeItem(this.mCorners,param1);
 }
 
-MyFloor.prototype.removeSection = function(param1)
+Floor.prototype.removeSection = function(param1)
 {
     return ArrayHelperClass.removeItem(this.mCurves, param1);
 }
 
-MyFloor.prototype.clearPickedArea = function() {
+Floor.prototype.clearPickedArea = function() {
     this.mPickedIndex = -1;
 }
 
-MyFloor.prototype.getPickedArea = function(x, y) {
+Floor.prototype.getPickedArea = function(x, y) {
     if (x == undefined) {
         return this.mPickedIndex != -1;
     }
@@ -171,7 +171,7 @@ MyFloor.prototype.getPickedArea = function(x, y) {
     }
     return this.mPickedIndex != -1;
 }
-MyFloor.prototype.setAreaHeight = function(sign, val) {
+Floor.prototype.setAreaHeight = function(sign, val) {
     if (this.mPickedIndex == -1) {
         return;
     }
@@ -179,22 +179,22 @@ MyFloor.prototype.setAreaHeight = function(sign, val) {
     this.mAreaHeightRecord[this.mPickedIndex].height = val;
 }
 
-MyFloor.prototype.setAreaName = function(name) {
+Floor.prototype.setAreaName = function(name) {
     if (this.mPickedIndex == -1) {
         return;
     }
     this.mAreaHeightRecord[this.mPickedIndex].name = name;
 }
 
-MyFloor.prototype.getAreaHeight = function() {
+Floor.prototype.getAreaHeight = function() {
     return this.mAreaHeightRecord[this.mPickedIndex].sign * this.mAreaHeightRecord[this.mPickedIndex].height;
 }
 
-MyFloor.prototype.getAreaName = function() {
+Floor.prototype.getAreaName = function() {
     return this.mAreaHeightRecord[this.mPickedIndex].name;
 }
 
-MyFloor.prototype.checkOverlap = function()  {
+Floor.prototype.checkOverlap = function()  {
     var overlapped = false;
     for (var i = 0; i < this.mCurves.length; i++) {
         for (var j = i+1; j < this.mCurves.length; j++) {
@@ -232,7 +232,7 @@ MyFloor.prototype.checkOverlap = function()  {
     return overlapped;
 }
 
-MyFloor.prototype._updateGeoStructure = function() {
+Floor.prototype._updateGeoStructure = function() {
     var holesList = [];
     var areas = this.mAreas;
     for (var i = 0; i < areas.length; i++) {
@@ -452,7 +452,7 @@ MyFloor.prototype._updateGeoStructure = function() {
     this.mLastHeightRecord = this.mAreaHeightRecord;
 };
 
-MyFloor.prototype._removeInvalid = function(output, pass) {
+Floor.prototype._removeInvalid = function(output, pass) {
     var sameCountStart = new Array(output.length);
     var sameCountEnd = new Array(output.length);
         
@@ -502,7 +502,7 @@ MyFloor.prototype._removeInvalid = function(output, pass) {
     }
 };
 
-MyFloor.prototype._reconnect = function(output, valid) {
+Floor.prototype._reconnect = function(output, valid) {
     
     var ret  = [];
     
@@ -550,7 +550,7 @@ MyFloor.prototype._reconnect = function(output, valid) {
     return ret;
 };
 
-MyFloor.prototype.Analysis = function() {
+Floor.prototype.Analysis = function() {
     
     for (var i = 0; i < this.mCorners.length; i++) {
         
@@ -590,7 +590,7 @@ MyFloor.prototype.Analysis = function() {
     this._updateGeoStructure();
 }
 
-MyFloor.prototype.updatePosition = function(sub, newPos)
+Floor.prototype.updatePosition = function(sub, newPos)
 {
     var lastRecord = null;
     if (sub instanceof Array) {
@@ -630,7 +630,7 @@ MyFloor.prototype.updatePosition = function(sub, newPos)
     return overlapped;
 }
 
-MyFloor.prototype._seperateType = function() {
+Floor.prototype._seperateType = function() {
     var curves = [];
     var segments = [];
     var boundries = [];
@@ -647,7 +647,7 @@ MyFloor.prototype._seperateType = function() {
             if (pickedArea) {
                 for (var j = 0; j < pickedArea.mOutline.edges.length; j++) {
                     var edge = pickedArea.mOutline.edges[j];
-                    if (edge instanceof MyEdge && edge.isSameAsEdgeStartOrEnd(seg.mStart.mPosition) && edge.isSameAsEdgeStartOrEnd(seg.mEnd.mPosition)) {
+                    if (edge instanceof Edge && edge.isSameAsEdgeStartOrEnd(seg.mStart.mPosition) && edge.isSameAsEdgeStartOrEnd(seg.mEnd.mPosition)) {
                         validSegmentIndex.push(segments.length - 1);
                     }
                 }
@@ -655,7 +655,7 @@ MyFloor.prototype._seperateType = function() {
                     var poly = pickedArea.mHoles[k];
                     for (var j = 0; j < poly.edges.length; j++) {
                         var edge = poly.edges[j];
-                        if (edge instanceof MyEdge  && edge.isSameAsEdgeStartOrEnd(seg.mStart.mPosition) && edge.isSameAsEdgeStartOrEnd(seg.mEnd.mPosition)) {
+                        if (edge instanceof Edge  && edge.isSameAsEdgeStartOrEnd(seg.mStart.mPosition) && edge.isSameAsEdgeStartOrEnd(seg.mEnd.mPosition)) {
                             validSegmentIndex.push(segments.length - 1);
                         }
                     }
@@ -687,7 +687,7 @@ MyFloor.prototype._seperateType = function() {
     }
     return [curves, segments, boundries, validSegmentIndex, validCurveIndex];
 }
-MyFloor.prototype.renderPickedArea = function(renderer) {
+Floor.prototype.renderPickedArea = function(renderer) {
     if (this.mPickedIndex == -1/*!this.mPickedArea*/) {
         return;
     }
@@ -697,7 +697,7 @@ MyFloor.prototype.renderPickedArea = function(renderer) {
     renderer.drawAreaDots(this.mAreasControllers[this.mPickedIndex]);
 }
 
-MyFloor.prototype.renderOutput = function(renderer) {
+Floor.prototype.renderOutput = function(renderer) {
     if (this.mOutput == null) {
         return;
     }
@@ -722,7 +722,7 @@ MyFloor.prototype.renderOutput = function(renderer) {
 }
 
 //画内部标注线
-MyFloor.prototype._renderZoneSize = function(segments, validIndex, renderer) {
+Floor.prototype._renderZoneSize = function(segments, validIndex, renderer) {
     for (var i = 0; i < segments.length; i++) {
         var segment = segments[i];
         var edge = segment.getTheStartEndEdge();
@@ -751,7 +751,7 @@ MyFloor.prototype._renderZoneSize = function(segments, validIndex, renderer) {
 }
 
 //画内部标注线
-MyFloor.prototype._renderCurveHeight = function(curves, validCurveIndex, canvas, renderer) {
+Floor.prototype._renderCurveHeight = function(curves, validCurveIndex, canvas, renderer) {
     for (var i = 0; i < curves.length; i++) {
         var pt0 = curves[i].getCenter();
         var pt1 = curves[i].getTheStartEndEdge().getCenter();
@@ -762,7 +762,7 @@ MyFloor.prototype._renderCurveHeight = function(curves, validCurveIndex, canvas,
         }
     }
 }
-MyFloor.prototype._isWithinSameArea = function(seg0, seg1) {
+Floor.prototype._isWithinSameArea = function(seg0, seg1) {
     var segments = this.mAreasControllers[this.mPickedIndex];
     var s0 = false;
     var s1 = false;
@@ -782,7 +782,7 @@ MyFloor.prototype._isWithinSameArea = function(seg0, seg1) {
     }
 }
 
-MyFloor.prototype._renderRelativeDistance = function(segments, validIndex, canvas, renderer) {
+Floor.prototype._renderRelativeDistance = function(segments, validIndex, canvas, renderer) {
     
     for (var k = 0; k < validIndex.length; k++) {
         var i = validIndex[k];
@@ -809,15 +809,15 @@ MyFloor.prototype._renderRelativeDistance = function(segments, validIndex, canva
             var maxDis = -Number.MAX_VALUE;
             var sign = 0;
             var center;
-            var markLine = new MyEdge(new Vec2(), new Vec2());
+            var markLine = new Edge(new Vec2(), new Vec2());
             if (!this._isWithinSameArea(segmentObj,segmentSbj)) {
                 var direction = -1;
                 
-                if (isHorizontalObj && isHorizontalSbj && MyEdge.getValidHorizontalSection(edgeObj, edgeSbj, markLine)) {
+                if (isHorizontalObj && isHorizontalSbj && Edge.getValidHorizontalSection(edgeObj, edgeSbj, markLine)) {
                     direction = 0;
                 }
                 
-                if (isVerticalObj && isVerticalObSbj && MyEdge.getValidVerticalSection(edgeObj, edgeSbj, markLine)) {
+                if (isVerticalObj && isVerticalObSbj && Edge.getValidVerticalSection(edgeObj, edgeSbj, markLine)) {
                     direction = 1;
                 }
                 
@@ -874,7 +874,7 @@ MyFloor.prototype._renderRelativeDistance = function(segments, validIndex, canva
     }
 }
 
-MyFloor.prototype._renderAbosoluteDistance = function(segments, validIndex, boundries , canvas, renderer) {
+Floor.prototype._renderAbosoluteDistance = function(segments, validIndex, boundries , canvas, renderer) {
     for (var q = 0; q < validIndex.length; q++) {
         var i = validIndex[q];
         var segmentObj = segments[i];
@@ -895,15 +895,15 @@ MyFloor.prototype._renderAbosoluteDistance = function(segments, validIndex, boun
             var maxDis = -Number.MAX_VALUE;
             var sign = 0;
             var center;
-            var markLine = new MyEdge(new Vec2(), new Vec2());
+            var markLine = new Edge(new Vec2(), new Vec2());
             if (!this._isWithinSameArea(segmentObj,segmentSbj)) {
                 var direction = -1;
                 
-                if (isHorizontalObj && isHorizontalSbj && MyEdge.getValidHorizontalSection(edgeObj, edgeSbj, markLine)) {
+                if (isHorizontalObj && isHorizontalSbj && Edge.getValidHorizontalSection(edgeObj, edgeSbj, markLine)) {
                     direction = 0;
                 }
                 
-                if (isVerticalObj && isVerticalObSbj && MyEdge.getValidVerticalSection(edgeObj, edgeSbj, markLine)) {
+                if (isVerticalObj && isVerticalObSbj && Edge.getValidVerticalSection(edgeObj, edgeSbj, markLine)) {
                     direction = 1;
                 }
                 
@@ -952,7 +952,7 @@ MyFloor.prototype._renderAbosoluteDistance = function(segments, validIndex, boun
 }
 
 
-MyFloor.prototype._renderBoundryLines = function(segments, renderer) {
+Floor.prototype._renderBoundryLines = function(segments, renderer) {
     for (var i = 0; i < segments.length; i++) {
         var segment = segments[i];
         var edge = segment.getTheStartEndEdge();
@@ -978,7 +978,7 @@ MyFloor.prototype._renderBoundryLines = function(segments, renderer) {
     }
 }
 
-MyFloor.prototype.renderMarkerLines = function(flags, renderer, canvas)  {
+Floor.prototype.renderMarkerLines = function(flags, renderer, canvas)  {
     //1. seperate the lines
     var curves, segments, boundries, validSegmentIndex, validCurveIndex;
     [curves, segments, boundries, validSegmentIndex, validCurveIndex] = this._seperateType();
@@ -1004,7 +1004,7 @@ MyFloor.prototype.renderMarkerLines = function(flags, renderer, canvas)  {
 }
 
 
-MyFloor.prototype.getIntersectPoints = function(edges) {
+Floor.prototype.getIntersectPoints = function(edges) {
     var intersects = [];
     for (var i = 0; i < edges.length; i++) {
         for (var j = 0; j < this.mCurves.length; j++) {

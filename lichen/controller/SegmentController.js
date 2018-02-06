@@ -98,7 +98,7 @@ SegmentController.prototype.updateInfo = function(param1)
       
 SegmentController.prototype.getTheStartEndEdge = function()
 {
-    return new MyEdge(this.mStart.mPosition,this.mEnd.mPosition);
+    return new Edge(this.mStart.mPosition,this.mEnd.mPosition);
 }
 
 SegmentController.prototype.isStartOrEnd = function(param1)
@@ -130,7 +130,7 @@ SegmentController.prototype.containsPoint = function(param1)
 
 SegmentController.prototype.isValidAngleDiff = function(param1)
 {
-    return MyEdge.isValidAngleDiff(param1.getTheStartEndEdge(),this.getTheStartEndEdge());
+    return Edge.isValidAngleDiff(param1.getTheStartEndEdge(),this.getTheStartEndEdge());
 }
 
 SegmentController.prototype.isInsideMyArea = function(param1, param2, param3)
@@ -259,7 +259,7 @@ SegmentController.prototype.isIntersectWithGeometry = function(param1, param2, p
     var _loc7_ = null;
     var _loc8_ = null;
     var _loc5_ = null;
-    if(param1 instanceof MyEdge)
+    if(param1 instanceof Edge)
     {
         _loc5_ = param1
         return this.intersectSub(_loc5_,param2,param3,param4);
@@ -477,13 +477,13 @@ SegmentController.prototype.updatePosition = function(x, y) {
     
     var bC0 = coners[0].getBoundrySegments();
     if (bC0.length > 0) {
-        if (!MyEdge.isValidAngleDiff(bC0[0], bC0[1])) {
+        if (!Edge.isValidAngleDiff(bC0[0], bC0[1])) {
             return true;
         }
     }
     var bC1 = coners[1].getBoundrySegments();
     if (bC1.length > 0) {
-        if (!MyEdge.isValidAngleDiff(bC1[0], bC1[1])) {
+        if (!Edge.isValidAngleDiff(bC1[0], bC1[1])) {
             return true;
         }
     }
@@ -501,29 +501,29 @@ SegmentController.prototype.updatePosition = function(x, y) {
     
     
     if (bC0.length > 0) {
-        var newEdge = new MyEdge(s, e);
-        s = MyEdge.getIntersection(newEdge, bC0[0]);
+        var newEdge = new Edge(s, e);
+        s = Edge.getIntersection(newEdge, bC0[0]);
         
     } 
     
     if (bC1.length > 0) {
-        var newEdge = new MyEdge(s, e);
-        e = MyEdge.getIntersection(newEdge, bC1[0]);
+        var newEdge = new Edge(s, e);
+        e = Edge.getIntersection(newEdge, bC1[0]);
     } 
     
-    var tmp = new MyEdge(s, e);
+    var tmp = new Edge(s, e);
     
     if (tmp.getDistance(new Vec2(x, y)) > 1.0E-6) {
         s = new Vec2(pos0.mX - dis * Math.cos(angle + Math.PI / 2), pos0.mY - dis * Math.sin(angle + Math.PI / 2));
         e = new Vec2(pos1.mX - dis * Math.cos(angle + Math.PI / 2), pos1.mY - dis * Math.sin(angle + Math.PI / 2));
         if (bC0.length > 0) {
-            var newEdge = new MyEdge(s, e);
-            s = MyEdge.getIntersection(newEdge, bC0[0]);
+            var newEdge = new Edge(s, e);
+            s = Edge.getIntersection(newEdge, bC0[0]);
         } 
         
         if (bC1.length > 0) {
-            var newEdge = new MyEdge(s, e);
-            e = MyEdge.getIntersection(newEdge, bC1[0]);
+            var newEdge = new Edge(s, e);
+            e = Edge.getIntersection(newEdge, bC1[0]);
         } 
     }
     

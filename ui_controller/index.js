@@ -101,7 +101,7 @@ $(function() {
                     $('#props_wrap').find('.props.line').data('type', 'curve');
                     $('#props_wrap').find('.props.line').find('.pup').html('转为直线<i></i>');
 
-                } else if(elementType instanceof MyEdge) {
+                } else if(elementType instanceof Edge) {
                     $('#props_wrap .props.line .iconfont.curve').removeClass('none').siblings('.straight').addClass('none');
                     $('#props_wrap').find('.props.line').data('type', 'straight');
                     $('#props_wrap').find('.props.line').find('.pup').html('转为曲线<i></i>');

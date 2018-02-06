@@ -223,7 +223,7 @@ MyPolygon.prototype.getX_Intersections1 = function(param1, param2, param3)
     {
         start = points[i];
         end = points[(i + 1) % pointSize];
-        xValue = MyEdge.getXFromY(start,end,y,includeEnds,tolerance);
+        xValue = Edge.getXFromY(start,end,y,includeEnds,tolerance);
         if(!isNaN(xValue))
         {
             ArrayHelperClass.ifHasAndSave(intersections,xValue);
@@ -256,7 +256,7 @@ MyPolygon.prototype.getX_Intersections2 = function(param1, param2, param3)
     {
         start = points[i];
         end = points[(i + 1) % pointSize];
-        xValue = MyEdge.getXFromY(start,end,y,includeEnds,tolerance);
+        xValue = Edge.getXFromY(start,end,y,includeEnds,tolerance);
         if(!isNaN(xValue))
         {
             ArrayHelperClass.ifHasAndSave(intersections,xValue);
@@ -294,7 +294,7 @@ MyPolygon.prototype.getEdges = function()
     while(_loc3_ < _loc2_)
     {
         _loc4_ = (_loc3_ + 1) % _loc2_;
-        _loc1_.push(new MyEdge(this.mVertices[_loc3_],this.mVertices[_loc4_]));
+        _loc1_.push(new Edge(this.mVertices[_loc3_],this.mVertices[_loc4_]));
         _loc3_++;
     }
     return _loc1_;
@@ -338,7 +338,7 @@ MyPolygon.prototype.containsInclusive = function(param1, param2)
     while(_loc4_ < _loc3_)
     {
         _loc5_ = (_loc4_ + 1) % _loc3_;
-        if(MyEdge.distanceSmallThan(this.mVertices[_loc4_],this.mVertices[_loc5_],param1,param2))
+        if(Edge.distanceSmallThan(this.mVertices[_loc4_],this.mVertices[_loc5_],param1,param2))
         {
             return true;
         }
@@ -359,7 +359,7 @@ MyPolygon.prototype.containsExclusive = function(param1, param2)
     while(_loc4_ < _loc3_)
     {
         _loc5_ = (_loc4_ + 1) % _loc3_;
-        if(MyEdge.distanceSmallThan(this.mVertices[_loc4_],this.mVertices[_loc5_],param1,param2))
+        if(Edge.distanceSmallThan(this.mVertices[_loc4_],this.mVertices[_loc5_],param1,param2))
         {
             return false;
         }
@@ -390,7 +390,7 @@ MyPolygon.prototype.isIncludedPolygon = function(param1)
     _loc5_ = 0;
     while(_loc5_ < _loc3_)
     {
-        _loc6_ = new MyEdge(param1.mVertices[_loc5_],param1.mVertices[(_loc5_ + 1) % _loc3_]);
+        _loc6_ = new Edge(param1.mVertices[_loc5_],param1.mVertices[(_loc5_ + 1) % _loc3_]);
         if(!this.containsInclusive(_loc6_.getCenter()))
         {
             return false;
@@ -398,7 +398,7 @@ MyPolygon.prototype.isIncludedPolygon = function(param1)
         _loc7_ = 0;
         while(_loc7_ < _loc4_)
         {
-            _loc8_ = new MyEdge(this.mVertices[_loc7_],this.mVertices[(_loc7_ + 1) % _loc4_]);
+            _loc8_ = new Edge(this.mVertices[_loc7_],this.mVertices[(_loc7_ + 1) % _loc4_]);
             if(LineRelationHelper.isInterSect(_loc6_,_loc8_,false))
             {
                 return false;
@@ -430,11 +430,11 @@ MyPolygon.prototype.isIntersected = function(param1)
     var _loc6_ = 0;
     while(_loc6_ < _loc4_)
     {
-        _loc7_ = new MyEdge(this.mVertices[_loc6_],this.mVertices[(_loc6_ + 1) % _loc4_]);
+        _loc7_ = new Edge(this.mVertices[_loc6_],this.mVertices[(_loc6_ + 1) % _loc4_]);
         _loc8_ = 0;
         while(_loc8_ < _loc5_)
         {
-            _loc9_ = new MyEdge(param1.vertices[_loc8_],param1.vertices[(_loc8_ + 1) % _loc5_]);
+            _loc9_ = new Edge(param1.vertices[_loc8_],param1.vertices[(_loc8_ + 1) % _loc5_]);
             if(_loc7_.length != 0 && _loc9_.length != 0 && LineRelationHelper.isIntersectedInHelper(_loc7_,_loc9_,true, 0.01))
             {
                 return true;

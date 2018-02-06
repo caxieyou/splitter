@@ -53,7 +53,7 @@ circleEdgeHelper.getCircleIntersectionPoints = function(param1, param2)
     var _loc6_ = param1.mRadius;
     var _loc7_ = param2.mRadius;
     var _loc8_ = _loc4_.distance(_loc5_);
-    var _loc9_ = new MyEdge(_loc4_,_loc5_);
+    var _loc9_ = new Edge(_loc4_,_loc5_);
     if(_loc8_ > _loc6_ + _loc7_)
     {
         return _loc3_;
@@ -64,7 +64,7 @@ circleEdgeHelper.getCircleIntersectionPoints = function(param1, param2)
     }
     else
     {
-        _loc10_ = new MyEdge(_loc4_,_loc5_).getCenter();
+        _loc10_ = new Edge(_loc4_,_loc5_).getCenter();
         _loc11_ = _loc8_ / 2 + (_loc6_ * _loc6_ - _loc7_ * _loc7_) / (2 * _loc8_);
         _loc12_ = Math.sqrt(_loc6_ * _loc6_ - _loc11_ * _loc11_);
         _loc13_ = _loc9_.getPointByDistanceOnEdge(_loc11_);
