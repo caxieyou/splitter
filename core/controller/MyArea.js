@@ -79,7 +79,7 @@ MyArea.outputStructures = function(param1, param2) {
         var helper = new curveCornerHelperClass(curves);
         var paths = helper.getPaths_eh();
         
-        var clockwisePaths = path.getClockWisePaths(paths);
+        var clockwisePaths = Path.getClockWisePaths(paths);
         
         for (var i = 0; i < clockwisePaths.length; i++) {
             res.mHoles.push(MyArea.outputStructure(clockwisePaths[i].mCurves));

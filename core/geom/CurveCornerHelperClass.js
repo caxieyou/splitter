@@ -140,7 +140,7 @@ curveCornerHelperClass.prototype.getPaths_eh = function()
         for (var j = 0; j < _loc4_.length; j++)
         //for(_loc5_ in _loc4_)
         {
-            _loc6_ = new path();
+            _loc6_ = new Path();
             _loc6_.mStart = _loc1_;
             this.getPathByCornerCurve(_loc1_,_loc4_[j],_loc6_);
             if(_loc6_.getSize() > 1)

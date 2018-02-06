@@ -1,4 +1,4 @@
-function path() {
+function Path() {
     this.mStart;
     this.mCurves;
     this.mPolygon;
@@ -7,7 +7,7 @@ function path() {
     this.initialize();
 }
 
-path.getArea_Not_0_Paths = function(param1)
+Path.getArea_Not_0_Paths = function(param1)
 {
     var _loc2_ = [];
     for(var i = 0; i < param1.length; i++)
@@ -20,7 +20,7 @@ path.getArea_Not_0_Paths = function(param1)
     return _loc2_;
 }
 
-path.getClockWisePaths = function(param1)
+Path.getClockWisePaths = function(param1)
 {
     var _loc2_ = [];
     for(var i = 0; i < param1.length; i++)
@@ -33,7 +33,7 @@ path.getClockWisePaths = function(param1)
     return _loc2_;
 }
 
-path.getCountClockWisePath = function(param1)
+Path.getCountClockWisePath = function(param1)
 {
     var _loc3_ = null;
     var _loc2_ = [];
@@ -47,7 +47,7 @@ path.getCountClockWisePath = function(param1)
     return _loc2_;
 }
 
-path.getArea_0_Paths = function(param1)
+Path.getArea_0_Paths = function(param1)
 {
     var _loc2_ = [];
     for(var i = 0; i < param1.length; i++)
@@ -60,20 +60,20 @@ path.getArea_0_Paths = function(param1)
     return _loc2_;
 }
 
-path.prototype.initialize = function()
+Path.prototype.initialize = function()
 {
     this.mPolygon = new Polygon();
     this.mCurves = [];
     this.mCorners = [];
 }
 
-path.prototype.buildCurveAndCorner = function()
+Path.prototype.buildCurveAndCorner = function()
 {
     this.buildCorners();
     this.buildPolygon();
 }
 
-path.prototype.buildCorners = function()
+Path.prototype.buildCorners = function()
 {
     var _loc1_ = this.getSize();
     var _loc2_ = this.mStart;
@@ -87,7 +87,7 @@ path.prototype.buildCorners = function()
     }
 }
 
-path.prototype.buildPolygon = function()
+Path.prototype.buildPolygon = function()
 {
     var _loc4_ = null;
     var _loc5_ = NaN;
@@ -108,27 +108,27 @@ path.prototype.buildPolygon = function()
     this.mArea = this.mPolygon.getSignedArea();
 }
 
-path.prototype.addSection = function(param1)
+Path.prototype.addSection = function(param1)
 {
     this.mCurves.push(param1);
 }
 
-path.prototype.isClockWise = function()
+Path.prototype.isClockWise = function()
 {
     return this.mArea > 0;
 }
 
-path.prototype.isCountClockWise = function()
+Path.prototype.isCountClockWise = function()
 {
     return this.mArea < 0;
 }
 
-path.prototype.isIsolated = function()
+Path.prototype.isIsolated = function()
 {
     return MyNumber.isEqual(this.mArea,0);
 }
 
-path.prototype.isCurveInPath_not_sure = function(param1)
+Path.prototype.isCurveInPath_not_sure = function(param1)
 {
     var _loc2_ = this.mCurves.indexOf(param1);
     var _loc3_ = this.mCurves.lastIndexOf(param1);
@@ -140,26 +140,26 @@ path.prototype.isCurveInPath_not_sure = function(param1)
     return _loc4_ == _loc2_;
 }
 
-path.prototype.getCurveByIndex = function(param1)
+Path.prototype.getCurveByIndex = function(param1)
 {
     return this.mCurves[param1];
 }
 
-path.prototype.getCornerByIndex = function(param1)
+Path.prototype.getCornerByIndex = function(param1)
 {
     return this.mCorners[param1];
 }
 
-path.prototype.getSize = function()
+Path.prototype.getSize = function()
 {
     return this.mCurves.length;
 }
 
-path.prototype.getPolygon = function() {
+Path.prototype.getPolygon = function() {
     return this.mPolygon;
 }
 
-path.prototype.getArea = function()
+Path.prototype.getArea = function()
 {
     return this.mArea;
 }
