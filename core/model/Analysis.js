@@ -3,16 +3,16 @@ function Analysis(param1) {
     this.mCurves;
     this.mAreasPick;
     this.mCurveCornerHelper;
-    this.mWall = param1;
+    this.mFloor = param1;
 }
 
 
 Analysis.prototype.calculateAreaAndCurves = function()
 {
-    //this.mAreas = MyArea.cloneAreas(this.mWall.mAreas);
-    this.mAreas = this.mWall.mAreas;
-    //this.mCurves = Arc.cloneAreas(this.mWall.curves);
-    this.mCurves = this.mWall.mCurves;
+    //this.mAreas = MyArea.cloneAreas(this.mFloor.mAreas);
+    this.mAreas = this.mFloor.mAreas;
+    //this.mCurves = Arc.cloneAreas(this.mFloor.curves);
+    this.mCurves = this.mFloor.mCurves;
 }
 
 Analysis.prototype.clearAreas = function()
@@ -38,7 +38,7 @@ Analysis.prototype.prepare = function()
 
 Analysis.prototype.generateWallAreasByWall = function()
 {
-    return new MyArea(this.mWall);
+    return new MyArea(this.mFloor);
 }
 
 //private function addNotHoleParts(param1:AreaFatherClass, param2:Vector.<curveBasicClass>) : void
@@ -215,13 +215,13 @@ Analysis.prototype.seperateAreasInClip = function()
 
 Analysis.prototype.setBackAreaAndCurvesToWall = function()
 {
-    this.mWall.mAreas = this.mAreas;
-    this.mWall.mCurves = this.mCurves;
+    this.mFloor.mAreas = this.mAreas;
+    this.mFloor.mCurves = this.mCurves;
 }
 
 Analysis.prototype.correctAreas = function()
 {
-    //this.mWall.correctAreas();
+    //this.mFloor.correctAreas();
 }
 
 /*
@@ -666,34 +666,34 @@ package §---__--_-_-_-§
    {
        
       
-      private var mWall:my_xx_wall;
+      private var mFloor:my_xx_wall;
       
       public function my_clip_1_nowhere(param1:my_xx_wall)
       {
          super();
-         this.mWall = param1;
+         this.mFloor = param1;
       }
       
       override protected function calculateAreaAndCurves() : void
       {
-         mAreas = wallAreas_Class.cloneAreas(this.mWall.areas);
-         m_curves = wallCurve.cloneAreas(this.mWall.curves);
+         mAreas = wallAreas_Class.cloneAreas(this.mFloor.areas);
+         m_curves = wallCurve.cloneAreas(this.mFloor.curves);
       }
       
       override protected function correctAreas() : void
       {
-         this.mWall.correctAreas();
+         this.mFloor.correctAreas();
       }
       
       override protected function setBackAreaAndCurvesToWall() : void
       {
-         this.mWall.areas = wallAreas_Class.cloneParameter(mAreas);
-         this.mWall.curves = wallCurve.cloneParameter(m_curves);
+         this.mFloor.areas = wallAreas_Class.cloneParameter(mAreas);
+         this.mFloor.curves = wallCurve.cloneParameter(m_curves);
       }
       
       override protected function generateWallAreasByWall() : AreaFatherClass
       {
-         return new wallAreas_Class(this.mWall);
+         return new wallAreas_Class(this.mFloor);
       }
    }
 }

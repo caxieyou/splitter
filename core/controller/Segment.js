@@ -9,7 +9,7 @@ function Segment(param1, param2) {
     this.mStart = new MyCorner(param1);
     this.mEnd = new MyCorner(param1);
     this.mAreas = [];
-    this.mWall = param1;
+    this.mFloor = param1;
     this.mId = ID.assignUniqueId();
     this.isBoundry = param2;
 }
@@ -92,7 +92,7 @@ Segment.prototype.updateInfo = function(param1)
     _loc2_.updateEndCorner(this.mEnd);
     this.updateEndCorner(param1);
 
-    this.mWall.addSection(_loc2_);
+    this.mFloor.addSection(_loc2_);
     return _loc2_;
 }
       
@@ -322,9 +322,9 @@ Segment.prototype.dispose = function()
         _loc3_.removeSection(this);
     }
          
-    if(this.mWall != null)
+    if(this.mFloor != null)
     {
-        this.mWall.removeSection(this);
+        this.mFloor.removeSection(this);
     }
 }
 

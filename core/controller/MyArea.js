@@ -6,7 +6,7 @@ function MyArea(param1) {
     this.mAreaNotUnderstand;//整块的大属性？
     //this.m_Decorations:Vector.<MyBasicArea>;//里面好多块的属性？
     this.mCurves;
-    this.mWall = param1;
+    this.mFloor = param1;
     
     this.mPath; 
       
@@ -166,9 +166,9 @@ MyArea.prototype.dispose = function()
     {
         this.mCurves[i].wallDleleteSame(this);
     }
-    if(this.mWall)
+    if(this.mFloor)
     {
-        this.mWall.wallDleleteSame(this);
+        this.mFloor.wallDleleteSame(this);
     }
 }
 MyArea.prototype.getPolygonFunc_EH = function()

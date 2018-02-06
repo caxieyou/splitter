@@ -2,7 +2,7 @@ function MyCorner(param1) {
     if (param1 == null || param1 == undefined) {
         param1 = null;
     }
-    this.mWall = param1;
+    this.mFloor = param1;
     this.mPosition = new Vec2();
     this.mCurves = [];
     this.initialize();
@@ -22,15 +22,15 @@ MyCorner.prototype.dispose = function()
     {
         this.mCurves[i].setCornerStartAndEndButHasToBeSame(this,null);
     }
-    if(this.mWall != null)
+    if(this.mFloor != null)
     {
-        this.mWall.removeCorner(this);
+        this.mFloor.removeCorner(this);
     }
 }
 
 MyCorner.prototype.clone = function()
 {
-    var _loc1_ = new MyCorner(this.mWall);
+    var _loc1_ = new MyCorner(this.mFloor);
     _loc1_.mCurves = this.mCurves.concat();
     _loc1_.mPosition = this.mPosition;
     return _loc1_;
@@ -54,9 +54,9 @@ MyCorner.prototype.updatePosition = function(x, y)
         }
     }
     
-    if (this.mWall) {
+    if (this.mFloor) {
 
-        var curves = this.mWall.mCurves;
+        var curves = this.mFloor.mCurves;
 
         for (var i = 0; i < curves.length; i++) {
             var curve = curves[i];

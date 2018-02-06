@@ -107,7 +107,7 @@ Floor.prototype.addSection = function(param1)
     var _loc2_ = ArrayHelperClass.ifHasAndSave(this.mCurves,param1);
     if(_loc2_)
     {
-        param1.mWall = this;
+        param1.mFloor = this;
     }
     return _loc2_;
 }
@@ -121,7 +121,7 @@ Floor.prototype.addCorner = function(param1)
     var _loc2_ = ArrayHelperClass.ifHasAndSave(this.mCorners,param1);
     if(_loc2_)
     {
-        param1.mWall = this;
+        param1.mFloor = this;
     }
     return _loc2_;
 }

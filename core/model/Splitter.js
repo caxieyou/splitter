@@ -1,6 +1,6 @@
 function Splitter(param1, param2, param3) {
     this.mCircle = param1;
-    this.mWall = param2;
+    this.mFloor = param2;
     this.mPolytree = param3;
 }
 
@@ -247,7 +247,7 @@ Splitter.prototype.addCorner = function(param1)
 {
     var _loc5_ = null;
     var _loc2_ = null;
-    var _loc3_ = wallCurveCornerHelper.getSamePositionButNotSamePointerCorner(param1, this.mWall.mCorners, Splitter.DISTANCE_TOLERANCE);
+    var _loc3_ = wallCurveCornerHelper.getSamePositionButNotSamePointerCorner(param1, this.mFloor.mCorners, Splitter.DISTANCE_TOLERANCE);
     if(_loc3_ != null)
     {
         _loc2_ = _loc3_.mCurves.concat();
@@ -259,12 +259,12 @@ Splitter.prototype.addCorner = function(param1)
         _loc3_.dispose();
     }
 
-    var _loc4_ = CurveRelationHelper.getTheClosestCurve_ax(param1.mPosition.clone(), this.mWall.mCurves, false, Splitter.DISTANCE_TOLERANCE);
+    var _loc4_ = CurveRelationHelper.getTheClosestCurve_ax(param1.mPosition.clone(), this.mFloor.mCurves, false, Splitter.DISTANCE_TOLERANCE);
     if(_loc4_ != null)
     {
         _loc4_.updateInfo(param1);
     }
-    this.mWall.addCorner(param1);
+    this.mFloor.addCorner(param1);
 }
       
 Splitter.prototype.splitCurvesIntoOneThirdCurves = function(param1)
@@ -312,7 +312,7 @@ Splitter.prototype.splitMyEdgeIntoSegment = function(param1)
 
 Splitter.prototype.execute = function() {
     var _loc3_ = null;
-    if(this.mCircle == null || this.mWall == null)
+    if(this.mCircle == null || this.mFloor == null)
     {
         return;
     }
@@ -326,11 +326,11 @@ Splitter.prototype.execute = function() {
     var _loc1_, _loc2_ = [];
     
     if (this.mCircle instanceof Circle) {
-        _loc1_ = this.getSubCurvesCircleSplitByCurves(this.mCircle,this.mWall.mCurves);
+        _loc1_ = this.getSubCurvesCircleSplitByCurves(this.mCircle,this.mFloor.mCurves);
     } else if (this.mCircle instanceof Polygon || this.mCircle instanceof Array) {
-        _loc1_ = this.getSubSegmentsSplitByCurves(this.mCircle,this.mWall.mCurves);
+        _loc1_ = this.getSubSegmentsSplitByCurves(this.mCircle,this.mFloor.mCurves);
     } //else if (this.mCircle instanceof Array) {
-    //    _loc1_ = this.getSubSegmentsSplitByCurves(this.mCircle,this.mWall.mCurves);
+    //    _loc1_ = this.getSubSegmentsSplitByCurves(this.mCircle,this.mFloor.mCurves);
     //}
     
     if (_loc1_[0] instanceof Curve) {
@@ -344,7 +344,7 @@ Splitter.prototype.execute = function() {
         this.addCorner(_loc2_[i].mStart);
         this.addCorner(_loc2_[i].mEnd);
 
-        this.mWall.addSection(_loc2_[i]);
+        this.mFloor.addSection(_loc2_[i]);
     }
     
     var edges;
@@ -352,8 +352,8 @@ Splitter.prototype.execute = function() {
         edges = this.mPolytree.mOutLines.getEdges();
     }
     
-    for (var i = 0; i < this.mWall.mCurves.length; i++) {
-        var seg = this.mWall.mCurves[i];
+    for (var i = 0; i < this.mFloor.mCurves.length; i++) {
+        var seg = this.mFloor.mCurves[i];
         if (seg instanceof Segment) {
             if (!this.mPolytree) {
                 seg.isBoundry = true;

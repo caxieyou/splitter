@@ -7,12 +7,12 @@ CurveAreaRelationshipHelper.isHole = function(param1)
     var _loc2_ = null;
     var _loc3_ = null;
     var _loc4_ = null;
-    if(param1.mWall.mHoles != null)
+    if(param1.mFloor.mHoles != null)
     {
         _loc3_ = param1.generateElementDiscribeUnit().getValidGravityCenter();
-        for (var i = 0; i < param1.mWall.mHoles.length; i++)
+        for (var i = 0; i < param1.mFloor.mHoles.length; i++)
         {
-            if(param1.mWall.mHoles[i].mPolygon.contains(_loc3_))
+            if(param1.mFloor.mHoles[i].mPolygon.contains(_loc3_))
             {
                 return true;
             }

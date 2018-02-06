@@ -5,7 +5,7 @@ function Arc(param1) {
     this.mStart = new MyCorner(param1);
     this.mEnd = new MyCorner(param1);
     this.mAreas = [];
-    this.mWall = param1;
+    this.mFloor = param1;
     this.mCurvePoint = new Vec2();
     this.mId = ID.assignUniqueId();
 }
@@ -142,7 +142,7 @@ Arc.prototype.updateInfo = function(param1)
         this.updateStartCorner(param1);
     }
     this.mCurvePoint = _loc5_;
-    this.mWall.addSection(_loc8_);
+    this.mFloor.addSection(_loc8_);
     return _loc8_;
 }
 
@@ -344,9 +344,9 @@ Arc.prototype.dispose = function()
         _loc3_.removeSection(this);
     }
     
-    if(this.mWall != null)
+    if(this.mFloor != null)
     {
-        this.mWall.removeSection(this);
+        this.mFloor.removeSection(this);
     }
 }
 Arc.prototype.isInsideMyArea = function(param1, param2, param3)
