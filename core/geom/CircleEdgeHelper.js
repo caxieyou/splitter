@@ -34,7 +34,6 @@ circleEdgeHelper.getEdgeCircleIntersectionPoints = function(param1, param2)
         }
         _loc3_.push(_loc8_.addBySplitAngle(_loc9_,_loc7_));
 
-        //这里loc9前面有个负号
         _loc3_.push(_loc8_.addBySplitAngle(-_loc9_,_loc7_));
     }
     return _loc3_;

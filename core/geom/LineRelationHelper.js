@@ -8,6 +8,12 @@ var Line2DIntersectionStatus = {
     PARALLEL            : 6
 }
 
+function MyEdgeCollide() {
+    this.mPoint;
+    this.mRatio1;
+    this.mRatio2;
+}
+
 function LineRelationHelper() {
     
 }
@@ -196,11 +202,4 @@ LineRelationHelper.isOverLapping = function(param1, param2, param3, param4)
         return param3 || !MyNumber.isEqual(_loc5_.mRatio1.mX,_loc5_.mRatio1.mY,0.01) || !MyNumber.isZero(_loc5_.mRatio1.mX,0.01);
     }
     return false;
-}
-//my_edge_collide_class --> MyEdgeCollide
-
-function MyEdgeCollide() {
-    this.mPoint;
-    this.mRatio1;
-    this.mRatio2;
 }
