@@ -247,7 +247,7 @@ Splitter.prototype.addCorner = function(param1)
 {
     var _loc5_ = null;
     var _loc2_ = null;
-    var _loc3_ = wallCurveCornerHelper.getSamePositionButNotSamePointerCorner(param1, this.mFloor.mCorners, Splitter.DISTANCE_TOLERANCE);
+    var _loc3_ = Auxiliary.getSameCorner(param1, this.mFloor.mCorners, Splitter.DISTANCE_TOLERANCE);
     if(_loc3_ != null)
     {
         _loc2_ = _loc3_.mElements.concat();

@@ -121,7 +121,7 @@ Arc.prototype.updateInfo = function(param1)
     var _loc4_ = _loc2_.getAngleRatio(_loc3_);
     var _loc5_ = _loc2_.getPointByRatio(_loc4_ * Arc.CONST_SPLIT);
     var _loc6_ = _loc2_.getPointByRatio(_loc4_ + (1 - _loc4_) * Arc.CONST_SPLIT);
-    var _loc7_ = wallCurveCornerHelper.getCornerByPos_XX(_loc2_.getPointByRatio(1),[this.mStart, this.mEnd]);
+    var _loc7_ = Auxiliary.getCloestPoint(_loc2_.getPointByRatio(1),[this.mStart, this.mEnd]);
     var _loc8_ = new Arc();
     
     _loc8_.updateStartCorner(param1);
