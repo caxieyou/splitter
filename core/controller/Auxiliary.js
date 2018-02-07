@@ -33,3 +33,75 @@ Auxiliary.getClosestCurve = function(param1, param2, param3, param4, param5)
     }
     return _loc6_;
 }
+
+Auxiliary._isHole = function(param1)
+{
+    var _loc2_ = null;
+    var _loc3_ = null;
+    var _loc4_ = null;
+    if(param1.mFloor.mHoles != null)
+    {
+        _loc3_ = param1.generateElementDiscribeUnit().getValidGravityCenter();
+        for (var i = 0; i < param1.mFloor.mHoles.length; i++)
+        {
+            if(param1.mFloor.mHoles[i].mPolygon.contains(_loc3_))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    for (var i = 0; i < param1.mElements.length; i++)
+    {
+        if(param1.mElements[i].type == WallCurveType.DEFAULT_LINE)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+Auxiliary.getHoleParts = function(param1) 
+{
+    var _loc3_ = null;
+    var _loc2_ = [];
+    if(param1.length >= 2)
+    {
+        for (var i = 0; i < param1.length; i++)
+        {
+            if(Auxiliary._isHole(param1[i]))
+            {
+                _loc2_.push(param1[i]);
+            }
+        }
+    }
+    return _loc2_;
+}
+
+Auxiliary.RIGHT = true;
+Auxiliary.LEFT  = false;
+
+Auxiliary.getPolygonFromAreaPath = function(param1)
+{
+    var _loc8_ = null;
+    var _loc9_ = null;
+
+    var _loc2_ = new Polygon();
+    var _loc3_ = param1.mPath;
+    var _loc4_ = _loc3_.mElements;
+    var _loc5_ = _loc3_.mCorners;
+    var _loc6_ = _loc4_.length;
+    var _loc7_ = 0;
+    while(_loc7_ < _loc6_)
+    {
+        _loc9_ = _loc4_[_loc7_];
+        _loc10_ = !!_loc9_.isStart(_loc5_[_loc7_]) ? Auxiliary.RIGHT:Auxiliary.LEFT;
+        
+        _loc2_.addVertices(_loc9_.switchOrder(_loc9_.isEnd(_loc5_[_loc7_])));
+        
+        _loc7_++;
+    }
+    _loc2_.polygonRemoveSame();
+    return _loc2_;
+}

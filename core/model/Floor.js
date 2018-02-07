@@ -86,7 +86,7 @@ Floor.prototype.correctAreas = function()
 {
     var _loc2_ = null;
     var _loc3_ = null;
-    var _loc1_ = CurveAreaRelationshipHelper.getHoleParts(this.mAreas);
+    var _loc1_ = Auxiliary.getHoleParts(this.mAreas);
     this.mHoles = [];
     
     for (var i = 0; i < _loc1_.length; i++)

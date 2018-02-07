@@ -232,7 +232,7 @@ Area.prototype.getPathPolygon = function()
 
 Area.prototype.GetPolygonFromSelf = function()
 {
-    this.mPolygon = GeoHelpSomeClass.getPolygonFromAreaPath(this);
+    this.mPolygon = Auxiliary.getPolygonFromAreaPath(this);
 }
 
 Area.prototype.getAbsArea = function()
