@@ -8,17 +8,17 @@ var Line2DIntersectionStatus = {
     PARALLEL            : 6
 }
 
-function MyEdgeCollide() {
+function CollisionResult() {
     this.mPoint;
     this.mRatio1;
     this.mRatio2;
 }
 
-function LineRelationHelper() {
+function EdgeCollision() {
     
 }
 
-LineRelationHelper.isInterSectHarsh = function(param1, param2, param3, param4)
+EdgeCollision.isInterSectHarsh = function(param1, param2, param3, param4)
 {
     if (param3 == null || param3 == undefined) {
         param3 = false;
@@ -27,7 +27,7 @@ LineRelationHelper.isInterSectHarsh = function(param1, param2, param3, param4)
         param4 = 0.01;
     }
     
-    var _loc5_ = LineRelationHelper.createEdgeCollider(param1,param2,param4);
+    var _loc5_ = EdgeCollision.createEdgeCollider(param1,param2,param4);
     if(_loc5_.status == Line2DIntersectionStatus.SEGMENTS_INTERSECT)
     {
         return param3 || !(MyNumber.isZero(_loc5_.mRatio1.mX) || MyNumber.isZero(_loc5_.mRatio2.mX));
@@ -35,12 +35,12 @@ LineRelationHelper.isInterSectHarsh = function(param1, param2, param3, param4)
     return false;
 }
 
-LineRelationHelper.isInterSectAndGetPoint = function(param1, param2, param3)
+EdgeCollision.isInterSectAndGetPoint = function(param1, param2, param3)
 {
     if (param3 == null || param3 == undefined) {
         param3 = 0.01;
     }
-    var _loc4_ = LineRelationHelper.createEdgeCollider(param1,param2,param3);
+    var _loc4_ = EdgeCollision.createEdgeCollider(param1,param2,param3);
     if(_loc4_.status == Line2DIntersectionStatus.SEGMENTS_INTERSECT)
     {
         return _loc4_.mPoint;
@@ -48,7 +48,7 @@ LineRelationHelper.isInterSectAndGetPoint = function(param1, param2, param3)
     return null;
 }
 
-LineRelationHelper.createEdgeCollider = function(param1, param2, param3)
+EdgeCollision.createEdgeCollider = function(param1, param2, param3)
 {
     if (param3 == null || param3 == undefined) {
         param3 = 0.01;
@@ -76,7 +76,7 @@ LineRelationHelper.createEdgeCollider = function(param1, param2, param3)
     var _loc10_ = Vec2.cross(_loc8_,_loc9_);
     var _loc11_ = Vec2.cross(Vec2.sub(_loc5_,_loc4_),_loc8_);
     var _loc12_ = Vec2.cross(Vec2.sub(_loc5_,_loc4_),_loc9_);
-    var _loc13_ = new MyEdgeCollide();
+    var _loc13_ = new CollisionResult();
     
     if(MyNumber.isZero(_loc10_,param3))
     {
@@ -145,7 +145,7 @@ LineRelationHelper.createEdgeCollider = function(param1, param2, param3)
     return _loc13_;
 }
 
-LineRelationHelper.isInterSect = function(param1, param2, param3, param4)
+EdgeCollision.isInterSect = function(param1, param2, param3, param4)
 {
     if (param3 == null || param3 == undefined) {
         param3 = false;
@@ -155,7 +155,7 @@ LineRelationHelper.isInterSect = function(param1, param2, param3, param4)
         param4 = 0.01;
     }
     
-    var _loc5_ = LineRelationHelper.createEdgeCollider(param1,param2,param4);
+    var _loc5_ = EdgeCollision.createEdgeCollider(param1,param2,param4);
     switch(_loc5_.status)
     {
         case Line2DIntersectionStatus.SEGMENTS_INTERSECT:
@@ -179,7 +179,7 @@ LineRelationHelper.isInterSect = function(param1, param2, param3, param4)
     }
 }
 
-LineRelationHelper.isOverLapping = function(param1, param2, param3, param4)
+EdgeCollision.isOverLapping = function(param1, param2, param3, param4)
 {
     if (param3 == null || param3 == undefined) {
         param3 = false;
@@ -188,7 +188,7 @@ LineRelationHelper.isOverLapping = function(param1, param2, param3, param4)
     if (param4 == null || param4 == undefined) {
         param4 = 0.01;
     }
-    var _loc5_ = LineRelationHelper.createEdgeCollider(param1,param2,param4);
+    var _loc5_ = EdgeCollision.createEdgeCollider(param1,param2,param4);
     if(_loc5_.status == Line2DIntersectionStatus.OVERLAPPING)
     {
         if (MyNumber.isEqual(_loc5_.mRatio1.mX, 1) && MyNumber.isEqual(_loc5_.mRatio1.mY, 1) 

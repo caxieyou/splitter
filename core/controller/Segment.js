@@ -45,11 +45,11 @@ Segment.intersectSub = function(param1, param2, param3, param4, param5)
     }
     var _loc5_ = param2;
     var _loc6_ = null;
-    if(LineRelationHelper.isInterSect(_loc5_,param1,param4,param5))
+    if(EdgeCollision.isInterSect(_loc5_,param1,param4,param5))
     {
         if(param3 != null)
         {
-            _loc6_ = LineRelationHelper.isInterSectAndGetPoint(_loc5_, param1);
+            _loc6_ = EdgeCollision.isInterSectAndGetPoint(_loc5_, param1);
             if(_loc6_ != null)
             {
                 param3.push(_loc6_);
@@ -285,11 +285,11 @@ Segment.prototype.intersectSub = function(param1, param2, param3, param4)
     }
     var _loc5_ = this.getTheStartEndEdge();
     var _loc6_ = null;
-    if(LineRelationHelper.isInterSect(_loc5_,param1,param3,param4))
+    if(EdgeCollision.isInterSect(_loc5_,param1,param3,param4))
     {
         if(param2 != null)
         {
-            _loc6_ = LineRelationHelper.isInterSectAndGetPoint(_loc5_,param1);
+            _loc6_ = EdgeCollision.isInterSectAndGetPoint(_loc5_,param1);
             if(_loc6_ != null)
             {
                 param2.push(_loc6_);
@@ -341,11 +341,11 @@ Segment.prototype.isCurveIntersectByEdgeAndGetIntersectPoint = function(param1, 
     }
     var _loc5_ = this.getTheStartEndEdge();
     var _loc6_ = null;
-    if(LineRelationHelper.isInterSectHarsh(_loc5_,param1,param3,param4))
+    if(EdgeCollision.isInterSectHarsh(_loc5_,param1,param3,param4))
     {
         if(param2 != null)
         {
-            _loc6_ = LineRelationHelper.isInterSectAndGetPoint(_loc5_,param1);
+            _loc6_ = EdgeCollision.isInterSectAndGetPoint(_loc5_,param1);
             if(_loc6_ != null)
             {
                 param2.push(_loc6_);

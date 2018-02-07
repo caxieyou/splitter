@@ -328,7 +328,7 @@ ElementDrawer.prototype.lineOperationStart = function(point) {
         for (var i = 0; i < curves.length; i++) {
             if (curves[i] instanceof Segment) {
                 var edge = curves[i].getTheStartEndEdge();
-                if (LineRelationHelper.isOverLapping(edge, this.mLine._currentLine)) {
+                if (EdgeCollision.isOverLapping(edge, this.mLine._currentLine)) {
                     return;
                 }
             }

@@ -399,7 +399,7 @@ Polygon.prototype.isIncludedPolygon = function(param1)
         while(_loc7_ < _loc4_)
         {
             _loc8_ = new Edge(this.mVertices[_loc7_],this.mVertices[(_loc7_ + 1) % _loc4_]);
-            if(LineRelationHelper.isInterSect(_loc6_,_loc8_,false))
+            if(EdgeCollision.isInterSect(_loc6_,_loc8_,false))
             {
                 return false;
             }
@@ -435,7 +435,7 @@ Polygon.prototype.isIntersected = function(param1)
         while(_loc8_ < _loc5_)
         {
             _loc9_ = new Edge(param1.vertices[_loc8_],param1.vertices[(_loc8_ + 1) % _loc5_]);
-            if(_loc7_.length != 0 && _loc9_.length != 0 && LineRelationHelper.isIntersectedInHelper(_loc7_,_loc9_,true, 0.01))
+            if(_loc7_.length != 0 && _loc9_.length != 0 && EdgeCollision.isIntersectedInHelper(_loc7_,_loc9_,true, 0.01))
             {
                 return true;
             }
