@@ -368,7 +368,7 @@ Segment.prototype.isCurveIntersectByAreaAndGetIntersectPoint = function(param1, 
         param4 = 1.0E-6;
     }
     
-    var _loc5_ = ArcEdgeHelper.getValidIntersectionPointBetweenArcAndEdge(param1, this.getTheStartEndEdge());
+    var _loc5_ = Auxiliary.getIntersectionForCurveAndEdge(param1, this.getTheStartEndEdge());
     if(!param3)
     {
         param1.removePointsNotInsideCurve(_loc5_);
@@ -396,7 +396,7 @@ Segment.isCurveIntersectByAreaAndGetIntersectPoint = function(param1, param2, pa
         param5 = 1.0E-6;
     }
     
-    var _loc5_ = ArcEdgeHelper.getValidIntersectionPointBetweenArcAndEdge(param2, param1);
+    var _loc5_ = Auxiliary.getIntersectionForCurveAndEdge(param2, param1);
     if(!param4)
     {
         param2.removePointsNotInsideCurve(_loc5_);
