@@ -152,7 +152,7 @@ Area.prototype.tryCalculatePolygon = function()
 
 Area.prototype.addElement = function(param1)
 {
-    return ArrayHelperClass.ifHasAndSave(this.mElements,param1);
+    return MyArray.ifHasAndSave(this.mElements,param1);
 }
       
 Area.prototype.dispose = function()
@@ -242,5 +242,5 @@ Area.prototype.getAbsArea = function()
 
 Area.prototype.removeElement = function(param1)
 {
-    return ArrayHelperClass.removeItem(this.mElements, param1);
+    return MyArray.removeItem(this.mElements, param1);
 }

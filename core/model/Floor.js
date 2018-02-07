@@ -48,18 +48,6 @@ Floor.prototype.setProfile = function(rect) {
 
 Floor.prototype.generatePolyTree = function()
 {
-    //var _loc4_ = null;
-    //var _loc5_ = null;
-    //var _loc1_ = this.getTheBiggestAreaPath();
-    
-    //var _loc2_ = _loc1_ != null?_loc1_.polygon : new Polygon();
-    //var _loc3_ = []; //new Vector.<my_polygon>();
-    //for (var i = 0; i < this.mHoles.length; i++)
-    //{
-    //    _loc3_.push(this.mHoles[i].getPolygon());
-    //}
-    //_loc5_ = new Polytree(_loc2_,_loc3_);
-    //return _loc5_;
     return this.mProfile;
 }
 
@@ -99,12 +87,12 @@ Floor.prototype.correctAreas = function()
             _loc3_.wallDleleteSame(_loc1_[i]);
         }
     }
-    ArrayHelperClass.deleteSameValues(this.mAreas,_loc1_);
+    MyArray.deleteSameValues(this.mAreas,_loc1_);
 }
 
 Floor.prototype.addElement = function(param1)
 {
-    var _loc2_ = ArrayHelperClass.ifHasAndSave(this.mElements,param1);
+    var _loc2_ = MyArray.ifHasAndSave(this.mElements,param1);
     if(_loc2_)
     {
         param1.mFloor = this;
@@ -118,7 +106,7 @@ Floor.prototype.addCorner = function(param1)
     {
         return false;
     }
-    var _loc2_ = ArrayHelperClass.ifHasAndSave(this.mCorners,param1);
+    var _loc2_ = MyArray.ifHasAndSave(this.mCorners,param1);
     if(_loc2_)
     {
         param1.mFloor = this;
@@ -128,12 +116,12 @@ Floor.prototype.addCorner = function(param1)
 
 Floor.prototype.removeCorner = function(param1)
 {
-    return ArrayHelperClass.removeItem(this.mCorners,param1);
+    return MyArray.removeItem(this.mCorners,param1);
 }
 
 Floor.prototype.removeElement = function(param1)
 {
-    return ArrayHelperClass.removeItem(this.mElements, param1);
+    return MyArray.removeItem(this.mElements, param1);
 }
 
 Floor.prototype.clearPickedArea = function() {

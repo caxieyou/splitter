@@ -87,7 +87,7 @@ circleEdgeHelper.getLiteIntersetionPoints = function(param1, param2, param3)
     {
         if(!param2.distanceSmallThan(_loc4_[_loc5_],param3))
         {
-            ArrayHelperClass.removeItemAt(_loc4_,_loc5_);
+            MyArray.removeItemAt(_loc4_,_loc5_);
         }
         _loc5_--;
     }

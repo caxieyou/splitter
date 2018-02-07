@@ -1,18 +1,18 @@
-function ArrayHelperClass() {
+function MyArray() {
     
 }
 
-ArrayHelperClass.isEmpty = function(param1)
+MyArray.isEmpty = function(param1)
 {
     return param1 == null || param1.length == 0;
 }
 
-ArrayHelperClass.isNotEmpty = function(param1)
+MyArray.isNotEmpty = function(param1)
 {
-    return !ArrayHelperClass.isEmpty(param1);
+    return !MyArray.isEmpty(param1);
 }
 
-ArrayHelperClass.ifHasAndSave = function(param1, param2)
+MyArray.ifHasAndSave = function(param1, param2)
 {
     if(param1 != null)
     {
@@ -26,19 +26,19 @@ ArrayHelperClass.ifHasAndSave = function(param1, param2)
     return false;
 }
       
-ArrayHelperClass.ifHaveSameTheLaterOne = function(param1, param2)
+MyArray.ifHaveSameTheLaterOne = function(param1, param2)
 {
     var _loc3_ = null;
     if(param1 != null && param2 != null)
     {
         for (var i = 0; i < param2.length; i++)
         {
-            ArrayHelperClass.ifHasAndSave(param1,param2[i]);
+            MyArray.ifHasAndSave(param1,param2[i]);
         }
     }
 }
 
-ArrayHelperClass.addItem = function(param1, param2)
+MyArray.addItem = function(param1, param2)
 {
     if(!(param1 == null || param1 == undefined))
     {
@@ -46,7 +46,7 @@ ArrayHelperClass.addItem = function(param1, param2)
     }
 }
 
-ArrayHelperClass.addItems = function(param1, param2)
+MyArray.addItems = function(param1, param2)
 {
     if(param1 != null && param2 != null)
     {
@@ -57,19 +57,19 @@ ArrayHelperClass.addItems = function(param1, param2)
     }
 }
 
-ArrayHelperClass.removeItemAt = function(param1, param2)
+MyArray.removeItemAt = function(param1, param2)
 {
-    if(ArrayHelperClass.isNotEmpty(param1) && param2 < param1.length)
+    if(MyArray.isNotEmpty(param1) && param2 < param1.length)
     {
         param1.splice(param2,1);
     }
 }
 
-ArrayHelperClass.deleteSameValues = function(param1, param2)
+MyArray.deleteSameValues = function(param1, param2)
 {
     var _loc3_ = null;
     var _loc4_ = 0;
-    if(ArrayHelperClass.isNotEmpty(param1) && ArrayHelperClass.isNotEmpty(param2))
+    if(MyArray.isNotEmpty(param1) && MyArray.isNotEmpty(param2))
     {
         for (var i = 0; i < param2.length; i++)
         {
@@ -83,7 +83,7 @@ ArrayHelperClass.deleteSameValues = function(param1, param2)
     }
 }
       
-ArrayHelperClass.removeItem = function(param1, param2)
+MyArray.removeItem = function(param1, param2)
 {
     var _loc3_ = param1.indexOf(param2);
     if(_loc3_ != -1)

@@ -197,7 +197,7 @@ Auxiliary.getIntersectionForCurveAndCurve = function(param1, param2, param3)
         _loc6_ = _loc4_[_loc5_];
         if(!param1.isInsideArcFan(_loc6_,param3) || !param2.isInsideArcFan(_loc6_,param3))
         {
-            ArrayHelperClass.removeItemAt(_loc4_,_loc5_);
+            MyArray.removeItemAt(_loc4_,_loc5_);
         }
         _loc5_--;
     }
@@ -215,7 +215,7 @@ Auxiliary.getIntersectionForCurveAndEdge = function(param1, param2, param3)
     {
         if(!param1.isInsideArcFan(_loc4_[_loc5_]))
         {
-            ArrayHelperClass.removeItemAt(_loc4_,_loc5_);
+            MyArray.removeItemAt(_loc4_,_loc5_);
         }
         _loc5_--;
     }

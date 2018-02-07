@@ -111,7 +111,7 @@ Splitter.prototype.getSubSegmentsSplitByCurves = function(param1, param2)
             item = res[j];
             if(!this.mPolytree.contains(item.getCenter()))
             {
-                ArrayHelperClass.removeItemAt(res,j);
+                MyArray.removeItemAt(res,j);
             }
             j--;
         }
@@ -218,10 +218,10 @@ Splitter.prototype.getSubCurvesCircleSplitByCurves = function(param1, param2)
             if (newArc[i] == null) {
             } else if (newArc[i] instanceof Array && newArc[i].length > 0) {
                 for (var j = 0; j < newArc[i].length; j++) {
-                    ArrayHelperClass.addItem(res,newArc[i][ja]);
+                    MyArray.addItem(res,newArc[i][ja]);
                 }
             } else {
-                ArrayHelperClass.addItem(res,newArc[i]);
+                MyArray.addItem(res,newArc[i]);
             }
         }
     }
@@ -234,7 +234,7 @@ Splitter.prototype.getSubCurvesCircleSplitByCurves = function(param1, param2)
             item = res[j];
             if(!this.mPolytree.contains(item.getPointByRatio(0.5)))
             {
-                ArrayHelperClass.removeItemAt(res,j);
+                MyArray.removeItemAt(res,j);
             }
             j--;
         }
@@ -350,6 +350,4 @@ Splitter.prototype.execute = function() {
         }
         
     }
-    
-        
 }

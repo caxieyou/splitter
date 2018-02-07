@@ -38,12 +38,12 @@ Corner.prototype.clone = function()
 
 Corner.prototype.addElement = function(param1)
 {
-    return ArrayHelperClass.ifHasAndSave(this.mElements,param1);
+    return MyArray.ifHasAndSave(this.mElements,param1);
 }
 
 Corner.prototype.removeElement = function(param1)
 {
-    return ArrayHelperClass.removeItem(this.mElements,param1);
+    return MyArray.removeItem(this.mElements,param1);
 }
 
 Corner.prototype.updatePosition = function(x, y)

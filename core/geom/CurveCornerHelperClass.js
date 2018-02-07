@@ -29,8 +29,8 @@ curveCornerHelperClass.prototype.addElement = function(param1)
     var _loc3_ = param1.mEnd;
     this.addCorner(_loc2_);
     this.addCorner(_loc3_);
-    ArrayHelperClass.ifHasAndSave(this.getCurvesByCorner(_loc2_),param1);
-    ArrayHelperClass.ifHasAndSave(this.getCurvesByCorner(_loc3_),param1);
+    MyArray.ifHasAndSave(this.getCurvesByCorner(_loc2_),param1);
+    MyArray.ifHasAndSave(this.getCurvesByCorner(_loc3_),param1);
 }
 
 curveCornerHelperClass.prototype.orderCurves = function(param1)

@@ -110,7 +110,7 @@ Arc.prototype.setCornerStartAndEndButHasToBeSame = function(param1, param2)
       
 Arc.prototype.isHasAndSaveOnCurve = function(param1)
 {
-    var _loc2_ = ArrayHelperClass.ifHasAndSave(this.mAreas, param1);
+    var _loc2_ = MyArray.ifHasAndSave(this.mAreas, param1);
     return _loc2_;
 }
 
@@ -156,7 +156,7 @@ Arc.prototype.getStartOrEndOrNull = function(param1)
 
 Arc.prototype.wallDleleteSame = function(param1)
 {
-    return ArrayHelperClass.removeItem(this.mAreas,param1);
+    return MyArray.removeItem(this.mAreas,param1);
 }
 
 Arc.prototype.updateStartCorner = function(param1) {
@@ -313,7 +313,7 @@ Arc.prototype.intersectSub = function(param1, param2, param3, param4)
     }
     if(param2 != null)
     {
-        ArrayHelperClass.addItems(param2,_loc6_);
+        MyArray.addItems(param2,_loc6_);
     }
     return true;
 }
@@ -389,7 +389,7 @@ Arc.prototype.isCurveIntersectByEdgeAndGetIntersectPoint = function(param1, para
     }
     if(param2 != null)
     {
-        ArrayHelperClass.addItems(param2,_loc6_);
+        MyArray.addItems(param2,_loc6_);
     }
     return true;
 }
@@ -419,7 +419,7 @@ Arc.prototype.isCurveIntersectByAreaAndGetIntersectPoint = function(param1, para
     }
     if(param2 != null)
     {
-        ArrayHelperClass.addItems(param2,_loc6_);
+        MyArray.addItems(param2,_loc6_);
     }
     return true;
 }

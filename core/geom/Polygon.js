@@ -28,7 +28,7 @@ Polygon.getX_Intersections1 = function(param1, param2, param3, param4)
     var intersections = [];
     for(var i = 0; i < polygons.length; i++)
     {
-        ArrayHelperClass.ifHaveSameTheLaterOne(intersections,polygons[i].getX_Intersections1(y,includeEnds,tolerance));
+        MyArray.ifHaveSameTheLaterOne(intersections,polygons[i].getX_Intersections1(y,includeEnds,tolerance));
     }
     intersections.sort(function(param1, param2)
     {
@@ -100,13 +100,13 @@ Polygon.prototype.getSize = function()
 
 Polygon.prototype.addVertex = function(param1)
 {
-    ArrayHelperClass.addItem(this.mVertices,param1);
+    MyArray.addItem(this.mVertices,param1);
     return this;
 }
 
 Polygon.prototype.addVertices = function(param1)
 {
-    ArrayHelperClass.addItems(this.mVertices,param1);
+    MyArray.addItems(this.mVertices,param1);
     return this;
 }
 
@@ -226,7 +226,7 @@ Polygon.prototype.getX_Intersections1 = function(param1, param2, param3)
         xValue = Edge.getXFromY(start,end,y,includeEnds,tolerance);
         if(!isNaN(xValue))
         {
-            ArrayHelperClass.ifHasAndSave(intersections,xValue);
+            MyArray.ifHasAndSave(intersections,xValue);
         }
         i++;
     }
@@ -259,7 +259,7 @@ Polygon.prototype.getX_Intersections2 = function(param1, param2, param3)
         xValue = Edge.getXFromY(start,end,y,includeEnds,tolerance);
         if(!isNaN(xValue))
         {
-            ArrayHelperClass.ifHasAndSave(intersections,xValue);
+            MyArray.ifHasAndSave(intersections,xValue);
         }
         i++;
     }
@@ -273,7 +273,7 @@ Polygon.prototype.getX_Intersections2 = function(param1, param2, param3)
     {
         if(MyNumber.isEqual(intersections[j],intersections[j - 1],0.0001))
         {
-            ArrayHelperClass.removeItemAt(intersections,j);
+            MyArray.removeItemAt(intersections,j);
         }
         j--;
     }

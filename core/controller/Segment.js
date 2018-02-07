@@ -16,7 +16,7 @@ function Segment(param1, param2) {
 
 Segment.prototype.wallDleleteSame = function(param1)
 {
-    return ArrayHelperClass.removeItem(this.mAreas,param1);
+    return MyArray.removeItem(this.mAreas,param1);
 }
 
 Segment.createSegmentByMyEdge = function(param1)
@@ -379,7 +379,7 @@ Segment.prototype.isCurveIntersectByAreaAndGetIntersectPoint = function(param1, 
     }
     if(param2 != null)
     {
-        ArrayHelperClass.addItems(param2,_loc5_);
+        MyArray.addItems(param2,_loc5_);
     }
     return true;
 }
@@ -407,7 +407,7 @@ Segment.isCurveIntersectByAreaAndGetIntersectPoint = function(param1, param2, pa
     }
     if(param3 != null)
     {
-        ArrayHelperClass.addItems(param3,_loc5_);
+        MyArray.addItems(param3,_loc5_);
     }
     return true;
 }
@@ -415,7 +415,7 @@ Segment.isCurveIntersectByAreaAndGetIntersectPoint = function(param1, param2, pa
 
 Segment.prototype.isHasAndSaveOnCurve = function(param1)
 {
-    var _loc2_ = ArrayHelperClass.ifHasAndSave(this.mAreas, param1);
+    var _loc2_ = MyArray.ifHasAndSave(this.mAreas, param1);
     return _loc2_;
 }
 
