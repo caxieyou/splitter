@@ -2,7 +2,7 @@ function Analysis(param1) {
     this.mAreas;
     this.mElements;
     this.mAreasPick;
-    this.mCurveCornerHelper;
+    this.mSort;
     this.mFloor = param1;
 }
 
@@ -21,7 +21,7 @@ Analysis.prototype.clearAreas = function()
 Analysis.prototype.prepare = function()
 {
     var _loc1_ = null;
-    this.mCurveCornerHelper = new curveCornerHelperClass(this.mElements);
+    this.mSort = new AuxiliarySort(this.mElements);
     this.mAreaPick = this.mAreas.concat();
     
     for (var i = 0; i < this.mElements.length; i++) {
@@ -61,7 +61,7 @@ Analysis.prototype.seperateAreasInClip = function()
     var tmpArea = null;
     var polygonWithHole = null;
 
-    var paths = this.mCurveCornerHelper.getPaths_eh();
+    var paths = this.mSort.getPaths();
     var clockwisePaths = Path.getClockWisePaths(paths);
     var areas = this.mAreas;
     

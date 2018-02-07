@@ -54,8 +54,8 @@ Floor.prototype.generatePolyTree = function()
 
 Floor.prototype.getTheBiggestAreaPath = function()
 {
-    var pathFinder = new curveCornerHelperClass(this.mElements);
-    var paths = pathFinder.getPaths_eh();
+    var pathFinder = new AuxiliarySort(this.mElements);
+    var paths = pathFinder.getPaths();
     var counterClockPaths = Path.getCountClockWisePath(paths);
     //从大到小排序
     counterClockPaths.sort(function(param1, param2)

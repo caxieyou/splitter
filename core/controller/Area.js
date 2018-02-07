@@ -73,8 +73,8 @@ Area.outputStructures = function(param1, param2) {
                 }
             }
         }
-        var helper = new curveCornerHelperClass(curves);
-        var paths = helper.getPaths_eh();
+        var helper = new AuxiliarySort(curves);
+        var paths = helper.getPaths();
         
         var clockwisePaths = Path.getClockWisePaths(paths);
         
