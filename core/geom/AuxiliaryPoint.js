@@ -20,7 +20,7 @@ AuxiliaryPoint.removeItemAt = function(param1, param2)
     }
 }
 
-AuxiliaryPoint.removeDuplicatePointsInHelper = function(param1, param2)
+AuxiliaryPoint.removeDuplicate = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-5;
@@ -46,7 +46,7 @@ AuxiliaryPoint.removeDuplicatePointsInHelper = function(param1, param2)
     }
 }
 
-AuxiliaryPoint.removeSame = function(param1, param2)
+AuxiliaryPoint.removeSameOneByOne = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6
@@ -69,12 +69,12 @@ AuxiliaryPoint.removeSame = function(param1, param2)
     }
 }
 
-AuxiliaryPoint.removeSamePoint = function(param1, param2)
+AuxiliaryPoint.removeSameEndConnected = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6
     }
-    AuxiliaryPoint.removeSame(param1,param2);
+    AuxiliaryPoint.removeSameOneByOne(param1,param2);
     var _loc3_ = param1.length;
     if(_loc3_ > 1 && Vec2.isEqual(param1[0],param1[_loc3_ - 1],param2))
     {

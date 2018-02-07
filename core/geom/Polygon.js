@@ -302,7 +302,7 @@ Polygon.prototype.getEdges = function()
 
 Polygon.prototype.polygonRemoveSame = function()
 {
-    AuxiliaryPoint.removeSamePoint(this.mVertices, 1);
+    AuxiliaryPoint.removeSameEndConnected(this.mVertices, 1);
     return this;
 }
 

@@ -1,8 +1,8 @@
-function circleEdgeHelper() {
+function AuxiliaryCurve() {
     
 }
 
-circleEdgeHelper.getEdgeCircleIntersectionPoints = function(param1, param2)
+AuxiliaryCurve.getEdgeCircleIntersectionPoints = function(param1, param2)
 {
     var _loc7_ = NaN;
     var _loc8_ = null;
@@ -39,7 +39,7 @@ circleEdgeHelper.getEdgeCircleIntersectionPoints = function(param1, param2)
     return _loc3_;
 }
 
-circleEdgeHelper.getCircleIntersectionPoints = function(param1, param2)
+AuxiliaryCurve.getCircleIntersectionPoints = function(param1, param2)
 {
     var _loc10_ = null;
     var _loc11_ = NaN;
@@ -74,14 +74,12 @@ circleEdgeHelper.getCircleIntersectionPoints = function(param1, param2)
     return _loc3_;
 }
 
-
-
-circleEdgeHelper.getLiteIntersetionPoints = function(param1, param2, param3)
+AuxiliaryCurve.getLiteIntersetionPoints = function(param1, param2, param3)
 {
     if (param3 == null || param3 == undefined) {
         param3 = 1.0E-6;
     }
-    var _loc4_ = circleEdgeHelper.getEdgeCircleIntersectionPoints(param1,param2);
+    var _loc4_ = AuxiliaryCurve.getEdgeCircleIntersectionPoints(param1,param2);
     var _loc5_ = _loc4_.length - 1;
     while(_loc5_ >= 0)
     {
