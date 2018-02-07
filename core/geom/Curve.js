@@ -130,7 +130,7 @@ Curve.prototype.isInsideArcFan = function(param1, param2)
     }
     
     this.diagnose();
-    if(!this.createCircle_canvas().isInsideCircle(param1,param2))
+    if(!this.getCircle().isInsideCircle(param1,param2))
     {
         return false;
     }
@@ -278,7 +278,7 @@ Curve.prototype.distancePointToCurve = function(param1, param2)
     else
     {
         _loc6_ = this.getCenterIntersectAngle(param1);
-        _loc7_ = this.createCircle_canvas();
+        _loc7_ = this.getCircle();
         _loc3_ = _loc7_.curvePosByRatio(_loc6_);
     }
     var _loc4_ = param1.distance(_loc3_);
@@ -320,7 +320,7 @@ Curve.prototype.enlarge_xx = function(param1)
 Curve.prototype.getCenterIntersectAngle = function(param1)
 {
     this.diagnose();
-    var _loc2_ = this.createCircle_canvas().getCenterIntersectAngle(param1);
+    var _loc2_ = this.getCircle().getCenterIntersectAngle(param1);
     var _loc3_ = this.getAngleRatio(_loc2_);
     return this.curveAngleByRatio(_loc3_);
 }
@@ -405,7 +405,7 @@ Curve.prototype.get1_4_Of_arc = function()
     return Math.tan(this.mArcAngle / 4);
 }
 
-Curve.prototype.createCircle_canvas = function()
+Curve.prototype.getCircle = function()
 {
     this.diagnose();
     return new Circle(this.mCenter,this.mRadius);
@@ -444,9 +444,9 @@ Curve.prototype.getValidPart = function(curve)
     
     
     if (r2 && r3) {
-        var a1 = this.createCircle_canvas().getCenterIntersectAngle(s1);
+        var a1 = this.getCircle().getCenterIntersectAngle(s1);
         var ratio1 = this.getAngleRatio(a1);
-        var a2 = this.createCircle_canvas().getCenterIntersectAngle(e1);
+        var a2 = this.getCircle().getCenterIntersectAngle(e1);
         var ratio2 = this.getAngleRatio(a2);
         
         var max = Math.max(ratio1, ratio2);

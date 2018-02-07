@@ -1,8 +1,8 @@
-function edgePointHelperClass() {
+function AuxiliaryPoint() {
     
 }
 
-edgePointHelperClass.getCenter = function(param1)
+AuxiliaryPoint.getCenter = function(param1)
 {
     var _loc2_ = new Vec2(0,0);
     for(var i = 0; i < param1.length; i++)
@@ -12,7 +12,7 @@ edgePointHelperClass.getCenter = function(param1)
     return _loc2_.mulBy(1 / param1.length);
 }
 
-edgePointHelperClass.removeItemAt = function(param1, param2)
+AuxiliaryPoint.removeItemAt = function(param1, param2)
 {
     if(isNotEmpty(param1) && param2 < param1.length)
     {
@@ -20,7 +20,7 @@ edgePointHelperClass.removeItemAt = function(param1, param2)
     }
 }
 
-edgePointHelperClass.removeDuplicatePointsInHelper = function(param1, param2)
+AuxiliaryPoint.removeDuplicatePointsInHelper = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-5;
@@ -46,7 +46,7 @@ edgePointHelperClass.removeDuplicatePointsInHelper = function(param1, param2)
     }
 }
 
-edgePointHelperClass.removeSame = function(param1, param2)
+AuxiliaryPoint.removeSame = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6
@@ -69,12 +69,12 @@ edgePointHelperClass.removeSame = function(param1, param2)
     }
 }
 
-edgePointHelperClass.removeSamePoint = function(param1, param2)
+AuxiliaryPoint.removeSamePoint = function(param1, param2)
 {
     if (param2 == null || param2 == undefined) {
         param2 = 1.0E-6
     }
-    edgePointHelperClass.removeSame(param1,param2);
+    AuxiliaryPoint.removeSame(param1,param2);
     var _loc3_ = param1.length;
     if(_loc3_ > 1 && Vec2.isEqual(param1[0],param1[_loc3_ - 1],param2))
     {

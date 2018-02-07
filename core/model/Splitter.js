@@ -60,7 +60,7 @@ Splitter.prototype.getSubSegmentsSplitByCurves = function(param1, param2)
         }
     }
     
-    edgePointHelperClass.removeDuplicatePointsInHelper(intersections);
+    AuxiliaryPoint.removeDuplicatePointsInHelper(intersections);
     res = [];
     
     var record = [];
@@ -153,7 +153,7 @@ Splitter.prototype.getSubCurvesCircleSplitByCurves = function(param1, param2)
         }
     }
     
-    edgePointHelperClass.removeDuplicatePointsInHelper(intersections);
+    AuxiliaryPoint.removeDuplicatePointsInHelper(intersections);
     res = [];
     intersection = null;
     if(intersections.length == 0)

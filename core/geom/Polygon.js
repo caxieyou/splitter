@@ -149,7 +149,7 @@ Polygon.prototype.getGravity = function()
 
 Polygon.prototype.getPolyCenter = function()
 {
-    return edgePointHelperClass.getCenter(this.mVertices);
+    return AuxiliaryPoint.getCenter(this.mVertices);
 }
 
 Polygon.prototype.getValidGravityCenter = function()
@@ -302,7 +302,7 @@ Polygon.prototype.getEdges = function()
 
 Polygon.prototype.polygonRemoveSame = function()
 {
-    edgePointHelperClass.removeSamePoint(this.mVertices, 1);
+    AuxiliaryPoint.removeSamePoint(this.mVertices, 1);
     return this;
 }
 
