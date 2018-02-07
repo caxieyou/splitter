@@ -18,7 +18,7 @@ Splitter.prototype.getSplitCurvesByEdgeCircle = function(param1, param2)
     var _loc6_ = NaN;
     var _loc7_ = null;
     var _loc3_ = [];
-    var _loc4_ = AuxiliaryCurve.getEdgeCircleIntersectionPoints(param1,param2);
+    var _loc4_ = AuxiliaryCurve.getIntersectionCircleEdge(param1,param2);
     if(_loc4_.length != 2)
     {
         return [];

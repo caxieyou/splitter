@@ -44,7 +44,6 @@ curveCornerHelperClass.prototype.orderCurves = function(param1)
     var ordered = [];
     
     for (var i = 0; i < connections.length; i++)
-    //for (connection in connections)
     {
         var curve = connections[i];
         _reverse = curve.mStart != corner;
