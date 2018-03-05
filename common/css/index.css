@@ -48,14 +48,14 @@ body {
     height: 28px;
 }
 
-#container {
+#splitter_container {
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
-#container #head_wrap {
+#splitter_container .head-wrap {
     flex: 0 0 60px;
     line-height: 60px;
     padding-left: 20px;
@@ -64,13 +64,13 @@ body {
     color: #A2AAC1;
 }
 
-#container #main_wrap {
+#splitter_container .main-wrap {
     flex: 1 1 auto;
     position: relative;
     display: flex;
 }
 
-#container #main_container {
+#splitter_container #main_container {
     flex: 1 1 auto;
     position: relative;
     margin: 0 0 0 375px;
@@ -82,7 +82,7 @@ body {
     justify-content: center;
 }
 
-#container #main_container .bottom-props {
+#splitter_container #main_container .bottom-props {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -97,52 +97,52 @@ body {
     align-items: center;
 }
 
-#container #main_container .bottom-props *{
+#splitter_container #main_container .bottom-props *{
     font-size: 14px;
 }
 
-#container #main_container .bottom-props label{
+#splitter_container #main_container .bottom-props label{
     float: left;
 }
 
-#container #main_container .bottom-props input, #container #main_container .bottom-props .select2-selection, .select2-dropdown{
+#splitter_container #main_container .bottom-props input, #splitter_container #main_container .bottom-props .select2-selection, .select2-dropdown{
     border-color: #b2b1b1;
 }
 
-#container #main_container .bottom-props .bottom-props-name-input {
+#splitter_container #main_container .bottom-props .bottom-props-name-input {
     width: 87px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
-#container #main_container .bottom-props .bulge-backoff-selects {
+#splitter_container #main_container .bottom-props .bulge-backoff-selects {
     width: 55px;
 }
 
-#container #main_container .bottom-props .bottom-props-depth {
+#splitter_container #main_container .bottom-props .bottom-props-depth {
     margin-left: 10px;
 }
 
-#container #main_container .bottom-props .bottom-props-depth-input {
+#splitter_container #main_container .bottom-props .bottom-props-depth-input {
     width: 55px;
 }
 
-#container #props_wrap {
+#splitter_container #props_wrap {
     position: absolute;
     top: 50%;
     left: 50%;
     display: flex;
 }
 
-#container #main_container .canvas-container {
+#splitter_container #main_container .canvas-container {
     position: relative;
     width: 100%;
     height: 100%;
     overflow: hidden;
 }
 
-#container #props_wrap .props {
+#splitter_container #props_wrap .props {
     flex: 0 0 auto;
     position: relative;
     width: 40px;
@@ -156,15 +156,15 @@ body {
     cursor: pointer;
 }
 
-#container #props_wrap .props:nth-of-type(1) {
+#splitter_container #props_wrap .props:nth-of-type(1) {
     margin-left: 0;
 }
 
-#container #props_wrap .props .icon {
+#splitter_container #props_wrap .props .icon {
     font-size: 30px;
 }
 
-#container #props_wrap .props .pup {
+#splitter_container #props_wrap .props .pup {
     position: absolute;
     opacity: 0;
     left: 0;
@@ -176,14 +176,14 @@ body {
     background-color: #2E3940;
 }
 
-#container #props_wrap .props:hover .pup {
+#splitter_container #props_wrap .props:hover .pup {
     opacity: 1;
     transition: opacity 0.5s 0.25s;
     top: -39px;
     left: 0;
 }
 
-#container #props_wrap .props:hover .pup i {
+#splitter_container #props_wrap .props:hover .pup i {
     display: inline-block;
     width: 6px;
     height: 6px;
@@ -196,7 +196,7 @@ body {
     transform: rotate(45deg);
 }
 
-#container #props_wrap .props.line:hover .pup {
+#splitter_container #props_wrap .props.line:hover .pup {
     left: -20px;
     width: 80px;
 }

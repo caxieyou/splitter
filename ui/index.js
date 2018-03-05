@@ -9,8 +9,8 @@ var TYPE = {
     LINE: 2
 };
 
-$("#canvas")[0].width = $('#main_container').width();
-$("#canvas")[0].height = $('#main_container').height();
+$("#splitter_container #canvas")[0].width = $('#main_container').width();
+$("#splitter_container #canvas")[0].height = $('#main_container').height();
 // 初始化canvas
 var canvas = new Canvas("canvas");    
 
@@ -34,7 +34,7 @@ $(function() {
     savedOffset.copy(Globals.Offset);
     Globals.IsDragging = false;
     
-    $(document).on('mousedown', '#canvas', function(event) {
+    $(document).on('mousedown', '#splitter_container #canvas', function(event) {
         event = event || window.event;
         var btnNum = event.button;
         $('#props_wrap').hide();
@@ -50,7 +50,7 @@ $(function() {
         }
     });
 
-    $(document).on('mouseup', '#canvas', function(event) {
+    $(document).on('mouseup', '#splitter_container #canvas', function(event) {
         event = event || window.event;
         
         if (Globals.IsDragging) {
@@ -80,10 +80,10 @@ $(function() {
             } else if(elementType instanceof Vec2) {
                 console.log("set corner");
             } else {
-                var clientWidth = parseInt($('#container').css('width'));
-                var clientHeight = parseInt($('#container').css('height'));
-                var selfLength = parseInt($('#container #props_wrap').css('width'));
-                var selfHeight = parseInt($('#container #props_wrap').css('height'));
+                var clientWidth = parseInt($('#splitter_container').css('width'));
+                var clientHeight = parseInt($('#splitter_container').css('height'));
+                var selfLength = parseInt($('#splitter_container #props_wrap').css('width'));
+                var selfHeight = parseInt($('#splitter_container #props_wrap').css('height'));
                 var left = event.clientX + 20;
                 var top = event.clientY + 20;
                 if(left + selfLength >= clientWidth) {
@@ -120,7 +120,7 @@ $(function() {
         
     });
 
-    $(document).on('mousemove', '#canvas', function(event) {
+    $(document).on('mousemove', '#splitter_container #canvas', function(event) {
         event = event || window.event;
         if(event.which == 1) {
             //按住拖动
@@ -146,7 +146,7 @@ $(function() {
     // mousewheel 监听鼠标滚轮滚动次数
     // 鼠标滚轮滚动次数
     var mouseWheelIndex = 0;
-    $(document).on('mousewheel', '#canvas', function(event) {
+    $(document).on('mousewheel', '#splitter_container #canvas', function(event) {
         event = event || window.event;
         var e = event.originalEvent;
         var newScale = Globals.Scale + e.wheelDelta * 0.0001;
@@ -338,7 +338,7 @@ $(function() {
         canvas.setAreaHeight(sign, $('.bottom-props-depth-input').val());
     });
     var container = $('.canvas-container')[0],
-        $canvas = $("#canvas");
+        $canvas = $("#splitter_container #canvas");
 
     window.onresize = function(e){
         canvas.resize($('.canvas-container').width(), $('.canvas-container').height());
