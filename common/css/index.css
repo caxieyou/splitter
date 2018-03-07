@@ -240,6 +240,7 @@ body {
 
 #left_draw .material-content .box:hover .shape-obj {
     border: 2px solid #58A3F3;
+    box-sizing: border-box;
 }
 
 #left_draw .material-content .shape-obj {
