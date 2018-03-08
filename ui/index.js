@@ -198,45 +198,37 @@ $(function() {
     
     // 绝对边距和相对距离二选一事件
     $('#relative_distance').on('ifChecked', function(event) {
-        console.log("相对距离 选中");
         canvas.setRelativeDistance(true);
         $('#absolute_margin').iCheck('uncheck');
     });
     
     $('#relative_distance').on('ifUnchecked', function(event) {
-        console.log("相对距离 取消选中");
         canvas.setRelativeDistance(false);
     });
     
     $('#absolute_margin').on('ifChecked', function(event) {
-        console.log("绝对距离 选中");
         canvas.setAbsoluteMargin(true);
         $('#relative_distance').iCheck('uncheck');
     });
     
     $('#absolute_margin').on('ifUnchecked', function(event) {
         canvas.setAbsoluteMargin(false);
-        console.log("绝对距离 取消选中");
     });
     
     $('#zone_size').on('ifChecked', function(event) {
         canvas.setZoneSize(true);
-        console.log("区域边界 选中");
     });
     
     $('#zone_size').on('ifUnchecked', function(event) {
         canvas.setZoneSize(false);
-        console.log("区域边界 取消选中");
     });
     
     $('#crown_height').on('ifChecked', function(event) {
         canvas.setCrownHeight(true);
-        console.log("圆弧高度 选中");
     });
     
     $('#crown_height').on('ifUnchecked', function(event) {
         canvas.setCrownHeight(false);
-        console.log("圆弧高度 取消选中");
     });
     
     
@@ -310,10 +302,8 @@ $(function() {
         if(e.keyCode === 13) {
             var sign = 0;
             if($('#bulge_backoff_selects').val() === '1') {
-                console.log('凹进');
                 sign = -1;
             } else {
-                console.log('凸出');
                 sign = 1;
             }
             canvas.setAreaHeight(sign, $(this).val());
