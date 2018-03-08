@@ -2,7 +2,7 @@ var ScaleMouse = function(x, y) {
     return [(x - Globals.Offset.mX) / Globals.Scale, (y - Globals.Offset.mY) / Globals.Scale];
 }
 
-function Canvas(name) {
+function Canvas(name, shape) {
     this._canvas                = document.getElementById(name);
     this._mFloor                = new Floor();
     this._mRenderer             = new Renderer();
@@ -26,17 +26,20 @@ function Canvas(name) {
     
     this._mRenderer.init(this._canvas);
     this.resize(this._canvas.width, this._canvas.height);
-    this._initialize();
+    this._initialize(shape);
 }
+//Initialize as an array of points, which is type of Vec2
+Canvas.prototype._initialize = function(points) {
+    if (!points) {
+        points = [];
+        points.push(new Vec2(0, 0));
+        points.push(new Vec2(800, 0));
+        points.push(new Vec2(800, 400));
+        points.push(new Vec2(400, 400));
+        points.push(new Vec2(400, 800));
+        points.push(new Vec2(0, 800));
+    }
 
-Canvas.prototype._initialize = function() {
-    var points = [];
-    points.push(new Vec2(0, 0));
-    points.push(new Vec2(800, 0));
-    points.push(new Vec2(800, 400));
-    points.push(new Vec2(400, 400));
-    points.push(new Vec2(400, 800));
-    points.push(new Vec2(0, 800));
     var poly = new Polygon(points);
     
     this._mElmentDrawer.add(poly.getEdges());
