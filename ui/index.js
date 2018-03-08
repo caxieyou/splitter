@@ -334,5 +334,5 @@ $(function() {
         canvas.resize($('.canvas-container').width(), $('.canvas-container').height());
         savedOffset.copy(Globals.Offset);
         canvas.render();
-    }
+    };
 });
