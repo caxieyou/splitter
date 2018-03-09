@@ -318,280 +318,227 @@ Renderer = function () {
         this.textBlank =[];
     }
     
-   this.drawArea = function(outputOrigin, shadow) {
-			var borderPoints = [];
-			var ctx = this.ctx;
-			ctx.beginPath();
-			var output = ScaleOutput(outputOrigin);
-			var prevPoint;
-			var counterclockwise;
-			for(var i = 0, length = output.mOutline.edges.length; i < length; i++) {
-				var edge = output.mOutline.edges[i],
-					next = output.mOutline.edges[(i + 1) % length],
-					prev = output.mOutline.edges[i - 1 < 0 ? length - 1 : i - 1],
-					nextSP = next.mStart,
-					nextEP = next.mEnd,
-					prevSP = prev.mStart,
-					prevEP = prev.mEnd,
-					p = undefined;
-	
-				if(next.constructor == Curve) {
-					nextSP = this._rotatePoint({
-						x: next.mCenter.mX + next.mRadius,
-						y: next.mCenter.mY
-					}, next.mCenter, next.mStartAngle);
-					nextEP = this._rotatePoint({
-						x: next.mCenter.mX + next.mRadius,
-						y: next.mCenter.mY
-					}, next.mCenter, next.mStartAngle + next.mArcAngle);
-				}
-	
-				if(prev.constructor == Curve) {
-					prevSP = this._rotatePoint({
-						x: prev.mCenter.mX + prev.mRadius,
-						y: prev.mCenter.mY
-					}, prev.mCenter, prev.mStartAngle);
-					prevEP = this._rotatePoint({
-						x: prev.mCenter.mX + prev.mRadius,
-						y: prev.mCenter.mY
-					}, prev.mCenter, prev.mStartAngle + prev.mArcAngle);
-				}
-	
+    this.drawArea = function(outputOrigin, shadow) {
+        var ctx = this.ctx;
+        ctx.beginPath();
+        var output = ScaleOutput(outputOrigin);
+        var prevPoint;
+        var counterclockwise;
+        for (var i = 0, length = output.mOutline.edges.length; i < length; i++) {
+            var edge = output.mOutline.edges[i],
+                next = output.mOutline.edges[(i + 1) % length],
+                prev = output.mOutline.edges[i - 1 < 0 ? length - 1 : i- 1 ],
+                nextSP = next.mStart,
+                nextEP = next.mEnd,
+                prevSP = prev.mStart,
+                prevEP = prev.mEnd,                
+                p = undefined;
+
+            if (next.constructor == Curve) {
+                nextSP = this._rotatePoint({
+                    x: next.mCenter.mX + next.mRadius,
+                    y: next.mCenter.mY
+                }, next.mCenter, next.mStartAngle);
+                nextEP = this._rotatePoint({
+                    x: next.mCenter.mX + next.mRadius,
+                    y: next.mCenter.mY
+                }, next.mCenter, next.mStartAngle + next.mArcAngle);
+            }
+
+            if (prev.constructor == Curve) {
+                prevSP = this._rotatePoint({
+                    x: prev.mCenter.mX + prev.mRadius,
+                    y: prev.mCenter.mY
+                }, prev.mCenter, prev.mStartAngle);
+                prevEP = this._rotatePoint({
+                    x: prev.mCenter.mX + prev.mRadius,
+                    y: prev.mCenter.mY
+                }, prev.mCenter, prev.mStartAngle + prev.mArcAngle);
+            }
+            
+            //过滤不相连的线段
+            if (edge.constructor == Edge) {
+//				if((!this._isClose(edge.mStart,nextSP) && !this._isClose(edge.mEnd,nextSP) && !this._isClose(edge.mStart,nextEP) && !this._isClose(edge.mEnd,nextEP)) && (!this._isClose(edge.mStart,prevSP) && !this._isClose(edge.mEnd,prevSP) && !this._isClose(edge.mStart,prevEP) && !this._isClose(edge.mEnd,prevEP)))
+//           		continue;              	
+//				if((!this._isClose(edge.mStart,nextSP) && !this._isClose(edge.mStart,nextEP) && !this._isClose(edge.mStart,prevSP) && !this._isClose(edge.mStart,prevEP)) || (!this._isClose(edge.mEnd,nextSP) && !this._isClose(edge.mEnd,nextEP) && !this._isClose(edge.mEnd,prevSP) && !this._isClose(edge.mEnd,prevEP)))
+				if(this._checkCorrelated(edge.mStart, edge.mEnd, nextSP, nextEP, prevSP, prevEP))
+             		continue;
+                
+                if (prevPoint) {
+                    if (this._isClose(edge.mStart, prevPoint))
+                        p = edge.mEnd;
+                    else
+                        p = edge.mStart;
+                } else {
+                    if (this._isClose(edge.mStart, nextSP) || this._isClose(edge.mStart, nextEP))
+                        p = edge.mStart;
+                    else if (this._isClose(edge.mEnd, nextEP) || this._isClose(edge.mEnd, nextSP))
+                        p = edge.mEnd;
+                }
+                
+
+
+                if (p) {
+                    prevPoint = p;
+                    if (i == 0)
+                        ctx.moveTo(p.mX, p.mY);
+                    else
+                        ctx.lineTo(p.mX, p.mY);
+                }
+            } 
+            else if (edge.constructor == Curve) {
+                
+                var sp = this._rotatePoint({
+                        x: edge.mCenter.mX + edge.mRadius,
+                        y: edge.mCenter.mY
+                    }, edge.mCenter, edge.mStartAngle),
+                    ep = this._rotatePoint({
+                        x: edge.mCenter.mX + edge.mRadius,
+                        y: edge.mCenter.mY
+                    }, edge.mCenter, edge.mStartAngle + edge.mArcAngle);
+                    
 				//过滤不相连的线段
-				if(edge.constructor == Edge) {
-					//				if((!this._isClose(edge.mStart,nextSP) && !this._isClose(edge.mEnd,nextSP) && !this._isClose(edge.mStart,nextEP) && !this._isClose(edge.mEnd,nextEP)) && (!this._isClose(edge.mStart,prevSP) && !this._isClose(edge.mEnd,prevSP) && !this._isClose(edge.mStart,prevEP) && !this._isClose(edge.mEnd,prevEP)))
-					//           		continue;              	
-					//				if((!this._isClose(edge.mStart,nextSP) && !this._isClose(edge.mStart,nextEP) && !this._isClose(edge.mStart,prevSP) && !this._isClose(edge.mStart,prevEP)) || (!this._isClose(edge.mEnd,nextSP) && !this._isClose(edge.mEnd,nextEP) && !this._isClose(edge.mEnd,prevSP) && !this._isClose(edge.mEnd,prevEP)))
-					if(this._checkCorrelated(edge.mStart, edge.mEnd, nextSP, nextEP, prevSP, prevEP))
-						continue;
-	
-					if(prevPoint) {
-						if(this._isClose(edge.mStart, prevPoint))
-							p = edge.mEnd;
-						else
-							p = edge.mStart;
-					} else {
-						if(this._isClose(edge.mStart, nextSP) || this._isClose(edge.mStart, nextEP))
-							p = edge.mStart;
-						else if(this._isClose(edge.mEnd, nextEP) || this._isClose(edge.mEnd, nextSP))
-							p = edge.mEnd;
-					}
-	
-					if(p) {
-						prevPoint = p;
-						if(i == 0)
-							ctx.moveTo(p.mX, p.mY);
-						else
-							ctx.lineTo(p.mX, p.mY);
-						borderPoints.push({
-							x: p.mX,
-							y: p.mY
-						});
-					}
-				} else if(edge.constructor == Curve) {
-	
-					var sp = this._rotatePoint({
-							x: edge.mCenter.mX + edge.mRadius,
-							y: edge.mCenter.mY
-						}, edge.mCenter, edge.mStartAngle),
-						ep = this._rotatePoint({
-							x: edge.mCenter.mX + edge.mRadius,
-							y: edge.mCenter.mY
-						}, edge.mCenter, edge.mStartAngle + edge.mArcAngle);
-	
-					//过滤不相连的线段
-					//				if((!this._isClose(sp,nextSP) && !this._isClose(ep,nextSP) && !this._isClose(sp,nextEP) && !this._isClose(ep,nextEP)) && (!this._isClose(sp,prevSP) && !this._isClose(ep,prevSP) && !this._isClose(sp,prevEP) && !this._isClose(ep,prevEP)))
-					//           		continue;   
-					//           		if((!this._isClose(sp,nextSP) && !this._isClose(sp,nextEP) && !this._isClose(sp,prevSP) && !this._isClose(sp,prevEP))|| (!this._isClose(ep,nextSP) && !this._isClose(ep,nextEP) && !this._isClose(ep,prevSP) && !this._isClose(ep,prevEP)))            
-					//           		continue;
-	
-					if(this._checkCorrelated(sp, ep, nextSP, nextEP, prevSP, prevEP))
-						continue;
-	
-					var endAngle = edge.mArcAngle + edge.mStartAngle;
-					var counterclockwise;
-					var sAngle = edge.mStartAngle;
-					var eAngle = endAngle;
-	
-					if(prevPoint) {
-						if(this._isClose(prevPoint, sp)) {
-							counterclockwise = endAngle > edge.mStartAngle ? false : true;
-							ctx.arc(edge.mCenter.mX, edge.mCenter.mY, edge.mRadius, edge.mStartAngle, endAngle, counterclockwise); //false,endAngle < 0 ? true:false
-							prevPoint = ep;
-						} else {
-							counterclockwise = endAngle > edge.mStartAngle ? true : false
-							sAngle = endAngle;
-							eAngle = edge.mStartAngle;
-							ctx.arc(edge.mCenter.mX, edge.mCenter.mY, edge.mRadius, endAngle, edge.mStartAngle, counterclockwise); //true,endAngle < 0 ? false:true
-							prevPoint = sp;
-	
-						}
-					} else {
-						if(!this._isClose(ep, nextSP) && !this._isClose(ep, nextEP)) {
-							counterclockwise = endAngle > edge.mStartAngle ? true : false;
-							sAngle = endAngle;
-							eAngle = edge.mStartAngle;
-							ctx.arc(edge.mCenter.mX, edge.mCenter.mY, edge.mRadius, endAngle, edge.mStartAngle, counterclockwise); //true,endAngle < 0 ? false:true
-							prevPoint = sp;
-						} else {
-							counterclockwise = endAngle > edge.mStartAngle ? false : true;
-							ctx.arc(edge.mCenter.mX, edge.mCenter.mY, edge.mRadius, edge.mStartAngle, endAngle, counterclockwise); //false,endAngle < 0 ? true:false
-							prevPoint = ep;
-						}
-					}
-					borderPoints.push(this.copyCurve(edge, sAngle, eAngle, counterclockwise));
-	
-				}
-			}
-			ctx.fillStyle = Style.Fill.color;
-			ctx.fill();
-			ctx.closePath();
-			var holeDatas = [];
-			if(output.mHoles.length > 0) {
-	
-				ctx.globalCompositeOperation = "destination-out";
-				for(var i = 0; i < output.mHoles.length; i++) {
-					var prevPos = undefined,
-						next, nextSP, nextEP;
-					var hole = output.mHoles[i];
-					ctx.beginPath();
-	
-					var holePoints = [];
-					for(var j = 0; j < hole.edges.length; j++) {
-						var hedge = hole.edges[j],
-							next = hole.edges[(j + 1) % hole.edges.length],
-							prev = hole.edges[j - 1 < 0 ? hole.edges.length - 1 : j - 1],
-							nextSP = next.mStart,
-							nextEP = next.mEnd,
-							prevSP = prev.mStart,
-							prevEP = prev.mEnd;
-	
-						if(next.constructor == Curve) {
-							nextSP = this._rotatePoint({
-								x: next.mCenter.mX + next.mRadius,
-								y: next.mCenter.mY
-							}, next.mCenter, next.mStartAngle);
-							nextEP = this._rotatePoint({
-								x: next.mCenter.mX + next.mRadius,
-								y: next.mCenter.mY
-							}, next.mCenter, next.mStartAngle + next.mArcAngle);
-						}
-	
-						if(prev.constructor == Curve) {
-							prevSP = this._rotatePoint({
-								x: prev.mCenter.mX + prev.mRadius,
-								y: prev.mCenter.mY
-							}, prev.mCenter, prev.mStartAngle);
-							prevEP = this._rotatePoint({
-								x: prev.mCenter.mX + prev.mRadius,
-								y: prev.mCenter.mY
-							}, prev.mCenter, prev.mStartAngle + prev.mArcAngle);
-						}
-	
-						if(hedge.constructor == Edge) {
-							//过滤不相连的线段
-							//						if((!this._isClose(hedge.mStart,nextSP) && !this._isClose(hedge.mEnd,nextSP) && !this._isClose(hedge.mStart,nextEP) && !this._isClose(hedge.mEnd,nextEP)) && (!this._isClose(hedge.mStart,prevSP) && !this._isClose(hedge.mEnd,prevSP) && !this._isClose(hedge.mStart,prevEP) && !this._isClose(hedge.mEnd,prevEP)))
-							//                   		continue;
-	
-							//						if((!this._isClose(hedge.mStart,nextSP) && !this._isClose(hedge.mStart,nextEP) && !this._isClose(hedge.mStart,prevSP) && !this._isClose(hedge.mStart,prevEP)) || (!this._isClose(hedge.mEnd,nextSP) && !this._isClose(hedge.mEnd,nextEP) && !this._isClose(hedge.mEnd,prevSP) && !this._isClose(hedge.mEnd,prevEP)))
-							//                   		continue;
-							if(this._checkCorrelated(hedge.mStart, hedge.mEnd, nextSP, nextEP, prevSP, prevEP))
-								continue;
-	
-							if(prevPos) {
-								if(this._isClose(hedge.mStart, prevPos))
-									p = hedge.mEnd;
-								else
-									p = hedge.mStart;
-							} else {
-								if(this._isClose(hedge.mStart, nextSP) || this._isClose(hedge.mStart, nextEP))
-									p = hedge.mStart;
-								else if(this._isClose(hedge.mEnd, nextEP) || this._isClose(hedge.mEnd, nextSP))
-									p = hedge.mEnd;
-							}
-	
-							if(p) {
-								prevPos = p;
-								if(j == 0)
-									ctx.moveTo(p.mX, p.mY);
-								else
-									ctx.lineTo(p.mX, p.mY);
-							}
-							holePoints.push({
-								x: p.mX,
-								y: p.mY
-							});
-	
-						} else if(hedge.constructor == Curve) {
-	
-							var sp = this._rotatePoint({
-									x: hedge.mCenter.mX + hedge.mRadius,
-									y: hedge.mCenter.mY
-								}, hedge.mCenter, hedge.mStartAngle),
-								ep = this._rotatePoint({
-									x: hedge.mCenter.mX + hedge.mRadius,
-									y: hedge.mCenter.mY
-								}, hedge.mCenter, hedge.mStartAngle + hedge.mArcAngle);
-	
-							
-							//						if((!this._isClose(sp,nextSP) && !this._isClose(ep,nextSP) && !this._isClose(sp,nextEP) && !this._isClose(ep,nextEP)) && (!this._isClose(sp,prevSP) && !this._isClose(ep,prevSP) && !this._isClose(sp,prevEP) && !this._isClose(ep,prevEP)))
-							//                   		continue;             
-							//                   		if((!this._isClose(sp,nextSP) && !this._isClose(sp,nextEP) && !this._isClose(sp,prevSP) && !this._isClose(sp,prevEP))|| (!this._isClose(ep,nextSP) && !this._isClose(ep,nextEP) && !this._isClose(ep,prevSP) && !this._isClose(ep,prevEP)))            
-							//                   		continue;
-							//过滤不相连的线段
-							if(this._checkCorrelated(sp, ep, nextSP, nextEP, prevSP, prevEP))
-								continue;
-	
-							var endAngle = hedge.mArcAngle + hedge.mStartAngle;
-							var counterclockwise;
-							if((prevPos != undefined && !this._isClose(prevPos, sp)) || (!this._isClose(ep, nextEP) && !this._isClose(ep, nextSP))) {
-								counterclockwise = endAngle > hedge.mStartAngle ? true : false;
-								ctx.arc(hedge.mCenter.mX, hedge.mCenter.mY, hedge.mRadius, endAngle, hedge.mStartAngle, counterclockwise);
-								holePoints.push(this.copyCurve(hedge, endAngle, hedge.mStartAngle, counterclockwise));
-								prevPos = sp;
-							} else {
-								counterclockwise = endAngle > hedge.mStartAngle ? false : true;
-								ctx.arc(hedge.mCenter.mX, hedge.mCenter.mY, hedge.mRadius, hedge.mStartAngle, endAngle, counterclockwise);
-								holePoints.push(this.copyCurve(hedge, hedge.mStartAngle, endAngle, counterclockwise));
-								prevPos = ep;
-							}
-	
-							
-						}
-						
-					}
-	
-					ctx.fillStyle = '#FFF';
-					ctx.fill();
-					ctx.closePath();
-					holeDatas.push(holePoints);
-				}
-				ctx.globalCompositeOperation = "source-over";
-	
-			}
-			
-			return {borderPoints:borderPoints,holes:holeDatas};
-			console.log({borderPoints:borderPoints,holes:holeDatas});
-		}
-	
-		this.copyCurve = function(edge, sAngle, eAngle, counterclockwise) {
-				var points = [];
-				if(THREE !== undefined){
-					var points = new THREE.ArcCurve(edge.mCenter.mX, edge.mCenter.mY, edge.mRadius, sAngle, eAngle,counterclockwise).getPoints(10);
-					if(counterclockwise)
-						points.reverse();
-				}
-				return {
-					isCurve: true,
-					x: edge.mCenter.mX,
-					y: edge.mCenter.mY,
-					radius: edge.mRadius,
-					sAngle: sAngle,
-					eAngle: eAngle,
-					counterclockwise: counterclockwise,
-					points:points
-				};
-			}
+//				if((!this._isClose(sp,nextSP) && !this._isClose(ep,nextSP) && !this._isClose(sp,nextEP) && !this._isClose(ep,nextEP)) && (!this._isClose(sp,prevSP) && !this._isClose(ep,prevSP) && !this._isClose(sp,prevEP) && !this._isClose(ep,prevEP)))
+//           		continue;   
+//           		if((!this._isClose(sp,nextSP) && !this._isClose(sp,nextEP) && !this._isClose(sp,prevSP) && !this._isClose(sp,prevEP))|| (!this._isClose(ep,nextSP) && !this._isClose(ep,nextEP) && !this._isClose(ep,prevSP) && !this._isClose(ep,prevEP)))            
+//           		continue;
+             		
+				if(this._checkCorrelated(sp, ep, nextSP, nextEP, prevSP, prevEP))
+             		continue;             	
+             		
+                var endAngle = edge.mArcAngle + edge.mStartAngle;
+                if (prevPoint) {
+                    if (this._isClose(prevPoint, sp)) {
+                        ctx.arc(edge.mCenter.mX, edge.mCenter.mY, edge.mRadius, edge.mStartAngle, endAngle, endAngle > edge.mStartAngle ? false : true);//false,endAngle < 0 ? true:false
+                        prevPoint = ep;
+                    }
+                    else {
+                        ctx.arc(edge.mCenter.mX, edge.mCenter.mY, edge.mRadius, endAngle, edge.mStartAngle, endAngle > edge.mStartAngle ? true : false);//true,endAngle < 0 ? false:true
+                        prevPoint = sp;
+                    }
+                } else {
+                    if (!this._isClose(ep, nextSP) && !this._isClose(ep, nextEP)) {
+                        ctx.arc(edge.mCenter.mX, edge.mCenter.mY, edge.mRadius, endAngle, edge.mStartAngle, endAngle > edge.mStartAngle ? true : false);//true,endAngle < 0 ? false:true
+                        prevPoint = sp;
+                    } else {
+                        ctx.arc(edge.mCenter.mX, edge.mCenter.mY, edge.mRadius, edge.mStartAngle, endAngle, endAngle > edge.mStartAngle ? false : true);//false,endAngle < 0 ? true:false
+                        prevPoint = ep;
+                    }
+                }
+            }
+        }
+        ctx.fillStyle = Style.Fill.color;
+        ctx.fill();
+        ctx.closePath();
+
+        if (output.mHoles.length > 0) {
+
+            ctx.globalCompositeOperation = "destination-out";
+            for (var i = 0; i < output.mHoles.length; i++) {
+                var prevPos = undefined, next, nextSP, nextEP;
+                var hole = output.mHoles[i];
+                ctx.beginPath();
+                for (var j = 0; j < hole.edges.length; j++) {
+                    var hedge = hole.edges[j],
+	                    next = hole.edges[(j + 1) % hole.edges.length],
+	                    prev = hole.edges[j - 1 < 0 ? hole.edges.length - 1 : j - 1 ],
+	                    nextSP = next.mStart,
+	                    nextEP = next.mEnd,
+	                    prevSP = prev.mStart,
+	                    prevEP = prev.mEnd;
+
+                    if (next.constructor == Curve) {
+                        nextSP = this._rotatePoint({
+                            x: next.mCenter.mX + next.mRadius,
+                            y: next.mCenter.mY
+                        }, next.mCenter, next.mStartAngle);
+                        nextEP = this._rotatePoint({
+                            x: next.mCenter.mX + next.mRadius,
+                            y: next.mCenter.mY
+                        }, next.mCenter, next.mStartAngle + next.mArcAngle);
+                    }
+                    
+                    if (prev.constructor == Curve) {
+                        prevSP = this._rotatePoint({
+                            x: prev.mCenter.mX + prev.mRadius,
+                            y: prev.mCenter.mY
+                        }, prev.mCenter, prev.mStartAngle);
+                        prevEP = this._rotatePoint({
+                            x: prev.mCenter.mX + prev.mRadius,
+                            y: prev.mCenter.mY
+                        }, prev.mCenter, prev.mStartAngle + prev.mArcAngle);
+                    }
+
+                    if (hedge.constructor == Edge) {
+                    	//过滤不相连的线段
+//						if((!this._isClose(hedge.mStart,nextSP) && !this._isClose(hedge.mEnd,nextSP) && !this._isClose(hedge.mStart,nextEP) && !this._isClose(hedge.mEnd,nextEP)) && (!this._isClose(hedge.mStart,prevSP) && !this._isClose(hedge.mEnd,prevSP) && !this._isClose(hedge.mStart,prevEP) && !this._isClose(hedge.mEnd,prevEP)))
+//                   		continue;
+
+//						if((!this._isClose(hedge.mStart,nextSP) && !this._isClose(hedge.mStart,nextEP) && !this._isClose(hedge.mStart,prevSP) && !this._isClose(hedge.mStart,prevEP)) || (!this._isClose(hedge.mEnd,nextSP) && !this._isClose(hedge.mEnd,nextEP) && !this._isClose(hedge.mEnd,prevSP) && !this._isClose(hedge.mEnd,prevEP)))
+//                   		continue;
+					if(this._checkCorrelated(hedge.mStart, hedge.mEnd, nextSP, nextEP, prevSP, prevEP))
+	             		continue;
+
+		                if (prevPos) {
+		                    if (this._isClose(hedge.mStart, prevPos))
+		                        p = hedge.mEnd;
+		                    else
+		                        p = hedge.mStart;
+		                } else {
+		                    if (this._isClose(hedge.mStart, nextSP) || this._isClose(hedge.mStart, nextEP))
+		                        p = hedge.mStart;
+		                    else if (this._isClose(hedge.mEnd, nextEP) || this._isClose(hedge.mEnd, nextSP))
+		                        p = hedge.mEnd;
+		                }
+		
+		                if (p) {
+		                    prevPos = p;
+		                    if (j == 0)
+		                        ctx.moveTo(p.mX, p.mY);
+		                    else
+		                        ctx.lineTo(p.mX, p.mY);
+		                }                        
+                        
+                    } else if (hedge.constructor == Curve) {
+                        var sp = this._rotatePoint({
+                                x: hedge.mCenter.mX + hedge.mRadius,
+                                y: hedge.mCenter.mY
+                            }, hedge.mCenter, hedge.mStartAngle),
+                            ep = this._rotatePoint({
+                                x: hedge.mCenter.mX + hedge.mRadius,
+                                y: hedge.mCenter.mY
+                            }, hedge.mCenter, hedge.mStartAngle + hedge.mArcAngle);
+                            
+						//过滤不相连的线段
+//						if((!this._isClose(sp,nextSP) && !this._isClose(ep,nextSP) && !this._isClose(sp,nextEP) && !this._isClose(ep,nextEP)) && (!this._isClose(sp,prevSP) && !this._isClose(ep,prevSP) && !this._isClose(sp,prevEP) && !this._isClose(ep,prevEP)))
+//                   		continue;             
+//                   		if((!this._isClose(sp,nextSP) && !this._isClose(sp,nextEP) && !this._isClose(sp,prevSP) && !this._isClose(sp,prevEP))|| (!this._isClose(ep,nextSP) && !this._isClose(ep,nextEP) && !this._isClose(ep,prevSP) && !this._isClose(ep,prevEP)))            
+//                   		continue;
+	 					if(this._checkCorrelated(sp, ep, nextSP, nextEP, prevSP, prevEP))
+		             		continue;
+	             		
+                        var endAngle = hedge.mArcAngle + hedge.mStartAngle;
+
+                        if ((prevPos != undefined && !this._isClose(prevPos, sp)) || (!this._isClose(ep, nextEP) &&  !this._isClose(ep, nextSP) )){
+                            ctx.arc(hedge.mCenter.mX, hedge.mCenter.mY, hedge.mRadius, endAngle, hedge.mStartAngle, endAngle > hedge.mStartAngle ? true : false);
+                            prevPos = sp;
+                        }	
+                        else {
+                            ctx.arc(hedge.mCenter.mX, hedge.mCenter.mY, hedge.mRadius, hedge.mStartAngle, endAngle, endAngle > hedge.mStartAngle ? false:true);
+                            prevPos = ep;
+                        }
+                    }
+                }
+
+                ctx.fillStyle = '#FFF';
+                ctx.fill();
+                ctx.closePath();
+
+            }
+            ctx.globalCompositeOperation = "source-over";
+           
+        }
+    }
     
     this.drawAreaDots = function(output) {
         for (var i = 0; i < output.length; i++) {
