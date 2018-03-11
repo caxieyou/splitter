@@ -80,7 +80,7 @@ Corner.prototype.updatePosition = function(x, y)
 
                 if (curve instanceof Arc) {
                     var edge = curve.getCurve(); 
-                    if (edge.getDistance(new Vec2(x, y) < 5)) {
+                    if (edge.getDistance(new Vec2(x, y)) < 5) {
                         return true;
                     }
                 }
