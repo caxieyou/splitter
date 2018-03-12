@@ -26,7 +26,7 @@ $(function() {
         $('#props_wrap').css('left', left).css('top', top);
     });
     $(document).on('click', '#main_container .display', function(event) {
-        let ifShow = $(this).data('ifshow');
+        var ifShow = $(this).data('ifshow');
         if (ifShow) {
             $(this).html('隐藏');
             $(this).data('ifshow', false);

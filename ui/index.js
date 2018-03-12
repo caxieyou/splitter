@@ -330,6 +330,21 @@ $(function() {
     var container = $('.canvas-container')[0],
         $canvas = $("#splitter_container #canvas");
 
+    // 导入数据
+    $('#splitter_container').on('click', '.save', function () {
+        console.log('input');
+        var inputData = {
+            roomeID: 10086,
+            floorID: 12580
+        };
+        console.log(JSON.stringify(inputData));
+    });
+
+    // 导出数据
+    $('#splitter_container').on('click', '.quit', function () {
+        console.log('output');
+    });
+
     window.onresize = function(e){
         canvas.resize($('.canvas-container').width(), $('.canvas-container').height());
         savedOffset.copy(Globals.Offset);

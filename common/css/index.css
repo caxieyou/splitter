@@ -57,11 +57,39 @@ body {
 
 #splitter_container .head-wrap {
     flex: 0 0 60px;
-    line-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding-left: 20px;
     font-size: 20px;
     background-color: #333A4D;
     color: #A2AAC1;
+}
+
+#splitter_container .head-wrap .quit-splitter{
+    margin-right: 20px;
+    display: flex;
+}
+
+#splitter_container .head-wrap .quit-splitter div{
+    cursor: pointer;
+}
+
+#splitter_container .head-wrap .quit-splitter i{
+    float: left;
+    font-size: 20px;
+}
+
+#splitter_container .head-wrap .quit-splitter .quit{
+    margin-left: 15px;
+}
+
+#splitter_container .head-wrap .quit-splitter .quit i{
+    font-size: 24px;
+}
+
+#splitter_container .head-wrap .quit-splitter span {
+    margin-left: 5px;
 }
 
 #splitter_container .main-wrap {
