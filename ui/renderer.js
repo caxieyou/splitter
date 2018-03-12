@@ -289,8 +289,10 @@ Renderer = function () {
         this.ctx.closePath();
     }
     
-    /*
+    
     this._drawDashLine = function (p0, p1) {
+    	ScalePoint(p0);
+    	ScalePoint(p1);
         var dashLen = 5,
             xpos = p1.x - p0.x,
             ypos = p1.y - p0.y,
@@ -308,7 +310,7 @@ Renderer = function () {
         this.ctx.stroke();
         this.ctx.closePath();
     }
-    */
+    
     
     this.clear = function() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -917,25 +919,33 @@ Renderer = function () {
             return tt;
         }
     }
-    /*
-	///
-	// 绘制带端点的线段
-	// @param {Object} p0 起始点
-	// @param {Object} p1 结束点
-	// @param {Object} callbackFun 编辑回调函数
-	///
+    
+	
+	/**
+	 * 绘制带端点的线段
+	 * @param {Object} p0 起始点
+	 * @param {Object} p1 结束点
+	 * @param {Object} callbackFun 编辑回调函数
+	 */
     this.drawSegment = function(p0, p1, callbackFun) {
-
+    	var sp0 = this._copyPoint(p0);
+    	var sp1 = this._copyPoint(p1);
         this._drawDashLine(p0, p1);
-        this.drawCorner(p0, 3, "#a2a2a2");
-        this.drawCorner(p1, 3, "#a2a2a2", true);
+        this.drawCorner(sp0, 3, "#a2a2a2");
+        this.drawCorner(sp1, 3, "#a2a2a2", true);
+
         var center = new Vector3((p0.x+p1.x)/2, (p0.y+p1.y)/2, 0);
         var pos = this._rotateVector(center,new Vector3().subVectors(new Vector3(p0.x,p0.y,0),center).normalize(),Math.PI / 2).multiplyScalar(20).add(center);
         var tt = this._makeTextInput(pos, Math.round(this._getPointsDistance(p0, p1)), callbackFun);
+        tt.value = Math.round(this._getPointsDistance(p0, p1));
+        tt.select();
         //this.textBlank.push(tt);
         return tt;
     }
-    */
+    this._copyPoint = function(p){
+    	return {x:p.x,y:p.y};
+    }
+    
     
 	/***
 	 * 绘制文本
