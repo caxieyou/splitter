@@ -14,7 +14,7 @@ function Canvas(name, shape) {
     this._mUpdateElment         = null;     //需要调整位置，移动的图元
     this._mProcessElement       = null;     //需要改变性质的图元（直线变曲线，分裂等）
     this._mType                 = null;
-    
+    this._mProfile              = shape;
     this.toggleHeightUICallback = null;
     
     this._flags = {
@@ -29,18 +29,18 @@ function Canvas(name, shape) {
     this._initialize(shape);
 }
 //Initialize as an array of points, which is type of Vec2
-Canvas.prototype._initialize = function(points) {
-    if (!points) {
-        points = [];
-        points.push(new Vec2(0, 0));
-        points.push(new Vec2(800, 0));
-        points.push(new Vec2(800, 400));
-        points.push(new Vec2(400, 400));
-        points.push(new Vec2(400, 800));
-        points.push(new Vec2(0, 800));
+Canvas.prototype._initialize = function() {
+    if (!this._mProfile) {
+        this._mProfile = [];
+        this._mProfile.push(new Vec2(0, 0));
+        this._mProfile.push(new Vec2(800, 0));
+        this._mProfile.push(new Vec2(800, 400));
+        this._mProfile.push(new Vec2(400, 400));
+        this._mProfile.push(new Vec2(400, 800));
+        this._mProfile.push(new Vec2(0, 800));
     }
 
-    var poly = new Polygon(points);
+    var poly = new Polygon(this._mProfile);
     
     this._mElmentDrawer.add(poly.getEdges());
     this._mFloor.setProfile(poly);
@@ -469,6 +469,18 @@ Canvas.prototype.render = function() {
     //画选中点的边界的长度
     this._mRenderer.drawCornerDimentions(this._mUpdateElment);
     
+}
+
+Canvas.prototype.dump = function() {
+    return this._mFloor.dump();
+}
+
+Canvas.prototype.load = function(data) {
+    var res = this._mFloor.transferJsonToGeom(data);
+    this._mProfile = res.profile;
+    this.clear();
+    this._mElmentDrawer.add(res.geoms, true);
+    this.render();
 }
 
 Canvas.prototype.clear = function() {

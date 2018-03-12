@@ -256,8 +256,8 @@ function ElementDrawer(floor) {
     this.mCircle = new _CircleOp();
 }
 
-ElementDrawer.prototype.add = function (polygon) {
-    var splitter = new Splitter(polygon, this.mFloor, this.mFloor.generatePolyTree());
+ElementDrawer.prototype.add = function (polygon, skip) {
+    var splitter = new Splitter(polygon, this.mFloor, this.mFloor.generatePolyTree(), skip);
     splitter.execute();
     this.mFloor.Analysis();
 }

@@ -1,7 +1,8 @@
-function Splitter(param1, param2, param3) {
+function Splitter(param1, param2, param3, isSkipCheck) {
     this.mCircle = param1;
     this.mFloor = param2;
     this.mPolytree = param3;
+    this.mSkip = isSkipCheck;
 }
 
 Splitter.DISTANCE_TOLERANCE = 1.0E-5;
@@ -307,19 +308,32 @@ Splitter.prototype.execute = function() {
     }
     
     var _loc1_, _loc2_ = [];
-    
-    if (this.mCircle instanceof Circle) {
+    if (this.mSkip) {
+        _loc1_ = this.mCircle;
+    } else if (this.mCircle instanceof Circle) {
         _loc1_ = this.getSubCurvesCircleSplitByCurves(this.mCircle,this.mFloor.mElements);
     } else if (this.mCircle instanceof Polygon || this.mCircle instanceof Array) {
         _loc1_ = this.getSubSegmentsSplitByCurves(this.mCircle,this.mFloor.mElements);
     } 
     
+    var _loc4_ = null;
+    for (var i = 0; i < _loc1_.length; i++) {
+        if (_loc1_[i] instanceof Edge) {
+            _loc4_ = Segment.createSegmentByMyEdge(_loc1_[i]);
+            _loc2_.push(_loc4_);
+        } else {
+            _loc4_ = Arc.copy(_loc1_[i]);
+            _loc2_.push(_loc4_);
+        }
+    }
+    /*
     if (_loc1_[0] instanceof Curve) {
         _loc2_ = this.splitCurvesIntoOneThirdCurves(_loc1_);
     } else if (_loc1_[0] instanceof Edge) {
         _loc2_ = this.splitMyEdgeIntoSegment(_loc1_);
     }
-
+    */
+    
     for (var i = 0; i < _loc2_.length; i++)
     {
         this.addCorner(_loc2_[i].mStart);

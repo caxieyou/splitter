@@ -333,16 +333,16 @@ $(function() {
     // 导入数据
     $('#splitter_container').on('click', '.save', function () {
         console.log('input');
-        var inputData = {
-            roomeID: 10086,
-            floorID: 12580
-        };
-        console.log(JSON.stringify(inputData));
+        var d = JSON.stringify(canvas.dump());
+        var data  = jQuery.parseJSON(d);
+        
+        canvas.load(data);
     });
 
     // 导出数据
     $('#splitter_container').on('click', '.quit', function () {
         console.log('output');
+        console.log(JSON.stringify(canvas.dump()));
     });
 
     window.onresize = function(e){

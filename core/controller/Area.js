@@ -49,6 +49,32 @@ function MyOutput (outline) {
     this.mHoles = [];
 }
 
+MyOutput.prototype.clone = function() {
+    var ret = new MyOutput();
+    ret.mOutline = {
+        edges : []
+    };
+    
+    for (var i = 0; i < this.mOutline.edges.length; i++) {
+        ret.mOutline.edges.push(this.mOutline.edges[i].clone());
+    }
+    
+    
+    for (var i = 0; i < this.mHoles.length; i++) {
+        ret.mHoles[i] = {
+            edges : []
+        };
+        
+        for (var j = 0; j < this.mHoles[i].edges.length; j++) {
+            ret.mHoles[i].edges.push(this.mHoles[i].edges[j].clone());
+        }
+    }
+    
+    
+    
+    return ret;
+}
+
 Area.outputStructures = function(param1, param2) {
     var outline = Area.outputStructure(param1);
     

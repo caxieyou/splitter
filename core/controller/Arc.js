@@ -95,6 +95,25 @@ Arc.prototype.getCurve = function()
     return _loc6_;
 }
 
+Arc.prototype.getGeom = function()
+{
+    var _loc1_ = this.getCircleCenter();
+    if(isNaN(_loc1_.mX) || isNaN(_loc1_.mY))
+    {
+        return new Curve(this.mStart.mPosition.clone(), Arc.TOLERANCE, Arc.TOLERANCE, Arc.TOLERANCE);
+    }
+    var _loc2_ = this.mStart.mPosition.clone().sub(_loc1_).getAngle();
+    var _loc3_ = this.mEnd.mPosition.clone().sub(_loc1_).getAngle();
+    var _loc4_ = _loc3_ - _loc2_;
+    var _loc5_ = _loc1_.distance(this.mStart.mPosition);
+    var _loc6_ = new Curve(_loc1_.clone(),_loc5_,_loc2_,_loc4_);
+  
+    if(!_loc6_.isInsideArcFan(this.mCurvePoint.clone()))
+    {
+        _loc6_.mArcAngle = -1 * MyMath.sign(_loc4_) * (Angle.CONST_2_PI - Math.abs(_loc4_));
+    }
+    return _loc6_;
+}
 
 Arc.prototype.setCornerStartAndEndButHasToBeSame = function(param1, param2)
 {

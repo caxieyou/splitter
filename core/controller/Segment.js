@@ -101,6 +101,11 @@ Segment.prototype.getTheStartEndEdge = function()
     return new Edge(this.mStart.mPosition,this.mEnd.mPosition);
 }
 
+Segment.prototype.getGeom = function()
+{
+    return new Edge(this.mStart.mPosition.clone(),this.mEnd.mPosition.clone());
+}
+
 Segment.prototype.isStartOrEnd = function(param1)
 {
     return param1 == this.mStart || param1 == this.mEnd;

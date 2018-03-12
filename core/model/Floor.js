@@ -440,6 +440,58 @@ Floor.prototype._updateGeoStructure = function() {
     this.mLastHeightRecord = this.mAreaHeightRecord;
 };
 
+Floor.prototype.dump = function() {
+    
+    console.log(this.mOutput);
+    console.log(this.mAreasControllers);
+    
+    var res = {
+        areas : new Array(this.mOutput.length),
+        profile: [],
+        geoms : []
+    }
+    
+    for (var i = 0; i < this.mOutput.length; i++) {
+        res.areas[i] = this.mOutput[i].clone();
+    }
+    
+    for(var i = 0; i < this.mProfile.mOutLines.mVertices.length; i++) {
+        res.profile.push(this.mProfile.mOutLines.mVertices[i].clone());
+    }
+    
+    for(var i = 0; i < this.mElements.length; i++) {
+        if (!this.mElements[i].isBoundry) {
+            res.geoms.push(this.mElements[i].getGeom());
+        }
+    }
+    
+    return res;
+};
+
+Floor.prototype.transferJsonToGeom = function(data) {
+    var res = {
+        geoms : [],
+        profile : []
+    };
+    
+    for (var i = 0; i < data.geoms.length; i++) {
+        var geom = data.geoms[i];
+        
+        if (geom.mStart) {
+            res.geoms.push(new Edge(new Vec2(geom.mStart.mX, geom.mStart.mY), new Vec2(geom.mEnd.mX, geom.mEnd.mY)));
+        } else {
+            res.geoms.push(new Curve(new Vec2(geom.mCenter.mX, geom.mCenter.mY), geom.mRadius, geom.mStartAngle, geom.mArcAngle));
+        }
+        
+    }
+    
+    for (var i = 0; i < data.profile.length; i++) {
+        res.profile.push(new Vec2(data.profile[i].mX, data.profile[i].mY));
+    }
+    
+    return res;
+};
+
 Floor.prototype._removeInvalid = function(output, pass) {
     var sameCountStart = new Array(output.length);
     var sameCountEnd = new Array(output.length);
