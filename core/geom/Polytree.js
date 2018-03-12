@@ -129,7 +129,7 @@ Polytree.prototype.getValidGravityCenter = function()
         xIntersections = Polytree.getX_Intersections1(tempPoly,yVector[j],true, Polytree.TOLERENCE);
         if(xIntersections.length < 2 || isNaN(xIntersections[0]) || isNaN(xIntersections[1]))
         {
-            console.error("xIntersections error!");
+            console.warn("xIntersections error!");
         }
         else
         {
