@@ -289,6 +289,18 @@ Canvas.prototype.setOperationCurve = function() {
     this.render();
 }
 
+Canvas.prototype.deleteFocus = function() {
+    if (this._mSnap.mFocus.controller instanceof Segment || this._mSnap.mFocus.controller instanceof Arc) {
+        this._mProcessElement = this._mSnap.mFocus.controller;
+        this._mFloor.clearPickedArea();
+        this._mElementProcessor.onDelete(this._mProcessElement);
+        this._mProcessElement = null;
+        this._mSnap.clearFocus();
+        this.render();
+    }
+}
+
+
 Canvas.prototype.updateElement = function(x, y){
     [x, y] = ScaleMouse(x, y);
     if (!this._mUpdateElment && this._mSnap.mFocus.controller) {
@@ -468,6 +480,15 @@ Canvas.prototype.render = function() {
     
     //画选中点的边界的长度
     this._mRenderer.drawCornerDimentions(this._mUpdateElment);
+    /*
+    var a = {x: 100, y: 200};
+    var b = {x: 500, y: 500};
+    this._mRenderer.drawSegment(a, b);
+    
+    var c = {x: 100, y: 300};
+    var d = {x: 500, y: 600};
+    this._mRenderer.drawSegment(c, d);
+    */
     
 }
 

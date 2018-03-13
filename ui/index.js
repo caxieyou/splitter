@@ -350,4 +350,10 @@ $(function() {
         savedOffset.copy(Globals.Offset);
         canvas.render();
     };
+    window.addEventListener('keydown', function (e) { 
+        var keyID = e.keyCode ? e.keyCode :e.which; 
+        if (keyID === 8) {
+            canvas.deleteFocus();
+        }
+    } , true); 
 });
