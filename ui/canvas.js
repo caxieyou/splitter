@@ -290,7 +290,9 @@ Canvas.prototype.setOperationCurve = function() {
 }
 
 Canvas.prototype.deleteFocus = function() {
-    if (this._mSnap.mFocus.controller instanceof Segment || this._mSnap.mFocus.controller instanceof Arc) {
+    if (this._mProcessElement) {
+        this.onDelete();
+    } else if (this._mSnap.mFocus.controller instanceof Segment || this._mSnap.mFocus.controller instanceof Arc) {
         this._mProcessElement = this._mSnap.mFocus.controller;
         this._mFloor.clearPickedArea();
         this._mElementProcessor.onDelete(this._mProcessElement);
