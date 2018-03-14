@@ -40,11 +40,19 @@ _LineOp.prototype.clear = function() {
     this._curentLineInvalidPart = null;
 }
 
-_LineOp.prototype.intersect = function(intersects) {
+_LineOp.prototype.intersect = function(intersects, e) {
     for (var i = 0; i < this._lineRecords.length; i++) {
         var edges = this._lineRecords[i]._lineEdges;
         for (var j = 0; j < edges.length; j++) {
             Segment.intersectSub(edges[j], this._currentLine, intersects);
+        }
+    }
+    if (e) {
+        for (var i = 0; i < this._lineRecords.length; i++) {
+            var edges = this._lineRecords[i]._lineEdges;
+            for (var j = 0; j < edges.length; j++) {
+                Segment.intersectSub(edges[j], e, intersects);
+            }
         }
     }
     
@@ -411,8 +419,8 @@ ElementDrawer.prototype.reset = function() {
             curve.isIntersectWithGeometry(e, intersects);
         }
         
-        this.mLine.intersect(intersects);
-        
+        this.mLine.intersect(intersects, e);
+        console.log(intersects);
         var minDis = Number.MAX_VALUE;
         var idx = 0;
         if (intersects.length > 0) {
