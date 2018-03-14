@@ -63,3 +63,16 @@ Utility.DrawCurveHeightCallback = function(dis, canvas, curve) {
     
     canvas.render();
 }
+
+Utility.DrawCircleRadiusCallback = function(dis, canvas) {
+    var edge = canvas._mEdge;
+    var pt1 = edge.getCenter();
+    
+    var dir = new Vec2(edge.mEnd.mX - edge.mStart.mX, edge.mEnd.mY - edge.mStart.mY);
+    dir.normalize();
+    
+    edge.mEnd.addBy(dir.mulBy(dis));
+
+    canvas.createElement();
+    canvas.render();
+}

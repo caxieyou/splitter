@@ -289,29 +289,6 @@ Renderer = function () {
         this.ctx.closePath();
     }
     
-    
-    this._drawDashLine = function (p0, p1) {
-    	ScalePoint(p0);
-    	ScalePoint(p1);
-        var dashLen = 5,
-            xpos = p1.x - p0.x,
-            ypos = p1.y - p0.y,
-            numDashes = Math.floor(Math.sqrt(xpos * xpos + ypos * ypos) / dashLen);
-            
-        this.ctx.beginPath();
-        for (var i = 0; i < numDashes; i++) {
-            if (i % 2 === 0) {
-                this.ctx.moveTo(p0.x + (xpos / numDashes) * i, p0.y + (ypos / numDashes) * i);
-            } else {
-                this.ctx.lineTo(p0.x + (xpos / numDashes) * i, p0.y + (ypos / numDashes) * i);
-            }
-        }
-        this.ctx.strokeStyle = '#888';
-        this.ctx.stroke();
-        this.ctx.closePath();
-    }
-    
-    
     this.clear = function() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         for (var i = 0; i < this.textBlank.length; i++) {
@@ -920,32 +897,62 @@ Renderer = function () {
         }
     }
     
-	
+    
+    this._drawDashLine = function (p0, p1) {
+    	ScalePoint(p0);
+    	ScalePoint(p1);
+        var dashLen = 5,
+            xpos = p1.x - p0.x,
+            ypos = p1.y - p0.y,
+            numDashes = Math.floor(Math.sqrt(xpos * xpos + ypos * ypos) / dashLen);
+            
+        this.ctx.beginPath();
+        for (var i = 0; i < numDashes; i++) {
+            if (i % 2 === 0) {
+                this.ctx.moveTo(p0.x + (xpos / numDashes) * i, p0.y + (ypos / numDashes) * i);
+            } else {
+                this.ctx.lineTo(p0.x + (xpos / numDashes) * i, p0.y + (ypos / numDashes) * i);
+            }
+        }
+        //this.ctx.strokeStyle = '#888';
+        this.ctx.stroke();
+        this.ctx.closePath();
+    }
+    
 	/**
 	 * 绘制带端点的线段
-	 * @param {Object} p0 起始点
-	 * @param {Object} p1 结束点
+	 * @param {Object} edge 边
 	 * @param {Object} callbackFun 编辑回调函数
 	 */
-    this.drawSegment = function(p0, p1, callbackFun) {
-    	var sp0 = this._copyPoint(p0);
-    	var sp1 = this._copyPoint(p1);
-        this._drawDashLine(p0, p1);
-        this.drawCorner(sp0, 3, "#a2a2a2");
-        this.drawCorner(sp1, 3, "#a2a2a2", true);
+    this.drawSegment = function(edge, isOffset, callbackFun, canvas) {
+        if (isOffset) {
+            var edge2 = new Edge(edge.mStart.clone(), edge.mEnd.clone());
+            var angle = edge.getAngle();
+            angle = angle + Math.PI / 2;
+            var offset = 10 / Globals.Scale;
+            var offvec = new Vec2(offset * Math.cos(angle), offset * Math.sin(angle));
+            edge2.mStart.addBy(offvec);
+            edge2.mEnd.addBy(offvec);
+            edge = edge2;
+        }
+
+        var p0 = {x: edge.mStart.mX, y: edge.mStart.mY};
+        var p1 = {x: edge.mEnd.mX, y: edge.mEnd.mY};
+
+        this.drawLine(edge, true, null, false);
+
+        this.drawCorner(p0, 3, "#a2a2a2");
+        this.drawCorner(p1, 3, "#a2a2a2", true);
 
         var center = new Vector3((p0.x+p1.x)/2, (p0.y+p1.y)/2, 0);
         var pos = this._rotateVector(center,new Vector3().subVectors(new Vector3(p0.x,p0.y,0),center).normalize(),Math.PI / 2).multiplyScalar(20).add(center);
-        var tt = this._makeTextInput(pos, Math.round(this._getPointsDistance(p0, p1)), callbackFun);
-        tt.value = Math.round(this._getPointsDistance(p0, p1));
+        
+        var tt = this._makeTextInput(pos, Math.round(edge.getLength()), callbackFun, canvas);
+        tt.value = Math.round(edge.getLength());
         tt.select();
-        //this.textBlank.push(tt);
+        this.textBlank.push(tt);
         return tt;
     }
-    this._copyPoint = function(p){
-    	return {x:p.x,y:p.y};
-    }
-    
     
 	/***
 	 * 绘制文本

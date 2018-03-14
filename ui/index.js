@@ -116,7 +116,7 @@ $(function() {
             canvas.render();
         }
         
-        canvas.recordMouseUp(event.offsetX, event.offsetY);
+        canvas.recordMouseUp(event.offsetX, event.offsetY, true);
         
     });
 

@@ -70,6 +70,7 @@ Canvas.prototype._renderCurrentPrimitive = function() {
         break;
         case TYPE.CIRCLE:
             this._mRenderer.drawCircle(this._mEdge);
+            this._mRenderer.drawSegment(this._mEdge, false, Utility.DrawCircleRadiusCallback, this);
         break;
         case TYPE.LINE:
         {
@@ -142,6 +143,7 @@ Canvas.prototype.setType = function(type) {
     if (this._mType == TYPE.LINE) {
         this._mElmentDrawer.setStatus(STATUS.LINE_START);
     } else {
+        console.log("11111111");
         this._mElmentDrawer.setStatus(STATUS.NOT_STARTED);
     }
     if (this._mType == null) {
@@ -167,7 +169,9 @@ Canvas.prototype.setStartPoint = function() {
     
     if (this._mElmentDrawer.lineOperationStart(this._mSnap.mouseSnapped)) {
         this._mEdge.mStart.copy(this._mSnap.mouseSnapped);
+        
     }
+    
     this.render();
 }
 
@@ -175,6 +179,7 @@ Canvas.prototype.setEndPoint = function() {
     if (this._mType == null) {
         return false;
     }
+    
     if (this._mSnap.mFocus.hintpoint) {
         this._mHintPoints.push(this._mSnap.mFocus.hintpoint.clone());
     }
@@ -482,16 +487,7 @@ Canvas.prototype.render = function() {
     
     //画选中点的边界的长度
     this._mRenderer.drawCornerDimentions(this._mUpdateElment);
-    /*
-    var a = {x: 100, y: 200};
-    var b = {x: 500, y: 500};
-    this._mRenderer.drawSegment(a, b);
-    
-    var c = {x: 100, y: 300};
-    var d = {x: 500, y: 600};
-    this._mRenderer.drawSegment(c, d);
-    */
-    
+
 }
 
 Canvas.prototype.dump = function() {
