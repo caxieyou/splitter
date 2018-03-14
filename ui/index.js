@@ -113,7 +113,6 @@ $(function() {
             }
         } else {
             canvas.createElement();
-            canvas.render();
         }
         
         canvas.recordMouseUp(event.offsetX, event.offsetY, true);
@@ -130,9 +129,10 @@ $(function() {
                 
                 Globals.Offset.copy(moveEnd);
                 Globals.Offset.addBy(savedOffset).sub(moveStart);
-                
                 document.body.style.cursor = "move";
-                canvas.render();
+                if (Math.abs(moveEnd.mX - moveStart.mX) + Math.abs(moveEnd.mY - moveStart.mY) > 4) {
+                    canvas.render();
+                }
             } else {
                 canvas.updateElement(event.offsetX, event.offsetY);
             }

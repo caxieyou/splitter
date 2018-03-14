@@ -79,7 +79,12 @@ Canvas.prototype._renderCurrentPrimitive = function() {
             for (var i = 0; i < edges.length; i++) {
                 this._mRenderer.drawLine(edges[i]);
             }
-            
+            /*
+            if (edges.length > 0 && this._mElmentDrawer.mStatus == STATUS.LINE_DRAWING) {
+                var lastEdge = edges[edges.length - 1];
+                this._mRenderer.drawSegment(lastEdge, false, Utility.DrawLineCallback, this, lastEdge);
+            }   
+            */
             if (eLine) {
                 this._mRenderer.drawLine(eLine, Style.OverLine.isDash, Style.OverLine.color);
             }
@@ -117,10 +122,12 @@ Canvas.prototype.createRect = function(p0, p1) {
     p0 = p0 || this._mEdge.mStart;
     p1 = p1 || this._mEdge.mEnd;
     this._mElmentDrawer.creatRect(p0, p1);
+    this.render();
 }
 
 Canvas.prototype.createCircle = function() {
     this._mElmentDrawer.createCircle(this._mEdge);
+    this.render();
 }
 
 //页面是否可拖动
@@ -143,7 +150,6 @@ Canvas.prototype.setType = function(type) {
     if (this._mType == TYPE.LINE) {
         this._mElmentDrawer.setStatus(STATUS.LINE_START);
     } else {
-        console.log("11111111");
         this._mElmentDrawer.setStatus(STATUS.NOT_STARTED);
     }
     if (this._mType == null) {
@@ -171,8 +177,6 @@ Canvas.prototype.setStartPoint = function() {
         this._mEdge.mStart.copy(this._mSnap.mouseSnapped);
         
     }
-    
-    this.render();
 }
 
 Canvas.prototype.setEndPoint = function() {

@@ -71,8 +71,24 @@ Utility.DrawCircleRadiusCallback = function(dis, canvas) {
     var dir = new Vec2(edge.mEnd.mX - edge.mStart.mX, edge.mEnd.mY - edge.mStart.mY);
     dir.normalize();
     
-    edge.mEnd.addBy(dir.mulBy(dis));
+    edge.mEnd.mX = edge.mStart.mX + dir.mX * dis;
+    edge.mEnd.mY = edge.mStart.mY + dir.mY * dis;
 
     canvas.createElement();
+    canvas.render();
+}
+
+Utility.DrawLineCallback = function(dis, canvas, edge) {
+    var dir = new Vec2(edge.mEnd.mX - edge.mStart.mX, edge.mEnd.mY - edge.mStart.mY);
+    dir.normalize();
+    
+    var end = new Vec2(edge.mStart.mX + dir.mX * dis, edge.mStart.mY + dir.mY * dis);
+
+    end.mX = end.mX * Globals.Scale + Globals.Offset.mX;
+    end.mY = end.mY * Globals.Scale + Globals.Offset.mY;
+    
+    canvas.snapMouse(end.mX, end.mY, true);
+    canvas.setEndPoint();
+    canvas.setStartPoint();
     canvas.render();
 }

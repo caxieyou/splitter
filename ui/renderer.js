@@ -924,13 +924,13 @@ Renderer = function () {
 	 * @param {Object} edge 边
 	 * @param {Object} callbackFun 编辑回调函数
 	 */
-    this.drawSegment = function(edge, isOffset, callbackFun, canvas) {
+    this.drawSegment = function(edge, isOffset, callbackFun, canvas, targetEdge) {
         if (isOffset) {
             var edge2 = new Edge(edge.mStart.clone(), edge.mEnd.clone());
             var angle = edge.getAngle();
             angle = angle + Math.PI / 2;
             var offset = 10 / Globals.Scale;
-            var offvec = new Vec2(offset * Math.cos(angle), offset * Math.sin(angle));
+            var offvec = new Vec2(-offset * Math.cos(angle), -offset * Math.sin(angle));
             edge2.mStart.addBy(offvec);
             edge2.mEnd.addBy(offvec);
             edge = edge2;
@@ -947,7 +947,7 @@ Renderer = function () {
         var center = new Vector3((p0.x+p1.x)/2, (p0.y+p1.y)/2, 0);
         var pos = this._rotateVector(center,new Vector3().subVectors(new Vector3(p0.x,p0.y,0),center).normalize(),Math.PI / 2).multiplyScalar(20).add(center);
         
-        var tt = this._makeTextInput(pos, Math.round(edge.getLength()), callbackFun, canvas);
+        var tt = this._makeTextInput(pos, Math.round(edge.getLength()), callbackFun, canvas, targetEdge);
         tt.value = Math.round(edge.getLength());
         tt.select();
         this.textBlank.push(tt);
