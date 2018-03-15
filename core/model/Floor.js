@@ -737,6 +737,27 @@ Floor.prototype.renderPickedArea = function(renderer) {
     renderer.drawAreaDots(this.mAreasControllers[this.mPickedIndex]);
 }
 
+Floor.prototype.renderAlignment = function(renderer, segment) {
+    if (!segment) {
+        return;
+    }
+    for (var i = 0; i < this.mElements.length; i++) {
+        var seg = this.mElements[i];
+        if (seg instanceof Segment && segment.mId != seg.mId) {
+            if (MyNumber.isEqual(seg.mStart.mPosition.mX, seg.mEnd.mPosition.mX)          &&
+                MyNumber.isEqual(segment.mStart.mPosition.mX, segment.mEnd.mPosition.mX)  &&
+                MyNumber.isEqual(segment.mStart.mPosition.mX, seg.mStart.mPosition.mX)){
+                    renderer.drawLine(seg.getTheStartEndEdge(), false, null, true);
+            }
+            if (MyNumber.isEqual(seg.mStart.mPosition.mY, seg.mEnd.mPosition.mY)          &&
+                MyNumber.isEqual(segment.mStart.mPosition.mY, segment.mEnd.mPosition.mY)  &&
+                MyNumber.isEqual(segment.mStart.mPosition.mY, seg.mStart.mPosition.mY)) {
+                    renderer.drawLine(seg.getTheStartEndEdge(), false, null, true);
+            }
+        }
+    }
+}
+
 Floor.prototype.renderOutput = function(renderer) {
     if (this.mOutput == null) {
         return;

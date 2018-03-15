@@ -495,6 +495,27 @@ Segment.prototype.updatePosition = function(x, y) {
     
     var angle = this.getAngle();
     
+
+    for (var i = 0; i < this.mFloor.mElements.length; i++) {
+        var seg = this.mFloor.mElements[i];
+        if (seg instanceof Segment && this.mId != seg.mId) {
+            if (MyNumber.isEqual(seg.mStart.mPosition.mX, seg.mEnd.mPosition.mX)          &&
+                MyNumber.isEqual(this.mStart.mPosition.mX, this.mEnd.mPosition.mX)        &&
+                MyNumber.isEqual(x, seg.mStart.mPosition.mX, Globals.SNAPPING_THRESHOLD)  &&
+                MyNumber.isEqual(x, seg.mEnd.mPosition.mX, Globals.SNAPPING_THRESHOLD) ) {
+                    x = seg.mStart.mPosition.mX;
+                    break;
+            }
+            if (MyNumber.isEqual(seg.mStart.mPosition.mY, seg.mEnd.mPosition.mY)          &&
+                MyNumber.isEqual(this.mStart.mPosition.mY, this.mEnd.mPosition.mY)        &&
+                MyNumber.isEqual(y, seg.mStart.mPosition.mY, Globals.SNAPPING_THRESHOLD)  &&
+                MyNumber.isEqual(y, seg.mEnd.mPosition.mY, Globals.SNAPPING_THRESHOLD) ) {
+                    y = seg.mStart.mPosition.mY;
+                    break;
+            }
+        }
+    }
+
     var dis = this.getTheStartEndEdge().getDistance(new Vec2(x, y));
     
     var pos0 = coners[0].mPosition.clone();

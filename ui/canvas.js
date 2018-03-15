@@ -492,6 +492,8 @@ Canvas.prototype.render = function() {
     //画选中点的边界的长度
     this._mRenderer.drawCornerDimentions(this._mUpdateElment);
 
+    //画对齐边
+    this._mFloor.renderAlignment(this._mRenderer, this._mUpdateElment);
 }
 
 Canvas.prototype.dump = function() {
