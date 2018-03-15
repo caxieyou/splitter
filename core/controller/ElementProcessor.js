@@ -63,12 +63,25 @@ ElementProcessor.prototype.onToArc = function(param1)
     
     var _loc4_ = 0.1;
     _loc7_.resetCurve(_loc4_);
-    
+    var valid = true;
     for (var i = 0; i < this.mFloor.mElements.length; i++) {
         var curve = this.mFloor.mElements[i];
         if (_loc7_.isIntersectWith(curve)) {
             console.warn("WARNING: TOO NARROW!!!");
-            return false;
+            valid = false;
+            break;
+        }
+    }
+    
+    if (!valid) {
+        _loc4_ = -0.1;
+        _loc7_.resetCurve(_loc4_);
+        for (var i = 0; i < this.mFloor.mElements.length; i++) {
+            var curve = this.mFloor.mElements[i];
+            if (_loc7_.isIntersectWith(curve)) {
+                console.warn("WARNING: TOO NARROW!!!");
+                return false;
+            }
         }
     }
     
