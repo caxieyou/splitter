@@ -15,6 +15,8 @@ function Canvas(name, shape) {
     this._mProcessElement       = null;     //需要改变性质的图元（直线变曲线，分裂等）
     this._mType                 = null;
     this._mProfile              = shape;
+    this._mRecordsCurrent       = [];
+    this._mRecordsForward       = [];
     this.toggleHeightUICallback = null;
     
     this._flags = {
@@ -26,10 +28,10 @@ function Canvas(name, shape) {
     
     this._mRenderer.init(this._canvas);
     this.resize(this._canvas.width, this._canvas.height);
-    this._initialize(shape);
+    this._initialize();
 }
 //Initialize as an array of points, which is type of Vec2
-Canvas.prototype._initialize = function() {
+Canvas.prototype._initialize = function(forget) {
     if (!this._mProfile) {
         this._mProfile = [];
         this._mProfile.push(new Vec2(0, 0));
@@ -45,6 +47,9 @@ Canvas.prototype._initialize = function() {
     this._mElmentDrawer.add(poly.getEdges());
     this._mFloor.setProfile(poly);
     this._mFloor.Analysis();
+    if (!forget) {
+        this._record();
+    }
     this.render();
 }
 
@@ -66,11 +71,19 @@ Canvas.prototype._renderCurrentPrimitive = function() {
             var intersects = this._mFloor.getIntersectPoints(edges);
             this._mHintPoints = this._mHintPoints.concat(intersects);
             this._mRenderer.drawRect(this._mEdge);
+            
+            var leftup = new Vec2(Math.min(this._mEdge.mStart.mX, this._mEdge.mEnd.mX), Math.min(this._mEdge.mStart.mY, this._mEdge.mEnd.mY));
+            var rightbuttom = new Vec2(Math.max(this._mEdge.mStart.mX, this._mEdge.mEnd.mX), Math.max(this._mEdge.mStart.mY, this._mEdge.mEnd.mY));
+            var edge1 = new Edge(leftup.clone(), new Vec2(rightbuttom.mX, leftup.mY));
+            var edge2 = new Edge(new Vec2(rightbuttom.mX, leftup.mY), rightbuttom.clone());
+            
+            this._mRenderer.drawSegment(edge1, true, Utility.DrawRectCallback1, this, edge1);
+            this._mRenderer.drawSegment(edge2, true, Utility.DrawRectCallback2, this, edge2);
         }
         break;
         case TYPE.CIRCLE:
             this._mRenderer.drawCircle(this._mEdge);
-            this._mRenderer.drawSegment(this._mEdge, false, Utility.DrawCircleRadiusCallback, this);
+            this._mRenderer.drawSegment(this._mEdge, false, Utility.DrawCircleRadiusCallback, this, true);
         break;
         case TYPE.LINE:
         {
@@ -79,12 +92,12 @@ Canvas.prototype._renderCurrentPrimitive = function() {
             for (var i = 0; i < edges.length; i++) {
                 this._mRenderer.drawLine(edges[i]);
             }
-            /*
+            
             if (edges.length > 0 && this._mElmentDrawer.mStatus == STATUS.LINE_DRAWING) {
                 var lastEdge = edges[edges.length - 1];
-                this._mRenderer.drawSegment(lastEdge, false, Utility.DrawLineCallback, this, lastEdge);
+                this._mRenderer.drawSegment(lastEdge, true, Utility.DrawLineCallback, this, lastEdge);
             }   
-            */
+            
             if (eLine) {
                 this._mRenderer.drawLine(eLine, Style.OverLine.isDash, Style.OverLine.color);
             }
@@ -202,14 +215,51 @@ Canvas.prototype.setEndPoint = function() {
 }
 
 Canvas.prototype.resetType = function() {
+    var status = this._mElmentDrawer.mStatus;
+    
     if (this._mElmentDrawer.reset()) {
+        var type = this._mType;
         this.setType(null);
+        
+        if ((status == STATUS.LINE_START || status == STATUS.NOT_STARTED) 
+            && (this._mElmentDrawer.mStatus == STATUS.NOT_STARTED)
+            && type != null) {
+                this._record();
+                this._mRecordsForward = [];
+            }
     }
     this._mSnap.clearFocus();
     this._mFloor.clearPickedArea();
     this._mProcessElement = null;
     this.render();
 }
+
+Canvas.prototype.SettingBack = function() {
+    
+    if (this._mRecordsCurrent.length > 1) {
+        var d = this._mRecordsCurrent.pop();
+        this._mRecordsForward.push(d);
+        this.load(this._mRecordsCurrent[this._mRecordsCurrent.length - 1], true);
+    }
+    
+}
+
+
+Canvas.prototype.SettingForward = function() {
+    
+    if (this._mRecordsForward.length > 0) {
+        var d = this._mRecordsForward.pop();
+        this._mRecordsCurrent.push(d);
+        this.load(d, true);
+    }
+    
+}
+
+Canvas.prototype._record = function() {
+    var d = jQuery.parseJSON(JSON.stringify(this.dump()));
+    this._mRecordsCurrent.push(d);
+}
+
 
 Canvas.prototype.getType = function() {
     return this._mType;
@@ -500,15 +550,15 @@ Canvas.prototype.dump = function() {
     return this._mFloor.dump();
 }
 
-Canvas.prototype.load = function(data) {
+Canvas.prototype.load = function(data, forget) {
     var res = this._mFloor.transferJsonToGeom(data);
     this._mProfile = res.profile;
-    this.clear();
+    this.clear(forget);
     this._mElmentDrawer.add(res.geoms, true);
     this.render();
 }
 
-Canvas.prototype.clear = function() {
+Canvas.prototype.clear = function(forget) {
     this._mRenderer.removeAllTextInputs();
     this._mFloor            = new Floor();
     this._mElementProcessor = new ElementProcessor(this._mFloor);
@@ -522,5 +572,5 @@ Canvas.prototype.clear = function() {
     this._mHintPoints       = [];
     
     this._mRenderer.init(this._canvas);
-    this._initialize();
+    this._initialize(forget);
 }

@@ -924,7 +924,7 @@ Renderer = function () {
 	 * @param {Object} edge 边
 	 * @param {Object} callbackFun 编辑回调函数
 	 */
-    this.drawSegment = function(edge, isOffset, callbackFun, canvas, targetEdge) {
+    this.drawSegment = function(edge, isOffset, callbackFun, canvas, targetEdge, isDirection) {
         if (isOffset) {
             var edge2 = new Edge(edge.mStart.clone(), edge.mEnd.clone());
             var angle = edge.getAngle();
@@ -942,7 +942,7 @@ Renderer = function () {
         this.drawLine(edge, true, null, false);
 
         this.drawCorner(p0, 3, "#a2a2a2");
-        this.drawCorner(p1, 3, "#a2a2a2", true);
+        this.drawCorner(p1, 3, "#a2a2a2", isDirection ? true : false);
 
         var center = new Vector3((p0.x+p1.x)/2, (p0.y+p1.y)/2, 0);
         var pos = this._rotateVector(center,new Vector3().subVectors(new Vector3(p0.x,p0.y,0),center).normalize(),Math.PI / 2).multiplyScalar(20).add(center);

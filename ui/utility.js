@@ -92,3 +92,15 @@ Utility.DrawLineCallback = function(dis, canvas, edge) {
     canvas.setStartPoint();
     canvas.render();
 }
+
+Utility.DrawRectCallback1 = function(dis, canvas, edge) {
+    
+}
+
+Utility.DrawRectCallback2 = function(dis, canvas, edge) {
+    var xDir = canvas._mEdge.mStart.mX - canvas._mEdge.mEnd.mX > 0 ? -1 : 1;
+    var yDir = canvas._mEdge.mStart.mY - canvas._mEdge.mEnd.mY > 0 ? -1 : 1;
+    canvas._mEdge.mEnd.mY = canvas._mEdge.mStart.mY + yDir * dis;
+    canvas.createElement();
+    canvas.render();
+}

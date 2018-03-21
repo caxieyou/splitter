@@ -234,12 +234,12 @@ $(function() {
     
     // 撤销
     $('#main_container').on('click', '#setting_goback', function() {
-        alert('setting_goback');
+        canvas.SettingBack();
         return false;
     });
     // 恢复
     $('#main_container').on('click', '#setting_goforward', function() {
-        alert('setting_goforward');
+        canvas.SettingForward();
         return false;
     });
     // 清空
