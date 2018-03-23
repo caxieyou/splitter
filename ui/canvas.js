@@ -255,6 +255,11 @@ Canvas.prototype.SettingForward = function() {
     
 }
 
+//return 2 values, first is revertable, second is forwardable
+Canvas.prototype.checkSettingStatus = function() {
+    return [this._mRecordsCurrent.length > 1, this._mRecordsForward.length > 0];
+}
+
 Canvas.prototype._record = function() {
     var d = jQuery.parseJSON(JSON.stringify(this.dump()));
     this._mRecordsCurrent.push(d);
