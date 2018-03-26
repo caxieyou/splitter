@@ -374,4 +374,5 @@ $(function() {
     // 这个data就是_mRecordsCurrent和_mRecordsForward
     event.data = [false, true];
     window.dispatchEvent(event);
+    event = null;
 });
