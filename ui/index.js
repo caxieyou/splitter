@@ -234,12 +234,14 @@ $(function() {
     
     // 撤销
     $('#main_container').on('click', '#setting_goback', function() {
-        canvas.SettingBack();
+        console.log(canvas.checkSettingStatus());
+        if(canvas.checkSettingStatus()[0]) canvas.SettingBack();
         return false;
     });
     // 恢复
     $('#main_container').on('click', '#setting_goforward', function() {
-        canvas.SettingForward();
+        console.log(canvas.checkSettingStatus());
+        if(canvas.checkSettingStatus()[1]) canvas.SettingForward();
         return false;
     });
     // 清空
@@ -356,5 +358,20 @@ $(function() {
             canvas.deleteFocus();
             $('#props_wrap').hide();
         }
-    } , true); 
+    } , true);
+    // 更新"撤销"和"恢复"的状态
+    window.addEventListener('operationStaus', function(e) {
+        var staus = e.data || [false, false];
+        console.log(staus);
+        $('#setting_goback').removeClass('able');
+        $('#setting_goforward').removeClass('able');
+        if(staus[0]) $('#setting_goback').addClass('able');
+        if(staus[1]) $('#setting_goforward').addClass('able');
+    }, false);
+    // 下面的代码在你的数据（_mRecordsCurrent和_mRecordsForward）更新之后执行
+    var event = document.createEvent('Event');
+    event.initEvent('operationStaus', true, false);
+    // 这个data就是_mRecordsCurrent和_mRecordsForward
+    event.data = [false, true];
+    window.dispatchEvent(event);
 });
