@@ -241,7 +241,7 @@ Canvas.prototype.SettingBack = function() {
         this._mRecordsForward.push(d);
         this.load(this._mRecordsCurrent[this._mRecordsCurrent.length - 1], true);
     }
-    
+    this._updateBackForwardUI();
 }
 
 
@@ -252,6 +252,7 @@ Canvas.prototype.SettingForward = function() {
         this._mRecordsCurrent.push(d);
         this.load(d, true);
     }
+    this._updateBackForwardUI();
     
 }
 
@@ -264,13 +265,16 @@ Canvas.prototype._record = function() {
     var d = jQuery.parseJSON(JSON.stringify(this.dump()));
     this._mRecordsCurrent.push(d);
     
-     var event = document.createEvent('Event');
-     event.initEvent('operationStaus', true, false);
-     event.data = this.checkSettingStatus();
-     window.dispatchEvent(event);
-     event = null;
+    this._updateBackForwardUI();
 }
 
+Canvas.prototype._updateBackForwardUI = function() {
+    var event = document.createEvent('Event');
+    event.initEvent('operationStaus', true, false);
+    event.data = this.checkSettingStatus();
+    window.dispatchEvent(event);
+    event = null;
+}
 
 Canvas.prototype.getType = function() {
     return this._mType;
