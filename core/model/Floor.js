@@ -738,7 +738,7 @@ Floor.prototype.renderPickedArea = function(renderer) {
 }
 
 Floor.prototype.renderAlignment = function(renderer, segment) {
-    if (!segment) {
+    if (!segment || segment instanceof Corner) {
         return;
     }
     for (var i = 0; i < this.mElements.length; i++) {
