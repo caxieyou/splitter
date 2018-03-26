@@ -263,6 +263,12 @@ Canvas.prototype.checkSettingStatus = function() {
 Canvas.prototype._record = function() {
     var d = jQuery.parseJSON(JSON.stringify(this.dump()));
     this._mRecordsCurrent.push(d);
+    
+     var event = document.createEvent('Event');
+     event.initEvent('operationStaus', true, false);
+     event.data = this.checkSettingStatus();
+     window.dispatchEvent(event);
+     event = null;
 }
 
 

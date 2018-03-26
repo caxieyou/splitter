@@ -368,11 +368,4 @@ $(function() {
         if(staus[0]) $('#setting_goback').addClass('able');
         if(staus[1]) $('#setting_goforward').addClass('able');
     }, false);
-    // 下面的代码在你的数据（_mRecordsCurrent和_mRecordsForward）更新之后执行
-    var event = document.createEvent('Event');
-    event.initEvent('operationStaus', true, false);
-    // 这个data就是_mRecordsCurrent和_mRecordsForward
-    event.data = [false, true];
-    window.dispatchEvent(event);
-    event = null;
 });
