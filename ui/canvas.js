@@ -59,7 +59,7 @@ Canvas.prototype.snapMouse = function(x, y, isSnap){
 }
 
 //绘制当前正在滑动的圆，直线，Rect等
-Canvas.prototype._renderCurrentPrimitive = function() {
+Canvas.prototype._renderCurrentPrimitive = function(foucs) {
     if (!this._mElmentDrawer.isDrawable()) {
         return;
     }
@@ -77,8 +77,14 @@ Canvas.prototype._renderCurrentPrimitive = function() {
             var edge1 = new Edge(leftup.clone(), new Vec2(rightbuttom.mX, leftup.mY));
             var edge2 = new Edge(new Vec2(rightbuttom.mX, leftup.mY), rightbuttom.clone());
             
-            this._mRenderer.drawSegment(edge1, true, Utility.DrawRectCallback1, this, edge1);
-            this._mRenderer.drawSegment(edge2, true, Utility.DrawRectCallback2, this, edge2);
+            
+            var t1 = this._mRenderer.drawSegment(edge1, true, Utility.DrawRectCallback1, this, edge1);
+            var t2 = this._mRenderer.drawSegment(edge2, true, Utility.DrawRectCallback2, this, edge2);
+            if (foucs) {
+                t2.select();
+            } else {
+                t1.select();
+            }
         }
         break;
         case TYPE.CIRCLE:
@@ -529,7 +535,7 @@ Canvas.prototype.setCrownHeight = function(enabled) {
     this.render();
 }
 
-Canvas.prototype.render = function() {
+Canvas.prototype.render = function(focus) {
     //清空canvas
     this._mRenderer.clear();
     
@@ -537,7 +543,7 @@ Canvas.prototype.render = function() {
     this._mFloor.renderOutput(this._mRenderer);
     
     //长方形，圆，线段等正在绘制的图元
-    this._renderCurrentPrimitive();
+    this._renderCurrentPrimitive(focus);
     
     //画鼠标线
     this._renderMouseLines();
