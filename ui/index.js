@@ -362,7 +362,7 @@ $(function() {
     // 更新"撤销"和"恢复"的状态
     window.addEventListener('operationStaus', function(e) {
         var staus = e.data || [false, false];
-        console.log(staus);
+        //console.log(staus);
         $('#setting_goback').removeClass('able');
         $('#setting_goforward').removeClass('able');
         if(staus[0]) $('#setting_goback').addClass('able');

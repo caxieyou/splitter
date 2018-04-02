@@ -46,7 +46,7 @@ Canvas.prototype._initialize = function(forget) {
     
     this._mElmentDrawer.add(poly.getEdges());
     this._mFloor.setProfile(poly);
-    this._mFloor.Analysis();
+    this._mFloor.Analysis(Floor.ANALYSIS_INIT);
     if (!forget) {
         this._record();
     }
@@ -269,6 +269,7 @@ Canvas.prototype.checkSettingStatus = function() {
 
 Canvas.prototype._record = function() {
     var d = jQuery.parseJSON(JSON.stringify(this.dump()));
+    console.log(d);
     this._mRecordsCurrent.push(d);
     
     this._updateBackForwardUI();
@@ -296,6 +297,7 @@ Canvas.prototype.getFocusElement = function() {
 
 Canvas.prototype.setAreaHeight = function(sign, val) {
     this._mFloor.setAreaHeight(sign, val);
+    this._record();
     this.render();
 }
 
@@ -577,9 +579,12 @@ Canvas.prototype.dump = function() {
 
 Canvas.prototype.load = function(data, forget) {
     var res = this._mFloor.transferJsonToGeom(data);
+    console.log(res);
+    console.log(data);
     this._mProfile = res.profile;
     this.clear(forget);
     this._mElmentDrawer.add(res.geoms, true);
+    this._mFloor.matchHeight(res.points, res.heights);
     this.render();
 }
 

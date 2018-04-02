@@ -9,7 +9,7 @@ ElementProcessor.prototype.onSplitCurve = function(param1)
     _loc1_.mPosition = param1.getCenter();
     this.mFloor.addCorner(_loc1_);
     param1.updateInfo(_loc1_);
-    this.mFloor.Analysis();
+    this.mFloor.Analysis(Floor.ANALYSIS_SPLIT);
     this.mFloor.clearPickedArea();
 }
 
@@ -51,7 +51,7 @@ ElementProcessor.prototype.onToLine = function(param1)
     
     this.mFloor.addElement(_loc6_);
     this.mFloor.removeElement(param1);
-    this.mFloor.Analysis();
+    this.mFloor.AnalysisFloor.ANALYSIS_CHANGE();
     this.mFloor.clearPickedArea();
 }
 
@@ -100,7 +100,7 @@ ElementProcessor.prototype.onToArc = function(param1)
     this.mFloor.addElement(_loc7_);
     this.mFloor.removeElement(param1);
     
-    this.mFloor.Analysis();
+    this.mFloor.Analysis(Floor.ANALYSIS_CHANGE);
     this.mFloor.clearPickedArea();
     return true;
 }
@@ -159,6 +159,6 @@ ElementProcessor.prototype.onDelete = function(param1) {
     while((_loc1_ =  selectfunc(this.mFloor))!= null) {
         _loc1_.dispose();
     }
-    this.mFloor.Analysis();
+    this.mFloor.Analysis(Floor.ANALYSIS_DELETE);
     this.mFloor.clearPickedArea();
 }

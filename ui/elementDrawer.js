@@ -267,7 +267,7 @@ function ElementDrawer(floor) {
 ElementDrawer.prototype.add = function (polygon, skip) {
     var splitter = new Splitter(polygon, this.mFloor, this.mFloor.generatePolyTree(), skip);
     splitter.execute();
-    this.mFloor.Analysis();
+    this.mFloor.Analysis(Floor.ANALYSIS_CREATE);
 }
 
 ElementDrawer.prototype.isStart = function() {
