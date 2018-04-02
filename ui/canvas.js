@@ -342,24 +342,28 @@ Canvas.prototype.recordMouseUp = function(x, y) {
 Canvas.prototype.onSplitCurve = function() {
     this._mElementProcessor.onSplitCurve(this._mProcessElement);
     this._mProcessElement = null;
+    this._record();
     this.render();
 }
 
 Canvas.prototype.onToLine = function() {
     this._mElementProcessor.onToLine(this._mProcessElement);
     this._mProcessElement = null;
+    this._record();
     this.render();
 }
 
 Canvas.prototype.onToArc = function() {
     this._mElementProcessor.onToArc(this._mProcessElement);
     this._mProcessElement = null;
+    this._record();
     this.render();
 }
 
 Canvas.prototype.onDelete = function() {
     this._mElementProcessor.onDelete(this._mProcessElement);
     this._mProcessElement = null;
+    this._record();
     this.render();
 }
 
