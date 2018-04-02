@@ -939,13 +939,55 @@ Renderer = function () {
         var p0 = {x: edge.mStart.mX, y: edge.mStart.mY};
         var p1 = {x: edge.mEnd.mX, y: edge.mEnd.mY};
 
-        this.drawLine(edge, true, null, false);
+        var color = '#a2a2a2';
+        
 
-        this.drawCorner(p0, 3, "#a2a2a2");
-        this.drawCorner(p1, 3, "#a2a2a2", isDirection ? true : false);
+        ScalePoint(p0);
+        ScalePoint(p1);
+        
+        var lines = [
+            [p0, p1]
+        ];
+        var length = 10;
+        	sp = new Vector3(p0.x, p0.y, 0),
+            ep = new Vector3(p1.x, p1.y, 0),
+            vec0 = new Vector3().subVectors(sp, ep).normalize(),
+            vec1 = new Vector3().subVectors(ep, sp).normalize();
+
+        //端点垂直线
+        lines.push([this._rotateVector(sp, vec0, Math.PI / 2).multiplyScalar(length).add(sp), this._rotateVector(sp, vec0, -Math.PI / 2).multiplyScalar(length).add(sp)]);
+        lines.push([this._rotateVector(sp, vec1, Math.PI / 2).multiplyScalar(length).add(ep), this._rotateVector(sp, vec1, -Math.PI / 2).multiplyScalar(length).add(ep)]);
+        
+        length = 6;
+        //端点斜线
+        lines.push([this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(length).add(sp), this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(-length).add(sp)]);
+        lines.push([this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(length).add(ep), this._rotateVector(sp, vec0, -Math.PI / 4).multiplyScalar(-length).add(ep)]);
+
+        this.ctx.strokeStyle = color;
+        this.ctx.beginPath();https://item.jd.com/3820581.html
+        for(var i = 0; i < lines.length; i++) {
+            lines[i][0].x = Math.round(lines[i][0].x);
+            lines[i][0].y = Math.round(lines[i][0].y);
+            lines[i][1].x = Math.round(lines[i][1].x);
+            lines[i][1].y = Math.round(lines[i][1].y);
+            if(lines[i][0].x % 2 == 0)
+                lines[i][0].x += 0.5;
+            if(lines[i][0].y % 2 == 0)
+                lines[i][0].y += 0.5;
+            if(lines[i][1].x % 2 == 0)
+                lines[i][1].x += 0.5;
+            if(lines[i][1].y % 2 == 0)
+                lines[i][1].y += 0.5;
+            this.ctx.moveTo(lines[i][0].x, lines[i][0].y);
+            this.ctx.lineTo(lines[i][1].x, lines[i][1].y);
+
+        }
+
+        this.ctx.stroke();
+        this.ctx.closePath();
 
         var center = new Vector3((p0.x+p1.x)/2, (p0.y+p1.y)/2, 0);
-        var pos = this._rotateVector(center,new Vector3().subVectors(new Vector3(p0.x,p0.y,0),center).normalize(),Math.PI / 2).multiplyScalar(20).add(center);
+        var pos = this._rotateVector(center,new Vector3().subVectors(new Vector3(p0.x,p0.y,0),center).normalize(),Math.PI / 2).multiplyScalar(5).add(center);
         
         var tt = this._makeTextInput(pos, Math.round(edge.getLength()), callbackFun, canvas, targetEdge,nextInput);
         tt.value = Math.round(edge.getLength());
