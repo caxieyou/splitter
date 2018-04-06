@@ -724,14 +724,14 @@ Floor.prototype.updatePosition = function(sub, newPos) {
         }
         
         for (var i = 0; i < sub.length; i++) {
-            illegal = sub[i].updatePosition(newPos[i].mX, newPos[i].mY);
+            illegal = sub[i].updatePosition(newPos[i].mX, newPos[i].mY, true);
             if (illegal) {
                 break;
             }
         }
     } else {
         lastRecord = sub.getLast();
-        illegal = sub.updatePosition(newPos.mX, newPos.mY);
+        illegal = sub.updatePosition(newPos.mX, newPos.mY, true);
     }
 
     this.Analysis(Floor.ANALYSIS_UPDATE);

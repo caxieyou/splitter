@@ -478,6 +478,7 @@ Segment.prototype.getAngle = function()
 
 Segment.prototype.updatePosition = function(x, y) {
     //1 找到2个corner
+    /*
     var coners = this.toCorners();
     
     var bC0 = coners[0].getBoundrySegments();
@@ -492,10 +493,11 @@ Segment.prototype.updatePosition = function(x, y) {
             return true;
         }
     }
-    
+    */
     var angle = this.getAngle();
     
 
+    //水平或者竖直的吸附
     for (var i = 0; i < this.mFloor.mElements.length; i++) {
         var seg = this.mFloor.mElements[i];
         if (seg instanceof Segment && this.mId != seg.mId) {
@@ -515,47 +517,121 @@ Segment.prototype.updatePosition = function(x, y) {
             }
         }
     }
+    
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    var verticalTrend = false;//边本身更倾向于垂直还是水平
+    if (Math.abs(angle) > Math.PI / 4  && Math.abs(angle) < Math.PI * 3 / 4) {
+        verticalTrend = true;
+    }
+
+    var s = null, e = null; //start Edge, end Edge
+    
+    //求出start点对应的目标边
+    for (var i = 0; i < this.mStart.mElements.length; i++) {
+        if (this.mId != this.mStart.mElements[i].mId) {
+            if (verticalTrend) {
+                if (MyNumber.isEqual(this.mStart.mElements[i].mStart.mPosition.mY, this.mStart.mElements[i].mEnd.mPosition.mY)) {
+                    s = this.mStart.mElements[i];
+                    break;
+                }
+            } else {
+                if (MyNumber.isEqual(this.mStart.mElements[i].mStart.mPosition.mX, this.mStart.mElements[i].mEnd.mPosition.mX)) {
+                    s = this.mStart.mElements[i];
+                    break;
+                }
+            }
+        }
+    }
+    
+    //求出end点对应的目标边
+    for (var i = 0; i < this.mEnd.mElements.length; i++) {
+        if (this.mId != this.mEnd.mElements[i].mId) {
+            if (verticalTrend) {
+                if (MyNumber.isEqual(this.mEnd.mElements[i].mStart.mPosition.mY, this.mEnd.mElements[i].mEnd.mPosition.mY)) {
+                    e = this.mEnd.mElements[i];
+                    break;
+                }
+            } else {
+                if (MyNumber.isEqual(this.mEnd.mElements[i].mStart.mPosition.mX, this.mEnd.mElements[i].mEnd.mPosition.mX)) {
+                    e = this.mEnd.mElements[i];
+                    break;
+                }
+            }
+        }
+    }
+    
+    //求出夹角最小的边
+    if (s == null) {
+        var _min = 2 * Math.PI;
+        var tSIndex = 0; //taget Start Index
+        for (var i = 0; i < this.mStart.mElements.length; i++) {
+            if (this.mId != this.mStart.mElements[i].mId) {
+                var corners = this.mStart.mElements[i].toCorners();
+                
+                var index = corners[0].mId == this.mStart.mId ? 1: 0;
+                
+                
+                var diffAngle = Vec2.IncludedAngleValue(Vec2.sub(this.mStart.mPosition, corners[index].mPosition), Vec2.sub(this.mStart.mPosition, this.mEnd.mPosition));
+                if(_min > diffAngle) {
+                    _min = diffAngle;
+                    tSIndex = i;
+                }
+            }
+        }
+        
+        s = this.mStart.mElements[tSIndex];
+    }
+
+    if (e == null) {
+        var _min = 2 * Math.PI;
+        var tEIndex = 0; //taget End Index
+        for (var i = 0; i < this.mEnd.mElements.length; i++) {
+            if (this.mId != this.mEnd.mElements[i].mId) {
+                var corners = this.mEnd.mElements[i].toCorners();
+                
+                var index = corners[0].mId == this.mEnd.mId ? 1: 0;
+                
+                
+                var diffAngle = Vec2.IncludedAngleValue(Vec2.sub(this.mEnd.mPosition, corners[index].mPosition), Vec2.sub(this.mStart.mPosition, this.mEnd.mPosition));
+                if(_min > diffAngle) {
+                    _min = diffAngle;
+                    tEIndex = i;
+                }
+            }
+        }
+        
+        e = this.mEnd.mElements[tEIndex];
+    }
+    
     var dis = this.getTheStartEndEdge().getDistance(new Vec2(x, y));
+
+    var coners = this.toCorners();
     
     var pos0 = coners[0].mPosition.clone();
     var pos1 = coners[1].mPosition.clone();
     
-    var s, e;
-    s = new Vec2(pos0.mX + dis * Math.cos(angle + Math.PI / 2), pos0.mY + dis * Math.sin(angle + Math.PI / 2));
-    e = new Vec2(pos1.mX + dis * Math.cos(angle + Math.PI / 2), pos1.mY + dis * Math.sin(angle + Math.PI / 2));
+    var ptS, ptE;
+    ptS = new Vec2(pos0.mX - dis * Math.cos(angle + Math.PI / 2), pos0.mY - dis * Math.sin(angle + Math.PI / 2));
+    ptE = new Vec2(pos1.mX - dis * Math.cos(angle + Math.PI / 2), pos1.mY - dis * Math.sin(angle + Math.PI / 2));
     
-    
-    if (bC0.length > 0) {
-        var newEdge = new Edge(s, e);
-        s = Edge.getIntersection(newEdge, bC0[0]);
-        
-    } 
-    
-    if (bC1.length > 0) {
-        var newEdge = new Edge(s, e);
-        e = Edge.getIntersection(newEdge, bC1[0]);
-    } 
-    
-    var tmp = new Edge(s, e);
+    var tmp = new Edge(ptS, ptE);
     
     if (tmp.getDistance(new Vec2(x, y)) > 1.0E-6) {
-        s = new Vec2(pos0.mX - dis * Math.cos(angle + Math.PI / 2), pos0.mY - dis * Math.sin(angle + Math.PI / 2));
-        e = new Vec2(pos1.mX - dis * Math.cos(angle + Math.PI / 2), pos1.mY - dis * Math.sin(angle + Math.PI / 2));
-        if (bC0.length > 0) {
-            var newEdge = new Edge(s, e);
-            s = Edge.getIntersection(newEdge, bC0[0]);
-        } 
-        
-        if (bC1.length > 0) {
-            var newEdge = new Edge(s, e);
-            e = Edge.getIntersection(newEdge, bC1[0]);
-        } 
-    }
+        ptS = new Vec2(pos0.mX + dis * Math.cos(angle + Math.PI / 2), pos0.mY + dis * Math.sin(angle + Math.PI / 2));
+        ptE = new Vec2(pos1.mX + dis * Math.cos(angle + Math.PI / 2), pos1.mY + dis * Math.sin(angle + Math.PI / 2));
     
-    if (s.equals(e)) {
+    }
+    ptS = Edge.getIntersection(s.getTheStartEndEdge(),  new Edge(ptS.clone(), ptE.clone()));
+    ptE = Edge.getIntersection(e.getTheStartEndEdge(),  new Edge(ptS.clone(), ptE.clone()));
+    
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+
+    if (Vec2.distance(ptS, ptE) < 5) {
         return true;
     }
+    
     var c = [];
     for (var i = 0; i < coners[0].mElements.length; i++) {
         c = c.concat(coners[0].mElements[i].toCorners());
@@ -569,7 +645,7 @@ Segment.prototype.updatePosition = function(x, y) {
         if (c[i].mId == coners[0].mId || c[i].mId == coners[1].mId) {
             continue;
         }
-        if (c[i].mPosition.equals(s) || c[i].mPosition.equals(e)) {
+        if (c[i].mPosition.equals(ptS) || c[i].mPosition.equals(ptE)) {
             illegal = true;
             break;
         }
@@ -577,8 +653,8 @@ Segment.prototype.updatePosition = function(x, y) {
     if (illegal) {
         return true;
     } else {
-        coners[0].updatePosition(s.mX, s.mY);
-        coners[1].updatePosition(e.mX, e.mY);
+        coners[0].updatePosition(ptS.mX, ptS.mY);
+        coners[1].updatePosition(ptE.mX, ptE.mY);
     }
 }
 

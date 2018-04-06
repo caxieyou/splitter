@@ -46,15 +46,16 @@ Corner.prototype.removeElement = function(param1)
     return MyArray.removeItem(this.mElements,param1);
 }
 
-Corner.prototype.updatePosition = function(x, y)
+Corner.prototype.updatePosition = function(x, y, isSnap)
 {
+    /*
     var arc = [];
     for (var i = 0; i < this.mElements.length; i++) {
         if (this.mElements[i] instanceof Arc) {
             arc.push(this.mElements[i].getCurve().mArcAngle);
         }
     }
-    
+    */
     if (this.mFloor) {
 
         var curves = this.mFloor.mElements;
@@ -86,7 +87,32 @@ Corner.prototype.updatePosition = function(x, y)
                 }
             }
         }
-
+        
+        if (isSnap) {
+            for (var i = 0; i < this.mElements.length; i++) {
+                if (this.mElements[i] instanceof Segment) {
+                    
+                    var corners = this.mElements[i].toCorners();
+                    
+                    //find another point
+                    var index = corners[0].mId == this.mId ? 1 : 0;
+                    
+                    var pos = corners[index].mPosition;
+                    
+                    //垂直水平吸附
+                    if (MyNumber.isEqual(x , pos.mX, Globals.SNAPPING_THRESHOLD)) {
+                        x = pos.mX;
+                        break;
+                    }
+                    
+                    if (MyNumber.isEqual(y , pos.mY, Globals.SNAPPING_THRESHOLD)) {
+                        y = pos.mY;
+                        break;
+                    }
+                }
+            }
+        }
+        
     }
     
     this.mPosition.set(x, y);
