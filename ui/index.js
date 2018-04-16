@@ -95,12 +95,12 @@ $(function() {
                 $('#props_wrap').css('left', left).css('top', top);
 
                 if(elementType instanceof Curve) {
-                    $('#props_wrap .props.line .iconfont.straight').removeClass('none').siblings('.curve').addClass('none');
+                    $('#props_wrap .props.line .icon.icon-straight').removeClass('none').siblings('.icon-curve').addClass('none');
                     $('#props_wrap').find('.props.line').data('type', 'curve');
                     $('#props_wrap').find('.props.line').find('.pup').html('转为直线<i></i>');
 
                 } else if(elementType instanceof Edge) {
-                    $('#props_wrap .props.line .iconfont.curve').removeClass('none').siblings('.straight').addClass('none');
+                    $('#props_wrap .props.line .icon.icon-curve').removeClass('none').siblings('.icon-straight').addClass('none');
                     $('#props_wrap').find('.props.line').data('type', 'straight');
                     $('#props_wrap').find('.props.line').find('.pup').html('转为曲线<i></i>');
                 }
@@ -170,7 +170,7 @@ $(function() {
         }
 
         if($(this).hasClass('line')) {
-            $(this).children('.iconfont').toggleClass('none');
+            $(this).children('.icon').toggleClass('none');
             if(type === 'straight') {
                 $(this).data('type', 'curve');
                 $(this).find('.pup').html('转为曲线<i></i>');
