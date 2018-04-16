@@ -1,28 +1,36 @@
-function AreaHeightRecord() {
-    this.corners = [];//二维数组
+function HeightRecord() {
+    this.parts = [];//二维数组
+    this.corners = [];
     this.height = 0; //一维数组
-    this.name = "";
-    this.sign = 0;
 }
 
 function Floor() {
     this.mAreas;
+    this.mOutput;
+    this.mAreasPolytree;
+    this.mAreasControllers;
+
     this.mElements;
     this.mCorners;
     this.mHoles;
     this.mProfile;
-    this.mOutput;
-    this.mAreasPolytree;
-    this.mAreasControllers;
-    this.mLastHeightRecord;
-    this.mAreaHeightRecord;
+    
+    this.mHeightRecord;
 
     this.mPickedIndex;
     this.mPickedDirection;
     
     this.mKeyPoints;
+
     this.initialize();
 }
+
+Floor.ANALYSIS_INIT   = 0; //初始化
+Floor.ANALYSIS_CREATE = 1; //创建
+Floor.ANALYSIS_SPLIT  = 2; //分割
+Floor.ANALYSIS_CHANGE = 3; //改变性质
+Floor.ANALYSIS_DELETE = 4; //删除
+Floor.ANALYSIS_UPDATE = 5; //移动更新
 
 Floor.prototype.initialize = function() {
     this.mAreas = [];
@@ -34,8 +42,7 @@ Floor.prototype.initialize = function() {
     this.mAreasControllers = [];
     this.mPickedIndex = -1;
     this.mPickedDirection = false;
-    this.mLastHeightRecord = null;
-    this.mAreaHeightRecord = [];
+    this.mHeightRecord = [];
     this.mKeyPoints = [];
 }
 
@@ -163,23 +170,23 @@ Floor.prototype.setAreaHeight = function(sign, val) {
     if (this.mPickedIndex == -1) {
         return;
     }
-    this.mAreaHeightRecord[this.mPickedIndex].sign = sign;
-    this.mAreaHeightRecord[this.mPickedIndex].height = val;
+    
+    this.mHeightRecord[this.mPickedIndex].height = sign * val;
+    this.Analysis(Floor.ANALYSIS_UPDATE);
 }
 
 Floor.prototype.setAreaName = function(name) {
     if (this.mPickedIndex == -1) {
         return;
     }
-    this.mAreaHeightRecord[this.mPickedIndex].name = name;
 }
 
 Floor.prototype.getAreaHeight = function() {
-    return this.mAreaHeightRecord[this.mPickedIndex].sign * this.mAreaHeightRecord[this.mPickedIndex].height;
+    return this.mHeightRecord[this.mPickedIndex].height;
 }
 
 Floor.prototype.getAreaName = function() {
-    return this.mAreaHeightRecord[this.mPickedIndex].name;
+    return "";
 }
 
 Floor.prototype.checkOverlap = function()  {
@@ -342,108 +349,12 @@ Floor.prototype._updateGeoStructure = function() {
         }
     }
     
-    var getCorners = function(controllers, areaHeightRecord) {
-        for (var i = 0; i < controllers.length; i++) {
-            var segments = controllers[i];
-            var record = new AreaHeightRecord();
-            
-            for (var j = 0; j < segments.length; j++) {
-                var corners = segments[j].toCorners();
-                
-                var isRepeat = false;
-                for (var m = 0; m < record.corners.length; m++) {
-                    if (record.corners[m] == corners[0].mId) {
-                        isRepeat = true;
-                        break;
-                    }
-                }
-                if (!isRepeat) {
-                    record.corners.push(corners[0].mId);
-                }
-                
-                var isRepeat = false;
-                for (var m = 0; m < record.corners.length; m++) {
-                    if (record.corners[m] == corners[1].mId) {
-                        isRepeat = true;
-                        break;
-                    }
-                }
-                if (!isRepeat) {
-                    record.corners.push(corners[1].mId);
-                }
-            }
-            record.corners.sort(function(a,b){return a - b});
-            areaHeightRecord.push(record);
-        }
+    for (var i = 0; i < this.mOutput.length; i++) {
+        this.mOutput[i].mHeight = this.mHeightRecord[i].height;
     }
-    this.mAreaHeightRecord = [];
-    getCorners(this.mAreasControllers, this.mAreaHeightRecord);
-    
-    if (this.mLastHeightRecord) {
-        //TODO: DO the Analysis
-        var compare = [];
-        
-        //compare from new to old
-        for (var i = 0; i < this.mLastHeightRecord.length; i++) {
-            var a = this.mLastHeightRecord[i].corners;
-            var subCompare = [];
-            
-            for (var j = 0; j < this.mAreaHeightRecord.length; j++) {
-                var b = this.mAreaHeightRecord[j].corners;
-                var nSame = 0;
-                for (var m = 0; m < a.length; m++) {
-                    for (var n = 0; n < b.length; n++) {
-                        if (a[m] == b[n]) {
-                            nSame++;
-                        }
-                    }
-                }
-                var c = {
-                    ratio    : nSame / b.length,
-                    oldSize  : a.length,
-                    newSize  : b.length
-                };
-                subCompare.push(c);
-            }
-            compare.push(subCompare);
-        }
-        
-        for (var i = 0; i < compare.length; i++) {
-            var copyIdx = -1;
-            var ratio = 0;
-            var diff = 0;
-            
-            
-            for (var j = 0; j < compare[i].length; j++) {
-                if (compare[i][j].ratio > ratio) {
-                    ratio = compare[i][j].ratio;
-                    copyIdx = j;
-                    diff = Math.abs(compare[i][j].oldSize - compare[i][j].newSize);
-                }
-                if (compare[i][j].ratio  == ratio) {
-                    if (diff > Math.abs(compare[i][j].newSize - compare[i][j].oldSize)) {
-                        ratio = compare[i][j].ratio;
-                        copyIdx = j;
-                        diff = Math.abs(compare[i][j].oldSize - compare[i][j].newSize);
-                    }
-                }
-            }
-            
-            if (copyIdx != -1) {
-                this.mAreaHeightRecord[copyIdx].name = this.mLastHeightRecord[i].name;
-                this.mAreaHeightRecord[copyIdx].sign = this.mLastHeightRecord[i].sign;
-                this.mAreaHeightRecord[copyIdx].height = this.mLastHeightRecord[i].height;
-            }
-            
-        }
-    }
-    this.mLastHeightRecord = this.mAreaHeightRecord;
 };
 
 Floor.prototype.dump = function() {
-    
-    console.log(this.mOutput);
-    console.log(this.mAreasControllers);
     
     var res = {
         areas : new Array(this.mOutput.length),
@@ -470,9 +381,45 @@ Floor.prototype.dump = function() {
 
 Floor.prototype.transferJsonToGeom = function(data) {
     var res = {
-        geoms : [],
-        profile : []
+        geoms   : [],
+        profile : [],
+        points  : [],
+        heights : []
     };
+    
+    for (var i = 0; i < data.areas.length; i++) {
+        var edges = data.areas[i].mOutline.edges;
+        
+        var points = [];
+        for (var j = 0; j < edges.length; j++) {
+            var isRepeat = false;
+            for (var m = 0; m < points.length; m++) {
+                if (MyNumber.isEqual(points[m].mX, edges[j].mStart.mX) && MyNumber.isEqual(points[m].mY, edges[j].mStart.mY)) {
+                    isRepeat = true;
+                    break;
+                }
+            }
+            
+            if (!isRepeat) {
+                points.push(new Vec2(edges[j].mStart.mX, edges[j].mStart.mY));
+            }
+            
+            isRepeat = false;
+            for (var m = 0; m < points.length; m++) {
+                if (MyNumber.isEqual(points[m].mX, edges[j].mEnd.mX) && MyNumber.isEqual(points[m].mY, edges[j].mEnd.mY)) {
+                    isRepeat = true;
+                    break;
+                }
+            }
+            
+            if (!isRepeat) {
+                points.push(new Vec2(edges[j].mEnd.mX, edges[j].mEnd.mY));
+            }
+        }
+        res.heights.push(data.areas[i].mHeight);
+        res.points.push(points);
+    }
+    
     
     for (var i = 0; i < data.geoms.length; i++) {
         var geom = data.geoms[i];
@@ -590,7 +537,7 @@ Floor.prototype._reconnect = function(output, valid) {
     return ret;
 };
 
-Floor.prototype.Analysis = function() {
+Floor.prototype.Analysis = function(mode) {
     
     for (var i = 0; i < this.mCorners.length; i++) {
         
@@ -627,11 +574,148 @@ Floor.prototype.Analysis = function() {
 
     var analysis = new Analysis(this);
     analysis.execute();
+/////////////////////////////////////////////////////////////////////////
+    //current data: 
+    var currentRecord = [];
+    
+    var getCorners = function(segments) {
+        var c = [];
+        for (var j = 0; j < segments.length; j++) {
+            var corners = segments[j].toCorners();
+            
+            var isRepeat = false;
+            
+            for (var m = 0; m < c.length; m++) {
+                if (c[m].mId == corners[0].mId) {
+                    isRepeat = true;
+                    break;
+                }
+            }
+            if (!isRepeat) {
+                c.push(corners[0]);
+            }
+            
+            isRepeat = false;
+            for (var m = 0; m < c.length; m++) {
+                if (c[m].mId == corners[1].mId) {
+                    isRepeat = true;
+                    break;
+                }
+            }
+            if (!isRepeat) {
+                c.push(corners[1]);
+            }
+        }
+        return c;
+    }
+    for (var i = 0; i < this.mAreas.length; i++) {
+        var r = new HeightRecord();
+        r.parts = this.mAreas[i].mElements;
+        r.corners = getCorners(r.parts);
+        currentRecord.push(r);
+    }
+
+    switch (mode) {
+        case Floor.ANALYSIS_INIT: 
+            this.mHeightRecord = currentRecord;
+        break;
+
+        case Floor.ANALYSIS_CREATE: 
+        case Floor.ANALYSIS_SPLIT: 
+        case Floor.ANALYSIS_CHANGE:
+        case Floor.ANALYSIS_DELETE: 
+        case Floor.ANALYSIS_UPDATE: 
+            this._heightCreate(currentRecord);
+        break;
+/*
+        case Floor.ANALYSIS_SPLIT: 
+            
+        break;
+        case Floor.ANALYSIS_CHANGE: 
+            
+        break;
+
+        case Floor.ANALYSIS_DELETE: 
+            
+        break;
+
+        case Floor.ANALYSIS_UPDATE: 
+            
+        break;
+*/
+    }
+////////////////////////////////////////////////////////////////
+
     this._updateGeoStructure();
+
+
+
+    
 }
 
-Floor.prototype.updatePosition = function(sub, newPos)
-{
+Floor.prototype._heightCreate = function(record) {
+
+    for (var i = 0; i < this.mHeightRecord.length; i++) {
+        var corners0 = this.mHeightRecord[i].corners;
+
+        var _max = -1;
+        var _idx = -1;
+        for (var j = 0; j < record.length; j++) {
+            var corners1 = record[j].corners;
+
+            var s = 0;
+            for (var m = 0; m < corners0.length; m++) {
+                for (var n = 0; n < corners1.length; n++) {
+                    if (corners0[m].mId == corners1[n].mId) {
+                        s++;
+                        break;
+                    }
+                }
+            }
+
+            if (s > _max) {
+                _max = s;
+                _idx = j;
+            }
+
+        }
+        record[_idx].height = this.mHeightRecord[i].height;
+    }
+    this.mHeightRecord = record;
+}
+
+Floor.prototype.matchHeight = function(points, heights) {
+    for (var i = 0; i < this.mHeightRecord.length; i++) {
+        var corners0 = this.mHeightRecord[i].corners;
+
+        var _max = -1;
+        var _idx = -1;
+        for (var j = 0; j < points.length; j++) {
+            var corners1 = points[j];
+
+            var s = 0;
+            for (var m = 0; m < corners0.length; m++) {
+                for (var n = 0; n < corners1.length; n++) {
+                    if (Vec2.isEqual(corners0[m].mPosition, corners1[n])) {
+                        s++;
+                        break;
+                    }
+                }
+            }
+
+            if (s > _max) {
+                _max = s;
+                _idx = j;
+            }
+
+        }
+        this.mHeightRecord[i].height = heights[_idx];
+    }
+}
+
+
+
+Floor.prototype.updatePosition = function(sub, newPos) {
     var lastRecord = null;
     if (sub instanceof Array) {
         lastRecord = [];
@@ -640,17 +724,17 @@ Floor.prototype.updatePosition = function(sub, newPos)
         }
         
         for (var i = 0; i < sub.length; i++) {
-            illegal = sub[i].updatePosition(newPos[i].mX, newPos[i].mY);
+            illegal = sub[i].updatePosition(newPos[i].mX, newPos[i].mY, true);
             if (illegal) {
                 break;
             }
         }
     } else {
         lastRecord = sub.getLast();
-        illegal = sub.updatePosition(newPos.mX, newPos.mY);
+        illegal = sub.updatePosition(newPos.mX, newPos.mY, true);
     }
 
-    this.Analysis();
+    this.Analysis(Floor.ANALYSIS_UPDATE);
 
     var overlapped = illegal || this.checkOverlap();
     
@@ -662,7 +746,7 @@ Floor.prototype.updatePosition = function(sub, newPos)
         } else {
             sub.revertUpdatePosition(lastRecord);
         }
-        this.Analysis();
+        this.Analysis(Floor.ANALYSIS_UPDATE);
     }
 
     this.clearPickedArea();
@@ -764,7 +848,7 @@ Floor.prototype.renderOutput = function(renderer) {
     }
     
     for (var i = 0; i < this.mAreasControllers.length; i++) {
-        var height = this.mAreaHeightRecord[i].height;
+        var height = this.mHeightRecord[i].height;
         if (height == 0) {
             renderer.drawOutput(this.mAreasControllers[i]);
         } else {
@@ -778,8 +862,6 @@ Floor.prototype.renderOutput = function(renderer) {
     if (this.mPickedIndex != -1) {
         renderer.drawOutput(this.mAreasControllers[this.mPickedIndex], true);
     }
-
-
 }
 
 //画内部标注线

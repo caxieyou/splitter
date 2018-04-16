@@ -46,7 +46,7 @@ Canvas.prototype._initialize = function(forget) {
     
     this._mElmentDrawer.add(poly.getEdges());
     this._mFloor.setProfile(poly);
-    this._mFloor.Analysis();
+    this._mFloor.Analysis(Floor.ANALYSIS_INIT);
     if (!forget) {
         this._record();
     }
@@ -59,7 +59,7 @@ Canvas.prototype.snapMouse = function(x, y, isSnap){
 }
 
 //绘制当前正在滑动的圆，直线，Rect等
-Canvas.prototype._renderCurrentPrimitive = function() {
+Canvas.prototype._renderCurrentPrimitive = function(foucs) {
     if (!this._mElmentDrawer.isDrawable()) {
         return;
     }
@@ -77,8 +77,14 @@ Canvas.prototype._renderCurrentPrimitive = function() {
             var edge1 = new Edge(leftup.clone(), new Vec2(rightbuttom.mX, leftup.mY));
             var edge2 = new Edge(new Vec2(rightbuttom.mX, leftup.mY), rightbuttom.clone());
             
-            this._mRenderer.drawSegment(edge1, true, Utility.DrawRectCallback1, this, edge1);
-            this._mRenderer.drawSegment(edge2, true, Utility.DrawRectCallback2, this, edge2);
+            
+            var t1 = this._mRenderer.drawSegment(edge1, true, Utility.DrawRectCallback1, this, edge1);
+            var t2 = this._mRenderer.drawSegment(edge2, true, Utility.DrawRectCallback2, this, edge2);
+            if (foucs) {
+                t2.select();
+            } else {
+                t1.select();
+            }
         }
         break;
         case TYPE.CIRCLE:
@@ -241,7 +247,7 @@ Canvas.prototype.SettingBack = function() {
         this._mRecordsForward.push(d);
         this.load(this._mRecordsCurrent[this._mRecordsCurrent.length - 1], true);
     }
-    
+    this._updateBackForwardUI();
 }
 
 
@@ -252,6 +258,7 @@ Canvas.prototype.SettingForward = function() {
         this._mRecordsCurrent.push(d);
         this.load(d, true);
     }
+    this._updateBackForwardUI();
     
 }
 
@@ -262,15 +269,19 @@ Canvas.prototype.checkSettingStatus = function() {
 
 Canvas.prototype._record = function() {
     var d = jQuery.parseJSON(JSON.stringify(this.dump()));
+    console.log(d);
     this._mRecordsCurrent.push(d);
     
-     var event = document.createEvent('Event');
-     event.initEvent('operationStaus', true, false);
-     event.data = this.checkSettingStatus();
-     window.dispatchEvent(event);
-     event = null;
+    this._updateBackForwardUI();
 }
 
+Canvas.prototype._updateBackForwardUI = function() {
+    var event = document.createEvent('Event');
+    event.initEvent('operationStaus', true, false);
+    event.data = this.checkSettingStatus();
+    window.dispatchEvent(event);
+    event = null;
+}
 
 Canvas.prototype.getType = function() {
     return this._mType;
@@ -286,6 +297,7 @@ Canvas.prototype.getFocusElement = function() {
 
 Canvas.prototype.setAreaHeight = function(sign, val) {
     this._mFloor.setAreaHeight(sign, val);
+    this._record();
     this.render();
 }
 
@@ -332,24 +344,28 @@ Canvas.prototype.recordMouseUp = function(x, y) {
 Canvas.prototype.onSplitCurve = function() {
     this._mElementProcessor.onSplitCurve(this._mProcessElement);
     this._mProcessElement = null;
+    this._record();
     this.render();
 }
 
 Canvas.prototype.onToLine = function() {
     this._mElementProcessor.onToLine(this._mProcessElement);
     this._mProcessElement = null;
+    this._record();
     this.render();
 }
 
 Canvas.prototype.onToArc = function() {
     this._mElementProcessor.onToArc(this._mProcessElement);
     this._mProcessElement = null;
+    this._record();
     this.render();
 }
 
 Canvas.prototype.onDelete = function() {
     this._mElementProcessor.onDelete(this._mProcessElement);
     this._mProcessElement = null;
+    this._record();
     this.render();
 }
 
@@ -525,7 +541,7 @@ Canvas.prototype.setCrownHeight = function(enabled) {
     this.render();
 }
 
-Canvas.prototype.render = function() {
+Canvas.prototype.render = function(focus) {
     //清空canvas
     this._mRenderer.clear();
     
@@ -533,7 +549,7 @@ Canvas.prototype.render = function() {
     this._mFloor.renderOutput(this._mRenderer);
     
     //长方形，圆，线段等正在绘制的图元
-    this._renderCurrentPrimitive();
+    this._renderCurrentPrimitive(focus);
     
     //画鼠标线
     this._renderMouseLines();
@@ -563,9 +579,12 @@ Canvas.prototype.dump = function() {
 
 Canvas.prototype.load = function(data, forget) {
     var res = this._mFloor.transferJsonToGeom(data);
+    console.log(res);
+    console.log(data);
     this._mProfile = res.profile;
     this.clear(forget);
     this._mElmentDrawer.add(res.geoms, true);
+    this._mFloor.matchHeight(res.points, res.heights);
     this.render();
 }
 

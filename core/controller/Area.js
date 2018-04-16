@@ -47,6 +47,7 @@ Area.outputStructure = function(param1) {
 function MyOutput (outline) {
     this.mOutline = outline;
     this.mHoles = [];
+    this.mHeight = 0;
 }
 
 MyOutput.prototype.clone = function() {
@@ -54,6 +55,7 @@ MyOutput.prototype.clone = function() {
     ret.mOutline = {
         edges : []
     };
+    ret.mHeight = this.mHeight;
     
     for (var i = 0; i < this.mOutline.edges.length; i++) {
         ret.mOutline.edges.push(this.mOutline.edges[i].clone());
