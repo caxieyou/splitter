@@ -110,6 +110,7 @@ $(function() {
                 } else {
                     $('#props_wrap').hide();
                 }
+                Globals.UpdateStatus = -1;
             }
         } else {
             canvas.createElement();

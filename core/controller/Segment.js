@@ -476,6 +476,10 @@ Segment.prototype.getAngle = function()
     return this.getTheStartEndEdge().getAngle();
 }
 
+//记录周边情况
+Segment.Record = null;
+
+
 Segment.prototype.updatePosition = function(x, y) {
     
     var angle = this.getAngle();
@@ -604,9 +608,35 @@ Segment.prototype.updatePosition = function(x, y) {
         ptE = new Vec2(pos1.mX + dis * Math.cos(angle + Math.PI / 2), pos1.mY + dis * Math.sin(angle + Math.PI / 2));
     
     }
-    var ptS2 = Edge.getIntersection(s.getTheStartEndEdge(),  new Edge(ptS.clone(), ptE.clone()));
-    var ptE2 = Edge.getIntersection(e.getTheStartEndEdge(),  new Edge(ptS.clone(), ptE.clone()));
     
+    if (Globals.UpdateStatus === -1) {
+        Globals.UpdateStatus = 0;
+        
+        
+        var angle1 = Edge.getCorssAngle(s.getTheStartEndEdge(), this.getTheStartEndEdge());
+        var angle2 = Edge.getCorssAngle(e.getTheStartEndEdge(), this.getTheStartEndEdge());
+        
+        Segment.Record = {
+            left :  ((angle1 > (Math.PI * 5 / 6)) || (angle1 < (Math.PI / 6))) ? false : true ,
+            right : ((angle2 > (Math.PI * 5 / 6)) || (angle2 < (Math.PI / 6))) ? false : true 
+        };
+    }
+    
+    var ptS2;
+    var ptE2;
+    if (Segment.Record.left) {
+        ptS2 = Edge.getIntersection(s.getTheStartEndEdge(),  new Edge(ptS.clone(), ptE.clone()));
+    } else {
+        ptS2 = ptS;
+    }
+    
+    if (Segment.Record.right) {
+        ptE2 = Edge.getIntersection(e.getTheStartEndEdge(),  new Edge(ptS.clone(), ptE.clone()));
+        
+        
+    } else {
+        ptE2 = ptE;
+    }
     
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
     
@@ -636,8 +666,8 @@ Segment.prototype.updatePosition = function(x, y) {
     if (illegal) {
         return true;
     } else {
-        coners[0].updatePosition(ptS.mX, ptS.mY);
-        coners[1].updatePosition(ptE.mX, ptE.mY);
+        coners[0].updatePosition(ptS2.mX, ptS2.mY);
+        coners[1].updatePosition(ptE2.mX, ptE2.mY);
     }
 }
 

@@ -554,6 +554,17 @@ Edge.prototype.getAngle = function()
     return Math.atan2(this.mEnd.mY - this.mStart.mY, this.mEnd.mX - this.mStart.mX);
 }
 
+Edge.getCorssAngle = function(edge1, edge2)
+{
+    var dir1 = new Vec2(edge1.mEnd.mX - edge1.mStart.mX, edge1.mEnd.mY - edge1.mStart.mY);
+    var dir2 = new Vec2(edge2.mEnd.mX - edge2.mStart.mX, edge2.mEnd.mY - edge2.mStart.mY);
+    
+    var cosValue = Vec2.dot(dir1, dir2) / (dir1.getLength() * dir2.getLength());
+    
+    return Math.acos(MyMath.clamp(cosValue,-1,1));
+}
+
+
 Edge.prototype.toRectEdges = function()
 {
     var edges = [];
