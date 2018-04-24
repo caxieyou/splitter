@@ -477,25 +477,8 @@ Segment.prototype.getAngle = function()
 }
 
 Segment.prototype.updatePosition = function(x, y) {
-    //1 找到2个corner
-    /*
-    var coners = this.toCorners();
     
-    var bC0 = coners[0].getBoundrySegments();
-    if (bC0.length > 0) {
-        if (!Edge.isValidAngleDiff(bC0[0], bC0[1])) {
-            return true;
-        }
-    }
-    var bC1 = coners[1].getBoundrySegments();
-    if (bC1.length > 0) {
-        if (!Edge.isValidAngleDiff(bC1[0], bC1[1])) {
-            return true;
-        }
-    }
-    */
     var angle = this.getAngle();
-    
 
     //水平或者竖直的吸附
     for (var i = 0; i < this.mFloor.mElements.length; i++) {
@@ -592,7 +575,6 @@ Segment.prototype.updatePosition = function(x, y) {
                 
                 var index = corners[0].mId == this.mEnd.mId ? 1: 0;
                 
-                
                 var diffAngle = Vec2.IncludedAngleValue(Vec2.sub(this.mEnd.mPosition, corners[index].mPosition), Vec2.sub(this.mStart.mPosition, this.mEnd.mPosition));
                 if(_min > diffAngle) {
                     _min = diffAngle;
@@ -622,12 +604,13 @@ Segment.prototype.updatePosition = function(x, y) {
         ptE = new Vec2(pos1.mX + dis * Math.cos(angle + Math.PI / 2), pos1.mY + dis * Math.sin(angle + Math.PI / 2));
     
     }
-    ptS = Edge.getIntersection(s.getTheStartEndEdge(),  new Edge(ptS.clone(), ptE.clone()));
-    ptE = Edge.getIntersection(e.getTheStartEndEdge(),  new Edge(ptS.clone(), ptE.clone()));
+    var ptS2 = Edge.getIntersection(s.getTheStartEndEdge(),  new Edge(ptS.clone(), ptE.clone()));
+    var ptE2 = Edge.getIntersection(e.getTheStartEndEdge(),  new Edge(ptS.clone(), ptE.clone()));
+    
     
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-
+    
     if (Vec2.distance(ptS, ptE) < 5) {
         return true;
     }

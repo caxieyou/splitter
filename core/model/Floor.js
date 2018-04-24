@@ -393,27 +393,44 @@ Floor.prototype.transferJsonToGeom = function(data) {
         var points = [];
         for (var j = 0; j < edges.length; j++) {
             var isRepeat = false;
+            
+            var edge = edges[j];
+            
+            if (!edge.mStart) {
+                edge = {};
+                var tmp = new Vec2(edges[j].mRadius * Math.cos(edges[j].mStartAngle),edges[j].mRadius * Math.sin(edges[j].mStartAngle));
+                var s = Vec2.add(edges[j].mCenter, tmp);
+                
+                edge.mStart = s;
+                
+                tmp = new Vec2(edges[j].mRadius * Math.cos(edges[j].mStartAngle + edges[j].mArcAngle),edges[j].mRadius * Math.sin(edges[j].mStartAngle + edges[j].mArcAngle));
+                var e = Vec2.add(edges[j].mCenter, tmp);
+                
+                edge.mEnd = e;
+            }
+            
+            
             for (var m = 0; m < points.length; m++) {
-                if (MyNumber.isEqual(points[m].mX, edges[j].mStart.mX) && MyNumber.isEqual(points[m].mY, edges[j].mStart.mY)) {
+                if (MyNumber.isEqual(points[m].mX, edge.mStart.mX) && MyNumber.isEqual(points[m].mY, edge.mStart.mY)) {
                     isRepeat = true;
                     break;
                 }
             }
             
             if (!isRepeat) {
-                points.push(new Vec2(edges[j].mStart.mX, edges[j].mStart.mY));
+                points.push(new Vec2(edge.mStart.mX, edge.mStart.mY));
             }
             
             isRepeat = false;
             for (var m = 0; m < points.length; m++) {
-                if (MyNumber.isEqual(points[m].mX, edges[j].mEnd.mX) && MyNumber.isEqual(points[m].mY, edges[j].mEnd.mY)) {
+                if (MyNumber.isEqual(points[m].mX, edge.mEnd.mX) && MyNumber.isEqual(points[m].mY, edge.mEnd.mY)) {
                     isRepeat = true;
                     break;
                 }
             }
             
             if (!isRepeat) {
-                points.push(new Vec2(edges[j].mEnd.mX, edges[j].mEnd.mY));
+                points.push(new Vec2(edge.mEnd.mX, edge.mEnd.mY));
             }
         }
         res.heights.push(data.areas[i].mHeight);
@@ -887,9 +904,9 @@ Floor.prototype._renderZoneSize = function(segments, validIndex, renderer) {
             start.addBy(offvec);
             end.addBy(offvec);
         }
-        if (validIndex.indexOf(i) > -1) {
+        //if (validIndex.indexOf(i) > -1) {
             renderer.drawDimensions({x: start.mX,y: start.mY}, {x: end.mX,y: end.mY});
-        }
+        //}
     }
 }
 

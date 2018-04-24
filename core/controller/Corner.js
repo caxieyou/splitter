@@ -48,14 +48,14 @@ Corner.prototype.removeElement = function(param1)
 
 Corner.prototype.updatePosition = function(x, y, isSnap)
 {
-    /*
+    
     var arc = [];
     for (var i = 0; i < this.mElements.length; i++) {
         if (this.mElements[i] instanceof Arc) {
             arc.push(this.mElements[i].getCurve().mArcAngle);
         }
     }
-    */
+    
     if (this.mFloor) {
 
         var curves = this.mFloor.mElements;
