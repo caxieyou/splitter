@@ -176,7 +176,7 @@ body {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: #2E3940;
+    background-color: #FFFFFF;
     margin-left: 10px;
     color: #FFFFFF;
     text-align: center;
@@ -184,12 +184,57 @@ body {
     cursor: pointer;
 }
 
+#splitter_container #props_wrap .props:hover {
+    background-color: #428bcb;
+}
+
 #splitter_container #props_wrap .props:nth-of-type(1) {
     margin-left: 0;
 }
 
 #splitter_container #props_wrap .props .icon {
-    font-size: 30px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -15px;
+    margin-top: -15px;
+    width: 30px;
+    height: 30px;
+    background-position: center;
+    background-size: 20px 20px;
+    background-repeat: no-repeat;
+}
+
+#splitter_container #props_wrap .props .icon-division {
+    background-image: url('../images/split_defaulte.png');
+}
+
+#splitter_container #props_wrap .props .icon-division:hover {
+    background-image: url('../images/split_hover.png');
+}
+
+#splitter_container #props_wrap .props .icon-curve {
+    background-image: url('../images/merge_defaulte.png');
+}
+
+#splitter_container #props_wrap .props .icon-curve:hover {
+    background-image: url('../images/merge_hover.png');
+}
+
+#splitter_container #props_wrap .props .icon-straight {
+    background-image: url('../images/split_defaulte.png');
+}
+
+#splitter_container #props_wrap .props .icon-straight:hover {
+    background-image: url('../images/split_hover.png');
+}
+
+#splitter_container #props_wrap .props .icon-delete {
+    background-image: url('../images/clean_defaulte.png');
+}
+
+#splitter_container #props_wrap .props .icon-delete:hover {
+    background-image: url('../images/clean_hover.png');
 }
 
 #splitter_container #props_wrap .props .pup {
