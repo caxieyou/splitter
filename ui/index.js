@@ -355,7 +355,7 @@ $(function() {
     };
     window.addEventListener('keydown', function (e) { 
         var keyID = e.keyCode ? e.keyCode :e.which; 
-        if (keyID === 8) {
+        if (keyID === 8 || keyID === 46) {
             canvas.deleteFocus();
             $('#props_wrap').hide();
         }
