@@ -51,7 +51,7 @@ ElementProcessor.prototype.onToLine = function(param1)
     
     this.mFloor.addElement(_loc6_);
     this.mFloor.removeElement(param1);
-    this.mFloor.AnalysisFloor.ANALYSIS_CHANGE();
+    this.mFloor.Analysis(Floor.ANALYSIS_CHANGE);
     this.mFloor.clearPickedArea();
 }
 

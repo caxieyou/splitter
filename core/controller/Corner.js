@@ -102,12 +102,10 @@ Corner.prototype.updatePosition = function(x, y, isSnap)
                     //垂直水平吸附
                     if (MyNumber.isEqual(x , pos.mX, Globals.SNAPPING_THRESHOLD)) {
                         x = pos.mX;
-                        break;
                     }
                     
                     if (MyNumber.isEqual(y , pos.mY, Globals.SNAPPING_THRESHOLD)) {
                         y = pos.mY;
-                        break;
                     }
                 }
             }

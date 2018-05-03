@@ -365,6 +365,7 @@ Canvas.prototype.onToArc = function() {
 Canvas.prototype.onDelete = function() {
     this._mElementProcessor.onDelete(this._mProcessElement);
     this._mProcessElement = null;
+    this._mSnap.clearFocus();
     this._record();
     this.render();
 }

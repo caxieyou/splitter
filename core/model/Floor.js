@@ -828,6 +828,7 @@ Floor.prototype._seperateType = function() {
     }
     return [curves, segments, boundries, validSegmentIndex, validCurveIndex];
 }
+
 Floor.prototype.renderPickedArea = function(renderer) {
     if (this.mPickedIndex == -1/*!this.mPickedArea*/) {
         return;
@@ -922,6 +923,7 @@ Floor.prototype._renderCurveHeight = function(curves, validCurveIndex, canvas, r
         }
     }
 }
+
 Floor.prototype._isWithinSameArea = function(seg0, seg1) {
     var segments = this.mAreasControllers[this.mPickedIndex];
     var s0 = false;
@@ -952,6 +954,7 @@ Floor.prototype._renderRelativeDistance = function(segments, validIndex, canvas,
         
         var isHorizontalObj = Angle.isHorizontal(angleObj);
         var isVerticalObj = Angle.isVertical(angleObj);
+        var relativeDistance = [];
         
         for (var j = 0; j < segments.length; j++) {
             
@@ -964,7 +967,7 @@ Floor.prototype._renderRelativeDistance = function(segments, validIndex, canvas,
             var angleSbj = edgeSbj.getAngle();
             
             var isHorizontalSbj = Angle.isHorizontal(angleSbj);
-            var isVerticalObSbj = Angle.isVertical(angleSbj);
+            var isVerticalSbj = Angle.isVertical(angleSbj);
             
             var maxDis = -Number.MAX_VALUE;
             var sign = 0;
@@ -977,7 +980,7 @@ Floor.prototype._renderRelativeDistance = function(segments, validIndex, canvas,
                     direction = 0;
                 }
                 
-                if (isVerticalObj && isVerticalObSbj && Edge.getValidVerticalSection(edgeObj, edgeSbj, markLine)) {
+                if (isVerticalObj && isVerticalSbj && Edge.getValidVerticalSection(edgeObj, edgeSbj, markLine)) {
                     direction = 1;
                 }
                 
@@ -1021,8 +1024,18 @@ Floor.prototype._renderRelativeDistance = function(segments, validIndex, canvas,
                                     }
                                 }
                             }
+                            var repeat = false;
+                            for (var q = 0; q < relativeDistance.length; q++) {
+                                if (MyNumber.isEqual(relativeDistance[i], sign * distance)) {
+                                    repeat = true;
+                                    break;
+                                }
+                            }
+                            if (!repeat) {
+                                relativeDistance.push(sign * distance);
+                            }
                             
-                            if (arcValid_i) {
+                            if (arcValid_i && !repeat) {
                                 renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - direction * sign * distance,y: center.mY  - (1 -  direction) * sign * distance}, null, true,
                                 Utility.DrawDimensionCallback, canvas, segments[i], null, sign * distance, direction);
                             }
@@ -1043,6 +1056,7 @@ Floor.prototype._renderAbosoluteDistance = function(segments, validIndex, boundr
         
         var isHorizontalObj = Angle.isHorizontal(angleObj);
         var isVerticalObj = Angle.isVertical(angleObj);
+        var abosoluteDistance = [];
         
         for (var j = 0; j < boundries.length; j++) {
             var segmentSbj = boundries[j];
@@ -1087,6 +1101,8 @@ Floor.prototype._renderAbosoluteDistance = function(segments, validIndex, boundr
                             }
                         }
                     }
+                    var repeat = false;
+                    
                     if(valid) {
                         var distance
                         if (direction == 0) {
@@ -1099,9 +1115,21 @@ Floor.prototype._renderAbosoluteDistance = function(segments, validIndex, boundr
                             maxDis = Math.abs(distance);
                             center = markLine.mStart.clone();
                         }
+                        
+                        var repeat = false;
+                        for (var  n= 0; n < abosoluteDistance.length; n++) {
+                            if (MyNumber.isEqual(abosoluteDistance[n], sign * maxDis)) {
+                                repeat = true;
+                                break;
+                            }
+                        }
+                        if (!repeat) {
+                            abosoluteDistance.push(sign * maxDis);
+                        }
+                        
                     }
                     
-                    if (maxDis > -Number.MAX_VALUE) {
+                    if (maxDis > -Number.MAX_VALUE && !repeat) {
                         renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - direction * sign * maxDis, y: center.mY - (1- direction) * sign * maxDis}, null, true,
                         Utility.DrawDimensionCallback, canvas, segments[i], null, sign * maxDis, direction);
                     }

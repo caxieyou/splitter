@@ -31,6 +31,7 @@ $(function() {
     var moveStart = new Vec2(0, 0);
     var moveEnd = new Vec2(0, 0);
     var savedOffset = new Vec2(0, 0);
+    var isClickOnCanvas = false;
     savedOffset.copy(Globals.Offset);
     Globals.IsDragging = false;
     
@@ -42,6 +43,7 @@ $(function() {
             //左键
             if (canvas.isDraggable()) {
                 moveStart.set(event.offsetX, event.offsetY);
+                isClickOnCanvas = true;
             } 
             canvas.setStartPoint();
         } else if(btnNum == 2) {
@@ -52,7 +54,7 @@ $(function() {
 
     $(document).on('mouseup', '#splitter_container #canvas', function(event) {
         event = event || window.event;
-        
+        isClickOnCanvas = false;
         if (Globals.IsDragging) {
             var isMoved = true;
             if (Vec2.distance(moveStart, new Vec2(event.offsetX, event.offsetY)) < 4) {
@@ -124,7 +126,7 @@ $(function() {
         event = event || window.event;
         if(event.which == 1) {
             //按住拖动
-            if (canvas.isDraggable()) {
+            if (canvas.isDraggable() && isClickOnCanvas) {
                 Globals.IsDragging = true;
                 moveEnd.set(event.offsetX, event.offsetY);
                 
