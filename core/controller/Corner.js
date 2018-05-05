@@ -86,6 +86,10 @@ Corner.prototype.updatePosition = function(x, y, isSnap)
                     }
                 }
             }
+            
+            if (!this.mFloor.mProfile.contains(new Vec2(x, y)) && !this.mFloor.mProfile.mOutLines.pointInEdgeOrOnEdge(new Vec2(x, y))) {
+                return true;
+            }
         }
         
         if (isSnap) {

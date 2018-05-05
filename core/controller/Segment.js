@@ -98,7 +98,7 @@ Segment.prototype.updateInfo = function(param1)
       
 Segment.prototype.getTheStartEndEdge = function()
 {
-    return new Edge(this.mStart.mPosition,this.mEnd.mPosition);
+    return new Edge(this.mStart.mPosition.clone(),this.mEnd.mPosition.clone());
 }
 
 Segment.prototype.getGeom = function()
@@ -620,6 +620,15 @@ Segment.prototype.updatePosition = function(x, y) {
             left :  ((angle1 > (Math.PI * 5 / 6)) || (angle1 < (Math.PI / 6))) ? false : true ,
             right : ((angle2 > (Math.PI * 5 / 6)) || (angle2 < (Math.PI / 6))) ? false : true 
         };
+        
+        if (s.isBoundry) {
+            Segment.Record.left = true;
+        }
+        
+        if (e.isBoundry) {
+            Segment.Record.right = true;
+        }
+        
     }
     
     var ptS2;
@@ -666,8 +675,9 @@ Segment.prototype.updatePosition = function(x, y) {
     if (illegal) {
         return true;
     } else {
-        coners[0].updatePosition(ptS2.mX, ptS2.mY);
-        coners[1].updatePosition(ptE2.mX, ptE2.mY);
+        var r1 = coners[0].updatePosition(ptS2.mX, ptS2.mY);
+        var r2 = coners[1].updatePosition(ptE2.mX, ptE2.mY);
+        return (r1 || r2);
     }
 }
 

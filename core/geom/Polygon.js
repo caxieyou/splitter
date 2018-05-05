@@ -409,7 +409,20 @@ Polygon.prototype.isIncludedPolygon = function(param1)
     }
     return true;
 }
-
+Polygon.prototype.pointInEdgeOrOnEdge = function(point) {
+    var _loc4_ = this.getSize();
+    var _loc6_ = 0;
+    while(_loc6_ < _loc4_)
+    {
+        _loc7_ = new Edge(this.mVertices[_loc6_],this.mVertices[(_loc6_ + 1) % _loc4_]);
+        
+        if (_loc7_.pointInEdgeOrOnEdge(point)) {
+            return true;
+        }
+        _loc6_++;
+    }
+    return false;
+}
 Polygon.prototype.isIntersected = function(param1)
 {
     var _loc7_ = null;
