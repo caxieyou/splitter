@@ -1024,6 +1024,7 @@ Floor.prototype._renderRelativeDistance = function(segments, validIndex, canvas,
                                     }
                                 }
                             }
+                            /*
                             var repeat = false;
                             for (var q = 0; q < relativeDistance.length; q++) {
                                 if (MyNumber.isEqual(relativeDistance[i], sign * distance)) {
@@ -1034,16 +1035,64 @@ Floor.prototype._renderRelativeDistance = function(segments, validIndex, canvas,
                             if (!repeat) {
                                 relativeDistance.push(sign * distance);
                             }
-                            
+                            */
                             if (arcValid_i && !repeat) {
+                                
+                                
+                                
+                                var repeat = false;
+                                for (var  n= 0; n < relativeDistance.length; n++) {
+                                    if (MyNumber.isEqual(relativeDistance[n].signDistance, sign * distance) && 
+                                        relativeDistance[n].direction === direction && 
+                                        relativeDistance[n].sign === sign && 
+                                        relativeDistance[n].maxDis === maxDis && 
+                                        relativeDistance[n].obj.mId === segments[i].mId
+                                        ) {
+                                        relativeDistance[n].centers.push(center);
+                                        repeat = true;
+                                    }
+                                }
+                                
+                                if (!repeat) {
+                                    relativeDistance.push( {
+                                        signDistance  : sign * distance,
+                                        direction     : direction,
+                                        sign          : sign,
+                                        distance      : distance,
+                                        obj           : segments[i],
+                                        centers       : [center]
+                                        }
+                                    );
+                                }
+                                
+                                /*
                                 renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - direction * sign * distance,y: center.mY  - (1 -  direction) * sign * distance}, null, true,
                                 Utility.DrawDimensionCallback, canvas, segments[i], null, sign * distance, direction);
+                                */
                             }
                         }
                     }
                 }
             }
         }
+        
+        
+        for (var x = 0; x < relativeDistance.length; x++) {
+            
+            var r = relativeDistance[x];
+            var centers = new Vec2(0, 0);
+            for (var y = 0; y < relativeDistance[x].centers.length; y++) {
+                centers = Vec2.add(centers, relativeDistance[x].centers[y]);
+            }
+            centers.mX /= relativeDistance[x].centers.length;
+            centers.mY /= relativeDistance[x].centers.length;
+            
+            renderer.drawDimensions({x: centers.mX,y: centers.mY}, {x: centers.mX - r.direction * r.sign * r.distance, y: centers.mY - (1- r.direction) * r.sign * r.distance}, null, true,
+                        Utility.DrawDimensionCallback, canvas, r.obj, null, r.sign * r.distance, r.direction);
+        }
+        
+        
+        
     }
 }
 
