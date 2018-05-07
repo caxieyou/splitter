@@ -623,13 +623,14 @@ Segment.prototype.updatePosition = function(x, y) {
         
         var angleS = s.getAngle();
         var angleE = e.getAngle();
-        if (s.isBoundry || Angle.isHorizontal(angleS) || Angle.isHorizontal(angleS))  {
+        if (s.isBoundry )  {
             Segment.Record.left = true;
         }
         
-        if (e.isBoundry || Angle.isHorizontal(angleE) || Angle.isHorizontal(angleE))  {
+        if (e.isBoundry )  {
             Segment.Record.right = true;
         }
+        
     }
     
     var ptS2;

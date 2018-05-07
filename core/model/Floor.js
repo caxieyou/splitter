@@ -1094,21 +1094,21 @@ Floor.prototype._renderAbosoluteDistance = function(segments, validIndex, boundr
                         }
                         var intersects = [];
                         if (Segment.isIntersectWith(markLine, this.mElements[m], intersects)) {
-                            if (intersects.length > 0 && !Vec2.isEqual(intersects[0], markLine.mEnd) && this._isWithinSameArea(segments[i],this.mElements[m]))
+                            if (intersects.length > 0 && !Vec2.isEqual(intersects[0], markLine.mEnd) && this._isWithinSameArea(segmentObj,this.mElements[m]))
                             {
                                 valid = false;
                                 continue;
                             }
                         }
                     }
-                    var repeat = false;
+                    
                     
                     if(valid) {
                         var distance
                         if (direction == 0) {
-                            distance = segments[i].mStart.mPosition.mY - boundries[j].mStart.mPosition.mY;
+                            distance = segmentObj.mStart.mPosition.mY - boundries[j].mStart.mPosition.mY;
                         } else {
-                            distance = segments[i].mStart.mPosition.mX - boundries[j].mStart.mPosition.mX;
+                            distance = segmentObj.mStart.mPosition.mX - boundries[j].mStart.mPosition.mX;
                         }
                         if (maxDis < Math.abs(distance)) {
                             sign = Math.sign(distance);
@@ -1116,26 +1116,56 @@ Floor.prototype._renderAbosoluteDistance = function(segments, validIndex, boundr
                             center = markLine.mStart.clone();
                         }
                         
-                        var repeat = false;
-                        for (var  n= 0; n < abosoluteDistance.length; n++) {
-                            if (MyNumber.isEqual(abosoluteDistance[n], sign * maxDis)) {
-                                repeat = true;
-                                break;
-                            }
-                        }
-                        if (!repeat) {
-                            abosoluteDistance.push(sign * maxDis);
-                        }
                         
                     }
                     
-                    if (maxDis > -Number.MAX_VALUE && !repeat) {
-                        renderer.drawDimensions({x: center.mX,y: center.mY}, {x: center.mX - direction * sign * maxDis, y: center.mY - (1- direction) * sign * maxDis}, null, true,
-                        Utility.DrawDimensionCallback, canvas, segments[i], null, sign * maxDis, direction);
+                    if (maxDis > -Number.MAX_VALUE) {
+                        
+                        var repeat = false;
+                        for (var  n= 0; n < abosoluteDistance.length; n++) {
+                            if (MyNumber.isEqual(abosoluteDistance[n].distance, sign * maxDis) && 
+                                abosoluteDistance[n].direction === direction && 
+                                abosoluteDistance[n].sign === sign && 
+                                abosoluteDistance[n].maxDis === maxDis && 
+                                abosoluteDistance[n].obj.mId === segmentObj.mId
+                                ) {
+                                abosoluteDistance[n].centers.push(center);
+                                repeat = true;
+                            }
+                        }
+                        if (!repeat) {
+                            abosoluteDistance.push( {
+                                distance  : sign * maxDis,
+                                direction : direction,
+                                sign      : sign,
+                                maxDis    : maxDis,
+                                obj       : segmentObj,
+                                centers   : [center]
+                                }
+                            );
+                        }
                     }
                 }
             }
         }
+        
+        for (var x = 0; x < abosoluteDistance.length; x++) {
+            
+            var r = abosoluteDistance[x];
+            var centers = new Vec2(0, 0);
+            for (var y = 0; y < abosoluteDistance[x].centers.length; y++) {
+                centers = Vec2.add(centers, abosoluteDistance[x].centers[y]);
+            }
+            centers.mX /= abosoluteDistance[x].centers.length;
+            centers.mY /= abosoluteDistance[x].centers.length;
+            
+            renderer.drawDimensions({x: centers.mX,y: centers.mY}, {x: centers.mX - r.direction * r.sign * r.maxDis, y: centers.mY - (1- r.direction) * r.sign * r.maxDis}, null, true,
+                        Utility.DrawDimensionCallback, canvas, r.obj, null, r.sign * r.maxDis, r.direction);
+        }
+        
+        
+        
+        
     }
 }
 
