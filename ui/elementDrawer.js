@@ -366,6 +366,15 @@ ElementDrawer.prototype.lineOperationEnd = function(point, hintPoints) {
     if (this.mStatus == STATUS.LINE_DRAWING) {
         //1. set edge
         this.mLine._currentLine.mEnd.copy(point);
+        
+        if (MyNumber.isEqual(this.mLine._currentLine.mEnd.mX, this.mLine._currentLine.mStart.mX, Globals.SNAPPING_THRESHOLD)) {
+            this.mLine._currentLine.mEnd.mX = this.mLine._currentLine.mStart.mX;
+        }
+        if (MyNumber.isEqual(this.mLine._currentLine.mEnd.mY, this.mLine._currentLine.mStart.mY, Globals.SNAPPING_THRESHOLD)) {
+            this.mLine._currentLine.mEnd.mY = this.mLine._currentLine.mStart.mY;
+        }
+        
+        
         var intersects = [];
         for (var i = 0; i < curves.length; i++) {
             if (curves[i].containsPoint(point)) {
@@ -376,7 +385,6 @@ ElementDrawer.prototype.lineOperationEnd = function(point, hintPoints) {
         for (var i = 0; i < curves.length; i++) {
             var curve = curves[i];
             curve.isIntersectWithGeometry(this.mLine._currentLine, intersects);
-            
         }
         
         this.mLine.intersect(intersects);

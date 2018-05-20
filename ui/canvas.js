@@ -102,7 +102,7 @@ Canvas.prototype._renderCurrentPrimitive = function(foucs) {
             if (edges.length > 0 && this._mElmentDrawer.mStatus == STATUS.LINE_DRAWING) {
                 var lastEdge = edges[edges.length - 1];
                 this._mRenderer.drawSegment(lastEdge, true, Utility.DrawLineCallback, this, lastEdge);
-            }   
+            }
             
             if (eLine) {
                 this._mRenderer.drawLine(eLine, Style.OverLine.isDash, Style.OverLine.color);
@@ -191,10 +191,8 @@ Canvas.prototype.setStartPoint = function() {
         console.log("START POINT OUTSIDE OF ROOM!");
         return;
     }
-    
     if (this._mElmentDrawer.lineOperationStart(this._mSnap.mouseSnapped)) {
         this._mEdge.mStart.copy(this._mSnap.mouseSnapped);
-        
     }
 }
 
@@ -208,6 +206,7 @@ Canvas.prototype.setEndPoint = function() {
     }
 
     if (this._mElmentDrawer.lineOperationEnd(this._mSnap.mouseSnapped, this._mHintPoints)) {
+        
         this._mEdge.mEnd.copy(this._mSnap.mouseSnapped);
         
         if (this._mEdge.getLength() < 0.0001) {
