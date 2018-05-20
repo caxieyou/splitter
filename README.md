@@ -5,69 +5,69 @@ develop branch for develop
 This is the project for 2D splitter tool for editing room areas.
 File structure: 
 
-.
-├── .idea
-│   ├── .name
-│   ├── modules.xml
-│   ├── region-ui.iml
-│   ├── workspace.xml
-│
-├── common
-│   ├── css
-│   ├── images
-│   ├── plug
-│   
-├── controller
-│   ├── index.js
-│
-├── core
-│   ├── controller
-│   │   ├──Arc.js                       //the arc class, the geom is a curve behind it, includes start corner, end corner, and a control point.
-│   │   ├──Area.js                      //Includes all the elements in forming the area
-│   │   ├──Auxiliary.js                 //A help tool class, to get the intersection points between elements, segment vs curve, curve vs curve and so on
-│   │   ├──Corner.js                    //the corner class, contains of it's position and all the elements connected to it
-│   │   ├──ElementProcessor.js          //a class to deal with the split, delete, and transfer from arc to segment, segment to arc and so on
-│   │   ├──ID.js                        //assign a unique ID to all the elements
-│   │   ├──Segment.js                   //the segement class, an edge, includs the start point, and the end point.
-│   │
-│   ├── geom
-│   │   ├──Angle.js                     //angle class and it's help functions
-│   │   ├──AuxiliaryCurve.js            //help tool to get the relationship between curve and other geom
-│   │   ├──AuxiliaryPoint.js            //help tool to get the relationship point curve and other geom
-│   │   ├──AuxiliarySort.js             //order the elements with one corner and form the closed shape of a path, really important
-│   │   ├──Circle.js                    //circle class, center and radius
-│   │   ├──Curve.js                     //curve class, has center, radius, and start angle and arc length
-│   │   ├──Edge.js                      //edge class, start and end point
-│   │   ├──EdgeCollision.js             //help tool to get the relationship between two edges, really important
-│   │   ├──Interval.js                  //a range class, inlcuds start and end.
-│   │   ├──Map.js                       //map class to sort and save elements
-│   │   ├──MyArray.js                   //array class to save elements
-│   │   ├──MyMath.js                    //math class to wrap the js math
-│   │   ├──MyNumber.js                  //number class to wrap the js number
-│   │   ├──Path.js                      //a path class which contains the start position and all the point, edges, curve to form a closed shape
-│   │   ├──Polygon.js                   //a polygon class
-│   │   ├──Polytree.js                  //a polytree class, which could contains several holes
-│   │   ├──Rect.js                      //rectangle class
-│   │   ├──Vec2.js                      //point class
-│   │   
-│   ├── model
-│   │   ├──Analysis.js                  //the analysis class which will add the elements into floor as a whole part, it will connect all the elements, add, delete all the reletive ones in its range.
-│   │   │                               //such as, when add a curve, it will add the curve to it's corners, and add the area to both of them too, also the floor container will add these pieces.
-│   │   ├──Floor.js                     //the container of all the elements, and deal with frontend drawing logic, take the renderer and draw the elements in their correct form
-│   │   ├──Splitter.js                  //the splitter will add the geom into analysis and check overlap, duplicated situations
-│
-├── ui
-│   ├── canvas.js                       //the canvas, wrap the h5 canvas and the frontend logic
-│   ├── elementDrawer.js                //deal with the UI logic of draw line, rect and circle
-│   ├── globals.js                      //global var, and style parameters
-│   ├── index.js                
-│   ├── renderer.js                     //render tool, to call the native h5 function
-│   ├── snap.js                         //do the snap work when mouse move, it will move the closest position which has geom meanings
-│   ├── utility.js                      //callback function list to deal with the input of changing the length
-│
-├── index.html                          //index page of h5 which shows the page
-│
-├── README.md
+.</br>
+├── .idea</br>
+│   ├── .name</br>
+│   ├── modules.xml</br>
+│   ├── region-ui.iml</br>
+│   ├── workspace.xml</br>
+│</br>
+├── common</br>
+│   ├── css</br>
+│   ├── images</br>
+│   ├── plug</br>
+│   </br>
+├── controller</br>
+│   ├── index.js</br>
+│</br>
+├── core</br>
+│   ├── controller</br>
+│   │   ├──Arc.js                       //the arc class, the geom is a curve behind it, includes start corner, end corner, and a control point.</br>
+│   │   ├──Area.js                      //Includes all the elements in forming the area</br>
+│   │   ├──Auxiliary.js                 //A help tool class, to get the intersection points between elements, segment vs curve, curve vs curve and so on</br>
+│   │   ├──Corner.js                    //the corner class, contains of it's position and all the elements connected to it</br>
+│   │   ├──ElementProcessor.js          //a class to deal with the split, delete, and transfer from arc to segment, segment to arc and so on</br>
+│   │   ├──ID.js                        //assign a unique ID to all the elements</br>
+│   │   ├──Segment.js                   //the segement class, an edge, includs the start point, and the end point.</br>
+│   │</br>
+│   ├── geom</br>
+│   │   ├──Angle.js                     //angle class and it's help functions</br>
+│   │   ├──AuxiliaryCurve.js            //help tool to get the relationship between curve and other geom</br>
+│   │   ├──AuxiliaryPoint.js            //help tool to get the relationship point curve and other geom</br>
+│   │   ├──AuxiliarySort.js             //order the elements with one corner and form the closed shape of a path, really important</br>
+│   │   ├──Circle.js                    //circle class, center and radius</br>
+│   │   ├──Curve.js                     //curve class, has center, radius, and start angle and arc length</br>
+│   │   ├──Edge.js                      //edge class, start and end point</br>
+│   │   ├──EdgeCollision.js             //help tool to get the relationship between two edges, really important</br>
+│   │   ├──Interval.js                  //a range class, inlcuds start and end.</br>
+│   │   ├──Map.js                       //map class to sort and save elements</br>
+│   │   ├──MyArray.js                   //array class to save elements</br>
+│   │   ├──MyMath.js                    //math class to wrap the js math</br>
+│   │   ├──MyNumber.js                  //number class to wrap the js number</br>
+│   │   ├──Path.js                      //a path class which contains the start position and all the point, edges, curve to form a closed shape</br>
+│   │   ├──Polygon.js                   //a polygon class</br>
+│   │   ├──Polytree.js                  //a polytree class, which could contains several holes</br>
+│   │   ├──Rect.js                      //rectangle class</br>
+│   │   ├──Vec2.js                      //point class</br>
+│   │   </br>
+│   ├── model</br>
+│   │   ├──Analysis.js                  //the analysis class which will add the elements into floor as a whole part, it will connect all the elements, add, delete all the reletive ones in its range.</br>
+│   │   │                               //such as, when add a curve, it will add the curve to it's corners, and add the area to both of them too, also the floor container will add these pieces.</br>
+│   │   ├──Floor.js                     //the container of all the elements, and deal with frontend drawing logic, take the renderer and draw the elements in their correct form</br>
+│   │   ├──Splitter.js                  //the splitter will add the geom into analysis and check overlap, duplicated situations</br>
+│</br>
+├── ui</br>
+│   ├── canvas.js                       //the canvas, wrap the h5 canvas and the frontend logic</br>
+│   ├── elementDrawer.js                //deal with the UI logic of draw line, rect and circle</br>
+│   ├── globals.js                      //global var, and style parameters</br>
+│   ├── index.js                </br>
+│   ├── renderer.js                     //render tool, to call the native h5 function</br>
+│   ├── snap.js                         //do the snap work when mouse move, it will move the closest position which has geom meanings</br>
+│   ├── utility.js                      //callback function list to deal with the input of changing the length</br>
+│</br>
+├── index.html                          //index page of h5 which shows the page</br>
+│</br>
+├── README.md</br>
 
 
 Basic Data Organization:
