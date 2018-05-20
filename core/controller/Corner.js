@@ -122,6 +122,8 @@ Corner.prototype.updatePosition = function(x, y, isSnap)
     for (var i = 0; i < this.mElements.length; i++) {
         if (this.mElements[i] instanceof Arc) {
             this.mElements[i].adjustCurve(arc[idx]);
+            var pt0 = this.mElements[i].getCenter();
+            var pt1 = this.mElements[i].getTheStartEndEdge().getCenter();
             idx++;
         }
     }

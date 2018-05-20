@@ -730,8 +730,6 @@ Floor.prototype.matchHeight = function(points, heights) {
     }
 }
 
-
-
 Floor.prototype.updatePosition = function(sub, newPos) {
     var lastRecord = null;
     if (sub instanceof Array) {
@@ -907,6 +905,17 @@ Floor.prototype._renderZoneSize = function(segments, validIndex, renderer) {
         }
         //if (validIndex.indexOf(i) > -1) {
             renderer.drawDimensions({x: start.mX,y: start.mY}, {x: end.mX,y: end.mY});
+        //}
+    }
+}
+
+Floor.prototype._renderCurveSize = function(curves, renderer) {
+    for (var i = 0; i < curves.length; i++) {
+        var pt0 = curves[i].getCenter();
+        var pt1 = curves[i].getTheStartEndEdge().getCenter();
+        
+        //if (validIndex.indexOf(i) > -1) {
+            renderer.drawDimensions({x: pt0.mX,y: pt0.mY}, {x: pt1.mX,y: pt1.mY});
         //}
     }
 }
@@ -1253,9 +1262,11 @@ Floor.prototype.renderMarkerLines = function(flags, renderer, canvas)  {
     //2. renderZoneSize
     if (flags.isZoneSizeEnabled) {
         this._renderZoneSize(segments, validSegmentIndex, renderer);
+        this._renderCurveSize(curves, renderer);
     }
     
     //3. renderCurveHeight and the callback
+    //有回调，可调节高度
     if (flags.isCrownHeightEnabled) {
         this._renderCurveHeight(curves, validCurveIndex, canvas, renderer);
     }
