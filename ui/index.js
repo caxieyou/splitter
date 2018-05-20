@@ -153,7 +153,7 @@ $(function() {
         event = event || window.event;
         var e = event.originalEvent;
         var newScale = Globals.Scale + e.wheelDelta * 0.0001;
-        newScale = Math.min(Math.max(newScale, 0.2), 2);
+        newScale = Math.min(Math.max(newScale, 0.1), 2);
         
         Globals.Offset.addBy(Globals.Size.mul((Globals.Scale - newScale) / 2));
         savedOffset.copy(Globals.Offset);

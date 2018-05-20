@@ -35,11 +35,11 @@ Canvas.prototype._initialize = function(forget) {
     if (!this._mProfile) {
         this._mProfile = [];
         this._mProfile.push(new Vec2(0, 0));
-        this._mProfile.push(new Vec2(800, 0));
-        this._mProfile.push(new Vec2(800, 400));
-        this._mProfile.push(new Vec2(400, 400));
-        this._mProfile.push(new Vec2(400, 800));
-        this._mProfile.push(new Vec2(0, 800));
+        this._mProfile.push(new Vec2(4000, 0));
+        this._mProfile.push(new Vec2(4000, 1600));
+        this._mProfile.push(new Vec2(1600, 1600));
+        this._mProfile.push(new Vec2(1600, 4000));
+        this._mProfile.push(new Vec2(0, 4000));
     }
 
     var poly = new Polygon(this._mProfile);
@@ -132,7 +132,7 @@ Canvas.prototype.resize = function(width, height) {
     var nH = Globals.Size.mY / s;
     
     Globals.Scale = 1 / s;
-    Globals.Scale = Math.min(Math.max(Globals.Scale, 0.2), 2);
+    Globals.Scale = Math.min(Math.max(Globals.Scale, 0.1), 2);
     Globals.Offset.mX = cX - nW / 2;
     Globals.Offset.mY = cY - nH / 2;
 }
