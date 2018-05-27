@@ -246,6 +246,7 @@ Canvas.prototype.SettingBack = function() {
         this._mRecordsForward.push(d);
         this.load(this._mRecordsCurrent[this._mRecordsCurrent.length - 1], true);
     }
+    this.toggleHeightUICallback(null, null, false);
     this._updateBackForwardUI();
 }
 
@@ -257,6 +258,7 @@ Canvas.prototype.SettingForward = function() {
         this._mRecordsCurrent.push(d);
         this.load(d, true);
     }
+    this.toggleHeightUICallback(null, null, false);
     this._updateBackForwardUI();
     
 }
