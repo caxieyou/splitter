@@ -922,6 +922,7 @@ Floor.prototype._renderCurveSize = function(curves, renderer) {
 
 //画内部标注线
 Floor.prototype._renderCurveHeight = function(curves, validCurveIndex, canvas, renderer) {
+    var ret = false;
     for (var i = 0; i < curves.length; i++) {
         var pt0 = curves[i].getCenter();
         var pt1 = curves[i].getTheStartEndEdge().getCenter();
@@ -929,8 +930,10 @@ Floor.prototype._renderCurveHeight = function(curves, validCurveIndex, canvas, r
         if (validCurveIndex.indexOf(i) > -1) {
             renderer.drawDimensions({x: pt0.mX,y: pt0.mY}, {x: pt1.mX,y: pt1.mY}, null, true, 
             Utility.DrawCurveHeightCallback, canvas, curves[i]);
+            ret = true;
         }
     }
+    return ret;
 }
 
 Floor.prototype._isWithinSameArea = function(seg0, seg1) {
@@ -1262,13 +1265,15 @@ Floor.prototype.renderMarkerLines = function(flags, renderer, canvas)  {
     //2. renderZoneSize
     if (flags.isZoneSizeEnabled) {
         this._renderZoneSize(segments, validSegmentIndex, renderer);
-        this._renderCurveSize(curves, renderer);
     }
     
     //3. renderCurveHeight and the callback
     //有回调，可调节高度
     if (flags.isCrownHeightEnabled) {
-        this._renderCurveHeight(curves, validCurveIndex, canvas, renderer);
+        var ret = this._renderCurveHeight(curves, validCurveIndex, canvas, renderer);
+        if (!ret) {
+            this._renderCurveSize(curves, renderer);
+        }
     }
     
     //4. render the segments's length and its callback
