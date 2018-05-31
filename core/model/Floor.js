@@ -1091,6 +1091,9 @@ Floor.prototype._renderRelativeDistance = function(segments, validIndex, canvas,
         
         for (var x = 0; x < relativeDistance.length; x++) {
             
+            if (MyNumber.isEqual(Math.abs(relativeDistance[i].distance), 0)) {
+                continue;
+            }
             var r = relativeDistance[x];
             var centers = new Vec2(0, 0);
             for (var y = 0; y < relativeDistance[x].centers.length; y++) {

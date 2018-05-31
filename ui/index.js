@@ -198,6 +198,7 @@ $(function() {
     $('#relative_distance').iCheck('uncheck');
     $('#absolute_margin').iCheck('check');
     $('#zone_size').iCheck('check');
+    $('#crown_height').iCheck('check');
     
     // 绝对边距和相对距离二选一事件
     $('#relative_distance').on('ifChecked', function(event) {

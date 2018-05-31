@@ -23,7 +23,7 @@ function Canvas(name, shape) {
        isRelativeDistanceEnabled : false,
        isAbosoluteMarginEnabled  : true,
        isZoneSizeEnabled         : true,
-       isCrownHeightEnabled      : false
+       isCrownHeightEnabled      : true
     };
     
     this._mRenderer.init(this._canvas);
