@@ -1091,7 +1091,7 @@ Floor.prototype._renderRelativeDistance = function(segments, validIndex, canvas,
         
         for (var x = 0; x < relativeDistance.length; x++) {
             
-            if (MyNumber.isEqual(Math.abs(relativeDistance[i].distance), 0)) {
+            if (MyNumber.isEqual(Math.abs(relativeDistance[x].distance), 0)) {
                 continue;
             }
             var r = relativeDistance[x];

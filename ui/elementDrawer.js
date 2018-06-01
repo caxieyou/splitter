@@ -329,6 +329,7 @@ ElementDrawer.prototype.lineOperationStart = function(point) {
         this.mStatus = STATUS.LINE_DRAWING;
         
     } else if (this.mStatus == STATUS.LINE_DRAWING) {
+        console.log(point);
         if (this.mLine._currentLine.mStart.equals(point.clone())) {
             return;
         }
@@ -373,7 +374,7 @@ ElementDrawer.prototype.lineOperationEnd = function(point, hintPoints) {
         if (MyNumber.isEqual(this.mLine._currentLine.mEnd.mY, this.mLine._currentLine.mStart.mY, Globals.SNAPPING_THRESHOLD)) {
             this.mLine._currentLine.mEnd.mY = this.mLine._currentLine.mStart.mY;
         }
-        
+        point.copy(this.mLine._currentLine.mEnd);
         
         var intersects = [];
         for (var i = 0; i < curves.length; i++) {

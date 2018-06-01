@@ -208,9 +208,7 @@ Canvas.prototype.setEndPoint = function() {
     }
 
     if (this._mElmentDrawer.lineOperationEnd(this._mSnap.mouseSnapped, this._mHintPoints)) {
-        
         this._mEdge.mEnd.copy(this._mSnap.mouseSnapped);
-        
         if (this._mEdge.getLength() < 0.0001) {
             return false;
         } else {
