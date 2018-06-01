@@ -158,6 +158,8 @@ $(function() {
         Globals.Offset.addBy(Globals.Size.mul((Globals.Scale - newScale) / 2));
         savedOffset.copy(Globals.Offset);
         Globals.Scale = newScale;
+        Globals.SNAPPING_THRESHOLD = Math.floor(Globals.SNAPPING_CORNER_CONSTANT / Globals.Scale);
+        Globals.SNAPPING_ELEMENT_THRESHOLD = Math.floor(Globals.SNAPPING_ELEMENT_CONSTANT / Globals.Scale);
         canvas.render();
     });
     

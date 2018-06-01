@@ -133,6 +133,8 @@ Canvas.prototype.resize = function(width, height) {
     
     Globals.Scale = 1 / s;
     Globals.Scale = Math.min(Math.max(Globals.Scale, 0.1), 2);
+    Globals.SNAPPING_THRESHOLD = Math.floor(Globals.SNAPPING_CORNER_CONSTANT / Globals.Scale);
+    Globals.SNAPPING_ELEMENT_THRESHOLD = Math.floor(Globals.SNAPPING_ELEMENT_CONSTANT / Globals.Scale);
     Globals.Offset.mX = cX - nW / 2;
     Globals.Offset.mY = cY - nH / 2;
 }
@@ -325,7 +327,7 @@ Canvas.prototype.renderAreaPicked = function(x, y) {
 Canvas.prototype.isMouseMoved = function(x, y) {
     [x, y] = ScaleMouse(x, y);
     var p = new Vec2(x, y);
-    if (p.distance(this._mSnap.mouseSnapped) > Globals.DISTANCE_THRESHOLD ) {
+    if (p.distance(this._mSnap.mouseSnapped) > Globals.SNAPPING_THRESHOLD ) {
         return true;
     } else {
         return false;
@@ -335,7 +337,7 @@ Canvas.prototype.isMouseMoved = function(x, y) {
 Canvas.prototype.recordMouseUp = function(x, y) {
     [x, y] = ScaleMouse(x, y);
     var p = new Vec2(x, y);
-    if (p.distance(this._mSnap.mouseSnapped) > Globals.DISTANCE_THRESHOLD ) {
+    if (p.distance(this._mSnap.mouseSnapped) > Globals.SNAPPING_THRESHOLD ) {
         //this._focus = null;
         this._mSnap.clearFocus();
     }

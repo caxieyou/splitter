@@ -41,7 +41,7 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
     if (type != null) {
         //1 和角点比
         for (var i = 0; i < this.mFloor.mCorners.length; i++) {
-            if (this.mFloor.mCorners[i].mPosition.isClose(this.mouseSnapped, Globals.DISTANCE_THRESHOLD)) {
+            if (this.mFloor.mCorners[i].mPosition.isClose(this.mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
                 this.mouseSnapped.copy(this.mFloor.mCorners[i].mPosition);
                 this.mFocus.keypoint = this.mFloor.mCorners[i].mPosition.clone();
                 break;
@@ -51,7 +51,7 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
         //2 和重心，中点比
         if (this.mFocus.keypoint == null) {
             for (var i = 0; i < this.mFloor.mKeyPoints.length; i++) {
-                if (this.mFloor.mKeyPoints[i].isClose(this.mouseSnapped, Globals.DISTANCE_THRESHOLD)) {
+                if (this.mFloor.mKeyPoints[i].isClose(this.mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
                     this.mouseSnapped.copy(this.mFloor.mKeyPoints[i]);
                     this.mFocus.keypoint = this.mFloor.mKeyPoints[i].clone();
                     break;
@@ -66,7 +66,7 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
                 var edge;
                 if (curve instanceof Segment) {
                     var edge = curve.getTheStartEndEdge();
-                    if (edge.pointInEdgeOrOnEdge(this.mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
+                    if (edge.pointInEdgeOrOnEdge(this.mouseSnapped, Globals.SNAPPING_ELEMENT_THRESHOLD)) {
                         var point = edge.getIntersectionPointByPoint(this.mouseSnapped, true);
                         this.mouseSnapped.copy(point);
                         this.mFocus.hintpoint = point.clone();
@@ -74,7 +74,7 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
                     }
                 } else if(curve instanceof Arc) {
                     var edge = curve.getCurve();
-                    if (edge.isInsideCurveAndNotOnCurve(this.mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
+                    if (edge.isInsideCurveAndNotOnCurve(this.mouseSnapped, Globals.SNAPPING_ELEMENT_THRESHOLD)) {
                         var point = edge.getIntersectionPointByPoint(this.mouseSnapped, true);
                         this.mouseSnapped.copy(point);
                         this.mFocus.hintpoint = point.clone();
@@ -123,7 +123,7 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
             }
         }
         
-        var min = Globals.DISTANCE_THRESHOLD;
+        var min = Globals.SNAPPING_THRESHOLD;
         for (var i = 0; i < snapY.length; i++) {
             var dis = Math.abs(snapY[i].mStart.mY - y);
             if (dis <= min) {
@@ -134,7 +134,7 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
             }
         }
         
-        min = Globals.DISTANCE_THRESHOLD;
+        min = Globals.SNAPPING_THRESHOLD;
         for (var i = 0; i < snapX.length; i++) {
             var dis = Math.abs(snapX[i].mStart.mX - x);
             if (dis <= min) {
@@ -164,7 +164,7 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
     } else {
         //1 和角点比
         for (var i = 0; i < this.mFloor.mCorners.length; i++) {
-            if (this.mFloor.mCorners[i].mPosition.isClose(this.mouseSnapped, Globals.DISTANCE_THRESHOLD) && !this.mFloor.mCorners[i].isBoundryCorner()) {
+            if (this.mFloor.mCorners[i].mPosition.isClose(this.mouseSnapped, Globals.SNAPPING_THRESHOLD) && !this.mFloor.mCorners[i].isBoundryCorner()) {
                 this.mouseSnapped.copy(this.mFloor.mCorners[i].mPosition);
                 this.mFocus.controller = this.mFloor.mCorners[i];
                 this.mFocus.geom = this.mFloor.mCorners[i].mPosition.clone();
@@ -177,7 +177,7 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
         //2 和重心，中点比
         if (this.mFocus.keypoint == null) {
             for (var i = 0; i < this.mFloor.mKeyPoints.length; i++) {
-                if (this.mFloor.mKeyPoints[i].isClose(this.mouseSnapped, Globals.DISTANCE_THRESHOLD)) {
+                if (this.mFloor.mKeyPoints[i].isClose(this.mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
                     this.mouseSnapped.copy(this.mFloor.mKeyPoints[i]);
                     this.mFocus.keypoint = this.mFloor.mKeyPoints[i].clone();
                     break;
@@ -192,14 +192,14 @@ Snap.prototype.snap = function(x, y, type, isSnap, lines) {
                 var edge;
                 if (curve instanceof Segment && !curve.isBoundry) {
                     var edge = curve.getTheStartEndEdge();
-                    if (edge.pointInEdgeOrOnEdge(this.mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
+                    if (edge.pointInEdgeOrOnEdge(this.mouseSnapped, Globals.SNAPPING_ELEMENT_THRESHOLD)) {
                         this.mFocus.controller = curve;
                         this.mFocus.geom = edge;
                         break;
                     }
                 } else if(curve instanceof Arc) {
                     var edge = curve.getCurve();
-                    if (edge.isInsideCurveAndNotOnCurve(this.mouseSnapped, Globals.SNAPPING_THRESHOLD)) {
+                    if (edge.isInsideCurveAndNotOnCurve(this.mouseSnapped, Globals.SNAPPING_ELEMENT_THRESHOLD)) {
                         this.mFocus.controller = curve;
                         this.mFocus.geom = edge;
                         break;

@@ -2,8 +2,10 @@
 
 var Globals = {};
 
+Globals.SNAPPING_CORNER_CONSTANT = 10;
 Globals.SNAPPING_THRESHOLD = 60;
-Globals.DISTANCE_THRESHOLD = 60;
+Globals.SNAPPING_ELEMENT_CONSTANT = 3;
+Globals.SNAPPING_ELEMENT_THRESHOLD = 20;
 Globals.Scale = 1;
 Globals.Size = new Vec2(4000, 4000);
 Globals.Offset = new Vec2(0, 0);
