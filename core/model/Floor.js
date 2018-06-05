@@ -739,7 +739,7 @@ Floor.prototype.updatePosition = function(sub, newPos) {
         }
         
         for (var i = 0; i < sub.length; i++) {
-            illegal = sub[i].updatePosition(newPos[i].mX, newPos[i].mY, true);
+            illegal = sub[i].updatePosition(newPos[i].mX, newPos[i].mY, false);
             if (illegal) {
                 break;
             }

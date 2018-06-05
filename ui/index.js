@@ -54,6 +54,9 @@ $(function() {
 
     $(document).on('mouseup', '#splitter_container #canvas', function(event) {
         event = event || window.event;
+        if (!isClickOnCanvas) {
+            return;
+        }
         isClickOnCanvas = false;
         if (Globals.IsDragging) {
             var isMoved = true;
@@ -124,6 +127,7 @@ $(function() {
 
     $(document).on('mousemove', '#splitter_container #canvas', function(event) {
         event = event || window.event;
+        
         if(event.which == 1) {
             //按住拖动
             if (canvas.isDraggable() && isClickOnCanvas) {
