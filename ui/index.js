@@ -41,11 +41,12 @@ $(function() {
         $('#props_wrap').hide();
         if(btnNum == 0) {
             //左键
-            if (canvas.isDraggable()) {
+            if (canvas.isElementDraggable()) {
+                
                 moveStart.set(event.offsetX, event.offsetY);
                 isClickOnCanvas = true;
             } 
-            canvas.setStartPoint();
+            canvas.setStartPoint(event.offsetX, event.offsetY);
         } else if(btnNum == 2) {
             //右键
             canvas.resetType();
@@ -130,15 +131,20 @@ $(function() {
         
         if(event.which == 1) {
             //按住拖动
-            if (canvas.isDraggable() && isClickOnCanvas) {
-                Globals.IsDragging = true;
-                moveEnd.set(event.offsetX, event.offsetY);
+            if (canvas.isElementDraggable() && isClickOnCanvas) {
                 
-                Globals.Offset.copy(moveEnd);
-                Globals.Offset.addBy(savedOffset).sub(moveStart);
-                document.body.style.cursor = "move";
-                if (Math.abs(moveEnd.mX - moveStart.mX) + Math.abs(moveEnd.mY - moveStart.mY) > 4) {
-                    canvas.render();
+                if (canvas.isAreaDraggable()) {
+                    canvas.updateArea(event.offsetX, event.offsetY);
+                } else {
+                    Globals.IsDragging = true;
+                    moveEnd.set(event.offsetX, event.offsetY);
+                    
+                    Globals.Offset.copy(moveEnd);
+                    Globals.Offset.addBy(savedOffset).sub(moveStart);
+                    document.body.style.cursor = "move";
+                    if (Math.abs(moveEnd.mX - moveStart.mX) + Math.abs(moveEnd.mY - moveStart.mY) > 4) {
+                        canvas.render();
+                    }
                 }
             } else {
                 canvas.updateElement(event.offsetX, event.offsetY);

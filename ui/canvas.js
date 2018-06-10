@@ -10,6 +10,7 @@ function Canvas(name, shape) {
     this._mElementProcessor     = new ElementProcessor(this._mFloor); //处理图元的分裂，删除，性质改变
     this._mSnap                 = new Snap(this._mFloor);
     this._mEdge                 = new Edge(new Vec2(), new Vec2());
+    this._mStartOrigin          = new Vec2(0, 0);
     this._mHintPoints           = [];
     this._mUpdateElment         = null;     //需要调整位置，移动的图元
     this._mProcessElement       = null;     //需要改变性质的图元（直线变曲线，分裂等）
@@ -152,12 +153,16 @@ Canvas.prototype.createCircle = function() {
 }
 
 //页面是否可拖动
-Canvas.prototype.isDraggable = function() {
+Canvas.prototype.isElementDraggable = function() {
     if (this._mSnap.mFocus.controller == null) {
         return true;
     } else {
         return false;
     }
+}
+
+Canvas.prototype.isAreaDraggable = function() {
+    return this._mFloor.isAreaDraggable();
 }
 
 Canvas.prototype.setType = function(type) {
@@ -184,7 +189,9 @@ Canvas.prototype.setType = function(type) {
     this.render();
 }
 
-Canvas.prototype.setStartPoint = function() {
+Canvas.prototype.setStartPoint = function(x, y) {
+    [x, y] = ScaleMouse(x, y);
+    this._mStartOrigin.set(x, y);
     if (this._mType == null) {
         return false;
     }
@@ -390,6 +397,18 @@ Canvas.prototype.deleteFocus = function() {
     }
 }
 
+Canvas.prototype.updateArea = function(x, y) {
+    var pX = x;
+    var pY = y;
+    [x, y] = ScaleMouse(x, y);
+    var diff = new Vec2(x - this._mStartOrigin.mX, y - this._mStartOrigin.mY);
+    var overlapped = this._mFloor.updateArea(diff);
+
+    if (!overlapped) {
+        this._mStartOrigin.set(x, y);
+    }
+    this.renderAreaPicked(pX, pY);
+}
 
 Canvas.prototype.updateElement = function(x, y){
     [x, y] = ScaleMouse(x, y);

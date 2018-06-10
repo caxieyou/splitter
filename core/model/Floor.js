@@ -18,6 +18,7 @@ function Floor() {
     this.mHeightRecord;
 
     this.mPickedIndex;
+    this.mAreaDraggable
     this.mPickedDirection;
     
     this.mKeyPoints;
@@ -41,6 +42,7 @@ Floor.prototype.initialize = function() {
     this.mAreasPolytree = null;
     this.mAreasControllers = [];
     this.mPickedIndex = -1;
+    this.mAreaDraggable = false;
     this.mPickedDirection = false;
     this.mHeightRecord = [];
     this.mKeyPoints = [];
@@ -133,6 +135,7 @@ Floor.prototype.removeElement = function(param1)
 
 Floor.prototype.clearPickedArea = function() {
     this.mPickedIndex = -1;
+    this.mAreaDraggable = false;
 }
 
 Floor.prototype.getPickedArea = function(x, y) {
@@ -140,6 +143,7 @@ Floor.prototype.getPickedArea = function(x, y) {
         return this.mPickedIndex != -1;
     }
     this.mPickedIndex = -1;
+    this.mAreaDraggable = false;
     //this.mPickedArea = null;
     for (var i = 0; i < this.mAreasPolytree.length; i++) {
         if (this.mAreasPolytree[i].contains(new Vec2(x, y))) {
@@ -161,11 +165,38 @@ Floor.prototype.getPickedArea = function(x, y) {
             } else {
                 this.mPickedDirection = -1;
             }
+            this.mAreaDraggable = true;
+            for (var m = 0; m < this.mAreasControllers[this.mPickedIndex].length; m++) {
+                var element = this.mAreasControllers[this.mPickedIndex][m];
+
+                if (element.isBoundry) {
+                    this.mAreaDraggable = false;
+                    break;
+                }
+
+                var corners = element.toCorners();
+
+                if (corners[0].mElements.length != 2) {
+                    this.mAreaDraggable = false;
+                    break;
+                }
+
+                if (corners[1].mElements.length != 2) {
+                    this.mAreaDraggable = false;
+                    break;
+                }
+            }
             break;
         }
     }
     return this.mPickedIndex != -1;
 }
+
+Floor.prototype.isAreaDraggable = function() {
+    return this.mAreaDraggable;
+}
+
+
 Floor.prototype.setAreaHeight = function(sign, val) {
     if (this.mPickedIndex == -1) {
         return;
@@ -728,6 +759,36 @@ Floor.prototype.matchHeight = function(points, heights) {
         }
         this.mHeightRecord[i].height = heights[_idx];
     }
+}
+Floor.prototype.updateArea = function(diff) {
+    corners = {};
+
+    for (var i = 0; i < this.mAreasControllers[this.mPickedIndex].length; i++) {
+        var c = this.mAreasControllers[this.mPickedIndex][i].toCorners();
+        if (!corners[c[0].mId]) {
+            corners[c[0].mId] = c[0];
+        }
+
+        if (!corners[c[1].mId]) {
+            corners[c[1].mId] = c[1];
+        }
+    }
+
+    var e = [];
+    var p = [];
+    for (var id in corners) {
+        e.push(corners[id]);
+
+        p.push(corners[id].mPosition.clone());
+    }
+
+    for (var i = 0; i < p.length; i++) {
+        p[i].mX += diff.mX;
+        p[i].mY += diff.mY;
+    }
+
+    return this.updatePosition(e, p);
+
 }
 
 Floor.prototype.updatePosition = function(sub, newPos) {
