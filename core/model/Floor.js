@@ -1240,8 +1240,6 @@ Floor.prototype._renderAbosoluteDistance = function(segments, validIndex, boundr
                             maxDis = Math.abs(distance);
                             center = markLine.mStart.clone();
                         }
-                        
-                        
                     }
                     
                     if (maxDis > -Number.MAX_VALUE) {

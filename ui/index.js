@@ -39,10 +39,10 @@ $(function() {
         event = event || window.event;
         var btnNum = event.button;
         $('#props_wrap').hide();
+        Globals.INPUT_FOUCS = false;
         if(btnNum == 0) {
             //左键
             if (canvas.isElementDraggable()) {
-                
                 moveStart.set(event.offsetX, event.offsetY);
                 isClickOnCanvas = true;
             } 
@@ -128,6 +128,9 @@ $(function() {
 
     $(document).on('mousemove', '#splitter_container #canvas', function(event) {
         event = event || window.event;
+        if (Globals.INPUT_FOUCS) {
+            return;
+        }
         
         if(event.which == 1) {
             //按住拖动

@@ -81,6 +81,7 @@ Canvas.prototype._renderCurrentPrimitive = function(foucs) {
             
             var t1 = this._mRenderer.drawSegment(edge1, true, Utility.DrawRectCallback1, this, edge1);
             var t2 = this._mRenderer.drawSegment(edge2, true, Utility.DrawRectCallback2, this, edge2);
+            
             if (foucs) {
                 t2.select();
             } else {

@@ -751,6 +751,10 @@ Renderer = function () {
 			tt.addEventListener("keyup", function(e) {
 				if(e.keyCode == 13 && !isNaN(tt.value) && tt.value > 0.9999999)
 					callbackFun(parseInt(tt.value), canvas, edge, edge2, distance, direction);
+                    Globals.INPUT_FOUCS = false;
+			});
+            tt.addEventListener("mousedown", function(e) {
+				Globals.INPUT_FOUCS = true;
 			});
 		}
 		this.textInputs.push(tt);

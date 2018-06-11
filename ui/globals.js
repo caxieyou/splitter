@@ -11,7 +11,7 @@ Globals.Size = new Vec2(4000, 4000);
 Globals.Offset = new Vec2(0, 0);
 Globals.IsDragging = false;
 Globals.UpdateStatus = -1;
-
+Globals.INPUT_FOUCS = false;
 //风格配置
 
 var Style = {};
