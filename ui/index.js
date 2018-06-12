@@ -44,8 +44,8 @@ $(function() {
             //左键
             if (canvas.isElementDraggable()) {
                 moveStart.set(event.offsetX, event.offsetY);
-                isClickOnCanvas = true;
             } 
+            isClickOnCanvas = true;
             canvas.setStartPoint(event.offsetX, event.offsetY);
         } else if(btnNum == 2) {
             //右键
@@ -59,6 +59,7 @@ $(function() {
             return;
         }
         isClickOnCanvas = false;
+        Globals.IsUpdatingArea = false;
         if (Globals.IsDragging) {
             var isMoved = true;
             if (Vec2.distance(moveStart, new Vec2(event.offsetX, event.offsetY)) < 4) {
@@ -74,7 +75,6 @@ $(function() {
                 return;
             }
         } 
-        
         if(canvas.getType() == null) {
             var elementType = canvas.getFocusElement();
             if(elementType == null) {
@@ -135,7 +135,6 @@ $(function() {
         if(event.which == 1) {
             //按住拖动
             if (canvas.isElementDraggable() && isClickOnCanvas) {
-                
                 if (canvas.isAreaDraggable()) {
                     canvas.updateArea(event.offsetX, event.offsetY);
                 } else {

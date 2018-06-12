@@ -10,6 +10,7 @@ Globals.Scale = 1;
 Globals.Size = new Vec2(4000, 4000);
 Globals.Offset = new Vec2(0, 0);
 Globals.IsDragging = false;
+Globals.IsUpdatingArea = false;
 Globals.UpdateStatus = -1;
 Globals.INPUT_FOUCS = false;
 //风格配置

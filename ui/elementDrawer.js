@@ -329,7 +329,6 @@ ElementDrawer.prototype.lineOperationStart = function(point) {
         this.mStatus = STATUS.LINE_DRAWING;
         
     } else if (this.mStatus == STATUS.LINE_DRAWING) {
-        console.log(point);
         if (this.mLine._currentLine.mStart.equals(point.clone())) {
             return;
         }

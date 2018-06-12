@@ -612,7 +612,6 @@ Segment.prototype.updatePosition = function(x, y) {
     if (Globals.UpdateStatus === -1) {
         Globals.UpdateStatus = 0;
         
-        
         var angle1 = Edge.getCorssAngle(s.getTheStartEndEdge(), this.getTheStartEndEdge());
         var angle2 = Edge.getCorssAngle(e.getTheStartEndEdge(), this.getTheStartEndEdge());
         
@@ -623,11 +622,11 @@ Segment.prototype.updatePosition = function(x, y) {
         
         var angleS = s.getAngle();
         var angleE = e.getAngle();
-        if (s.isBoundry )  {
+        if (s.isBoundry)  {
             Segment.Record.left = true;
         }
         
-        if (e.isBoundry )  {
+        if (e.isBoundry)  {
             Segment.Record.right = true;
         }
         
@@ -637,14 +636,40 @@ Segment.prototype.updatePosition = function(x, y) {
     var ptE2;
     if (Segment.Record.left) {
         ptS2 = Edge.getIntersection(s.getTheStartEndEdge(),  new Edge(ptS.clone(), ptE.clone()));
+        var inside = false;
+        for (var i = 0; i < this.mFloor.mElements.length; i++) {
+            var seg = this.mFloor.mElements[i];
+            if (seg.isBoundry) {
+                if (seg.getTheStartEndEdge().pointInEdge(ptS2)) {
+                    inside = true;
+                    break;
+                }
+            }
+        }
+        if (!inside) {
+            return false;
+        }
+        
+        
     } else {
         ptS2 = ptS;
     }
     
     if (Segment.Record.right) {
         ptE2 = Edge.getIntersection(e.getTheStartEndEdge(),  new Edge(ptS.clone(), ptE.clone()));
-        
-        
+        var inside = false;
+        for (var i = 0; i < this.mFloor.mElements.length; i++) {
+            var seg = this.mFloor.mElements[i];
+            if (seg.isBoundry) {
+                if (seg.getTheStartEndEdge().pointInEdge(ptE2)) {
+                    inside = true;
+                    break;
+                }
+            }
+        }
+        if (!inside) {
+            return false;
+        }
     } else {
         ptE2 = ptE;
     }

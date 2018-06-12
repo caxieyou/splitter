@@ -401,6 +401,7 @@ Canvas.prototype.deleteFocus = function() {
 Canvas.prototype.updateArea = function(x, y) {
     var pX = x;
     var pY = y;
+    Globals.IsUpdatingArea = true;
     [x, y] = ScaleMouse(x, y);
     var diff = new Vec2(x - this._mStartOrigin.mX, y - this._mStartOrigin.mY);
     var overlapped = this._mFloor.updateArea(diff);
@@ -538,7 +539,7 @@ Canvas.prototype._renderHintKeyPoints = function() {
     }
     this._mHintPoints = [];
     
-    if (this._mSnap.mFocus.keypoint) {
+    if (this._mSnap.mFocus.keypoint && !Globals.IsUpdatingArea) {
         this._mRenderer.drawCorner(this._mSnap.mFocus.keypoint, Style.FocusCorner.radius, Style.FocusCorner.color);
     }
 }
