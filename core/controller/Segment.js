@@ -617,17 +617,21 @@ Segment.prototype.updatePosition = function(x, y) {
         
         Segment.Record = {
             left :  ((angle1 > (Math.PI * 5 / 6)) || (angle1 < (Math.PI / 6))) ? false : true ,
-            right : ((angle2 > (Math.PI * 5 / 6)) || (angle2 < (Math.PI / 6))) ? false : true 
+            right : ((angle2 > (Math.PI * 5 / 6)) || (angle2 < (Math.PI / 6))) ? false : true ,
+            leftBoundry: false,
+            rightBoundry: false,
         };
         
         var angleS = s.getAngle();
         var angleE = e.getAngle();
         if (s.isBoundry)  {
             Segment.Record.left = true;
+            Segment.Record.leftBoundry = true;
         }
         
         if (e.isBoundry)  {
             Segment.Record.right = true;
+            Segment.Record.rightBoundry = true;
         }
         
     }
@@ -636,40 +640,43 @@ Segment.prototype.updatePosition = function(x, y) {
     var ptE2;
     if (Segment.Record.left) {
         ptS2 = Edge.getIntersection(s.getTheStartEndEdge(),  new Edge(ptS.clone(), ptE.clone()));
-        var inside = false;
-        for (var i = 0; i < this.mFloor.mElements.length; i++) {
-            var seg = this.mFloor.mElements[i];
-            if (seg.isBoundry) {
-                if (seg.getTheStartEndEdge().pointInEdge(ptS2)) {
-                    inside = true;
-                    break;
+        if (Segment.Record.leftBoundry) {
+            var inside = false;
+            for (var i = 0; i < this.mFloor.mElements.length; i++) {
+                var seg = this.mFloor.mElements[i];
+                if (seg.isBoundry) {
+                    if (seg.getTheStartEndEdge().pointInEdge(ptS2)) {
+                        inside = true;
+                        break;
+                    }
                 }
             }
+            if (!inside) {
+                return false;
+            }
         }
-        if (!inside) {
-            return false;
-        }
-        
-        
     } else {
         ptS2 = ptS;
     }
     
     if (Segment.Record.right) {
         ptE2 = Edge.getIntersection(e.getTheStartEndEdge(),  new Edge(ptS.clone(), ptE.clone()));
-        var inside = false;
-        for (var i = 0; i < this.mFloor.mElements.length; i++) {
-            var seg = this.mFloor.mElements[i];
-            if (seg.isBoundry) {
-                if (seg.getTheStartEndEdge().pointInEdge(ptE2)) {
-                    inside = true;
-                    break;
+        if (Segment.Record.rightBoundry) {
+            var inside = false;
+            for (var i = 0; i < this.mFloor.mElements.length; i++) {
+                var seg = this.mFloor.mElements[i];
+                if (seg.isBoundry) {
+                    if (seg.getTheStartEndEdge().pointInEdge(ptE2)) {
+                        inside = true;
+                        break;
+                    }
                 }
             }
+            if (!inside) {
+                return false;
+            }
         }
-        if (!inside) {
-            return false;
-        }
+        
     } else {
         ptE2 = ptE;
     }
